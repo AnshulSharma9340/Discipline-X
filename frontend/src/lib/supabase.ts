@@ -2,19 +2,30 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 const url = import.meta.env.VITE_SUPABASE_URL;
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const apiBase = import.meta.env.VITE_API_BASE_URL;
 
-export const isConfigured = Boolean(url && anonKey);
+// All three env vars must be set. apiBase must also be a reachable URL —
+// localhost from a deployed (non-localhost) frontend is mixed-content blocked.
+function isUsableApiUrl(v: string | undefined): boolean {
+  if (!v) return false;
+  if (!/^https?:\/\//.test(v)) return false;
+  const onLocalhost =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  if (v.includes('localhost') && !onLocalhost) return false;
+  return true;
+}
+
+export const isConfigured = Boolean(url && anonKey && isUsableApiUrl(apiBase));
 
 export const missingEnv: string[] = [];
 if (!url) missingEnv.push('VITE_SUPABASE_URL');
 if (!anonKey) missingEnv.push('VITE_SUPABASE_ANON_KEY');
+if (!isUsableApiUrl(apiBase)) missingEnv.push('VITE_API_BASE_URL');
 
-// Build a real client when configured. When missing, build a stub so the
-// rest of the app can import freely without crashing — the UI shows a
-// "Configuration needed" page instead of a blank screen.
 function buildStub(): SupabaseClient {
   const err = (..._args: unknown[]) =>
-    Promise.reject(new Error('Supabase not configured — set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY'));
+    Promise.reject(new Error('Supabase not configured — set required VITE_* env vars'));
   const ch = { unsubscribe() {} };
   return {
     auth: {
