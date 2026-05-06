@@ -1,0 +1,53 @@
+# Render blueprint — backend only (Supabase handles the database).
+# https://render.com/docs/blueprint-spec
+#
+# Deploy via: Render Dashboard → New → Blueprint → connect this repo
+
+services:
+  - type: web
+    name: disciplinex-backend
+    runtime: python
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: |
+      pip install -r requirements.txt &&
+      alembic upgrade head
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: BACKEND_ENV
+        value: production
+      - key: AUTO_PROMOTE_FIRST_USER
+        value: "false"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: SUPABASE_STORAGE_BUCKET
+        value: proofs
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: DAILY_CUTOFF_HOUR
+        value: "23"
+      - key: DAILY_CUTOFF_MINUTE
+        value: "59"
+      # ↓ Set these in the Render dashboard (mark them as secret) ↓
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_URL_SYNC
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: BACKEND_CORS_ORIGINS
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false

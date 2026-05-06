@@ -1,0 +1,24 @@
+{
+  "name": "DisciplineX",
+  "short_name": "DisciplineX",
+  "description": "AI-powered productivity & discipline OS — daily tasks, streaks, leaderboard, accountability.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#06070b",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    { "name": "Today's Tasks", "url": "/tasks" },
+    { "name": "Focus Timer", "url": "/focus" },
+    { "name": "Habits", "url": "/habits" }
+  ]
+}
