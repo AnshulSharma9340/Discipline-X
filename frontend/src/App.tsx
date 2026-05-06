@@ -5,6 +5,8 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { OnboardingGate } from '@/components/OnboardingGate';
 import { useAuth } from '@/store/auth';
 import { useRealtime } from '@/hooks/useRealtime';
+import { isConfigured } from '@/lib/supabase';
+import ConfigError from '@/pages/ConfigError';
 
 import Landing from '@/pages/Landing';
 import Login from '@/pages/Login';
@@ -37,10 +39,15 @@ import NotFound from '@/pages/NotFound';
 export default function App() {
   const init = useAuth((s) => s.init);
   useEffect(() => {
-    init();
+    if (isConfigured) init();
   }, [init]);
 
   useRealtime();
+
+  // If env vars are missing, show a clear setup page instead of a blank screen.
+  if (!isConfigured) {
+    return <ConfigError />;
+  }
 
   return (
     <Routes>
