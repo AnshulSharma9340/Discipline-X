@@ -32,6 +32,7 @@ out/
 frontend/dist/
 frontend/dist-ssr/
 *.local
+*.tsbuildinfo
 
 # IDE
 .vscode/*
