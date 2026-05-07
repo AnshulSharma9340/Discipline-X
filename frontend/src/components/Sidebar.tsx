@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -19,6 +20,7 @@ import {
   Swords,
   Building2,
   MessageSquare,
+  ChevronDown,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
@@ -26,47 +28,96 @@ import { frameGradient } from '@/lib/cosmetics';
 import { useAuth } from '@/store/auth';
 import { useUI } from '@/store/ui';
 
-const userLinks = [
+type LinkItem = { to: string; icon: typeof LayoutDashboard; label: string };
+
+// Top-level (always visible) — the 4 things a new user does daily.
+const dailyLinks: LinkItem[] = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/tasks', icon: ClipboardList, label: "Today's Tasks" },
   { to: '/focus', icon: Timer, label: 'Focus Timer' },
   { to: '/habits', icon: Check, label: 'Habits' },
-  { to: '/reflection', icon: BookOpen, label: 'Reflection' },
-  { to: '/chat', icon: MessageSquare, label: 'Chat' },
-  { to: '/coach', icon: Brain, label: 'AI Coach' },
 ];
 
-const userLinks2 = [
-  { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
-  { to: '/squads', icon: Swords, label: 'Squads' },
-  { to: '/buddy', icon: Heart, label: 'Buddy' },
+// Collapsible groups — surface power features without overwhelming new users.
+const progressLinks: LinkItem[] = [
   { to: '/streak', icon: Flame, label: 'Streak & Stats' },
   { to: '/achievements', icon: Trophy, label: 'Achievements' },
+  { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
+  { to: '/coach', icon: Brain, label: 'AI Coach' },
+  { to: '/reflection', icon: BookOpen, label: 'Reflection' },
+];
+
+const socialLinks: LinkItem[] = [
+  { to: '/chat', icon: MessageSquare, label: 'Chat' },
+  { to: '/squads', icon: Swords, label: 'Squads' },
+  { to: '/buddy', icon: Heart, label: 'Buddy' },
+];
+
+const accountLinks: LinkItem[] = [
   { to: '/shop', icon: ShoppingBag, label: 'XP Shop' },
   { to: '/emergency', icon: AlertTriangle, label: 'Emergency' },
   { to: '/org', icon: Building2, label: 'Organization' },
-  { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 
-const adminLinks = [
+const adminLinks: LinkItem[] = [
   { to: '/admin', icon: Shield, label: 'Admin Console' },
   { to: '/admin/tasks', icon: ClipboardList, label: 'Manage Tasks' },
   { to: '/admin/ai-tasks', icon: Sparkles, label: 'AI Task Gen' },
-  { to: '/admin/squads', icon: Swords, label: 'Manage Squads' },
   { to: '/admin/submissions', icon: BarChart3, label: 'Submissions' },
   { to: '/admin/users', icon: Users, label: 'Users' },
+  { to: '/admin/squads', icon: Swords, label: 'Manage Squads' },
   { to: '/admin/emergency', icon: AlertTriangle, label: 'Emergency Queue' },
 ];
+
+const SECTION_KEY = 'dx-sidebar-sections';
+
+type SectionState = { progress: boolean; social: boolean; account: boolean; admin: boolean };
+
+const DEFAULT_STATE: SectionState = {
+  progress: false,
+  social: false,
+  account: false,
+  admin: true, // admins probably want this open by default
+};
+
+function loadState(): SectionState {
+  if (typeof window === 'undefined') return DEFAULT_STATE;
+  try {
+    const raw = window.localStorage.getItem(SECTION_KEY);
+    if (!raw) return DEFAULT_STATE;
+    return { ...DEFAULT_STATE, ...JSON.parse(raw) };
+  } catch {
+    return DEFAULT_STATE;
+  }
+}
+
+function saveState(state: SectionState) {
+  try {
+    window.localStorage.setItem(SECTION_KEY, JSON.stringify(state));
+  } catch {
+    /* ignore */
+  }
+}
 
 export function Sidebar() {
   const user = useAuth((s) => s.user);
   const isAdmin = user?.org_role === 'owner' || user?.org_role === 'moderator';
   const sidebarOpen = useUI((s) => s.sidebarOpen);
   const setSidebarOpen = useUI((s) => s.setSidebarOpen);
+  const [sections, setSections] = useState<SectionState>(DEFAULT_STATE);
+
+  useEffect(() => {
+    setSections(loadState());
+  }, []);
+
+  function toggle(key: keyof SectionState) {
+    const next = { ...sections, [key]: !sections[key] };
+    setSections(next);
+    saveState(next);
+  }
 
   return (
     <>
-      {/* Mobile backdrop */}
       <div
         onClick={() => setSidebarOpen(false)}
         className={cn(
@@ -78,16 +129,12 @@ export function Sidebar() {
 
       <aside
         className={cn(
-          // Base layout
           'flex flex-col gap-0.5 p-3 border-r border-white/[0.06] backdrop-blur-xl overflow-y-auto',
-          // Mobile: fixed slide-over drawer
           'fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-black/90 transition-transform duration-200',
-          // Desktop: static, in flow
           'md:static md:z-0 md:w-64 md:max-w-none md:translate-x-0 md:bg-black/40 md:shrink-0',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
         )}
       >
-        {/* Brand row + mobile close button */}
         <div className="flex items-center justify-between mb-2">
           <Link
             to="/dashboard"
@@ -108,26 +155,51 @@ export function Sidebar() {
           </button>
         </div>
 
-        <SectionTitle>Daily</SectionTitle>
-        {userLinks.map((l) => (
+        {/* Always-visible essentials */}
+        {dailyLinks.map((l) => (
           <SideLink key={l.to} {...l} onNavigate={() => setSidebarOpen(false)} />
         ))}
 
-        <SectionTitle className="mt-5">Progress</SectionTitle>
-        {userLinks2.map((l) => (
-          <SideLink key={l.to} {...l} onNavigate={() => setSidebarOpen(false)} />
-        ))}
+        {/* Collapsible groups */}
+        <SectionGroup
+          label="Progress"
+          open={sections.progress}
+          onToggle={() => toggle('progress')}
+          items={progressLinks}
+          onNavigate={() => setSidebarOpen(false)}
+        />
+        <SectionGroup
+          label="Social"
+          open={sections.social}
+          onToggle={() => toggle('social')}
+          items={socialLinks}
+          onNavigate={() => setSidebarOpen(false)}
+        />
+        <SectionGroup
+          label="Account"
+          open={sections.account}
+          onToggle={() => toggle('account')}
+          items={accountLinks}
+          onNavigate={() => setSidebarOpen(false)}
+        />
 
         {isAdmin && (
-          <>
-            <SectionTitle className="mt-5">Admin</SectionTitle>
-            {adminLinks.map((l) => (
-              <SideLink key={l.to} {...l} onNavigate={() => setSidebarOpen(false)} />
-            ))}
-          </>
+          <SectionGroup
+            label="Admin"
+            open={sections.admin}
+            onToggle={() => toggle('admin')}
+            items={adminLinks}
+            onNavigate={() => setSidebarOpen(false)}
+          />
         )}
 
-        <div className="mt-auto pt-4">
+        <div className="mt-auto pt-4 space-y-2">
+          <SideLink
+            to="/settings"
+            icon={Settings}
+            label="Settings"
+            onNavigate={() => setSidebarOpen(false)}
+          />
           <Link
             to="/settings"
             onClick={() => setSidebarOpen(false)}
@@ -193,15 +265,46 @@ function SidebarAvatar({ initial, frameCode }: { initial: string; frameCode: str
   );
 }
 
-function SectionTitle({ children, className }: { children: React.ReactNode; className?: string }) {
+function SectionGroup({
+  label,
+  open,
+  onToggle,
+  items,
+  onNavigate,
+}: {
+  label: string;
+  open: boolean;
+  onToggle: () => void;
+  items: LinkItem[];
+  onNavigate?: () => void;
+}) {
   return (
-    <div
-      className={cn(
-        'px-3 mt-2 mb-1 text-[10px] uppercase tracking-[0.18em] text-white/35 font-medium',
-        className,
-      )}
-    >
-      {children}
+    <div className="mt-3">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-white/35 font-medium hover:text-white/60 transition group"
+      >
+        <span>{label}</span>
+        <ChevronDown
+          className={cn(
+            'w-3 h-3 transition-transform duration-150',
+            open && 'rotate-180',
+          )}
+          strokeWidth={2}
+        />
+      </button>
+      <div
+        className={cn(
+          'grid transition-all duration-150',
+          open ? 'grid-rows-[1fr] mt-0.5' : 'grid-rows-[0fr]',
+        )}
+      >
+        <div className="overflow-hidden">
+          {items.map((l) => (
+            <SideLink key={l.to} {...l} onNavigate={onNavigate} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
 import { StatCard } from '@/components/ui/StatCard';
 import { ProductivityLine } from '@/components/charts/ProductivityLine';
+import { Tutorial, shouldShowTutorial } from '@/components/Tutorial';
 import { api } from '@/lib/api';
 import { useAuth } from '@/store/auth';
 import { cn } from '@/lib/cn';
@@ -39,6 +40,7 @@ export default function Dashboard() {
   const [history, setHistory] = useState<HistoryPoint[]>([]);
   const [nudge, setNudge] = useState<NudgeResponse | null>(null);
   const [quote, setQuote] = useState<DailyQuote | null>(null);
+  const [tutorialOpen, setTutorialOpen] = useState(false);
 
   useEffect(() => {
     api.get<TaskWithSubmission[]>('/tasks/today/with-status').then((r) => setToday(r.data)).catch(() => {});
@@ -48,6 +50,13 @@ export default function Dashboard() {
       .catch(() => {});
     api.get<NudgeResponse>('/ai/me/nudge').then((r) => setNudge(r.data)).catch(() => {});
     api.get<DailyQuote>('/ai/quote').then((r) => setQuote(r.data)).catch(() => {});
+
+    // Auto-show the tutorial on the user's first dashboard visit. The flag in
+    // localStorage prevents it from re-showing on later visits.
+    if (shouldShowTutorial()) {
+      const t = setTimeout(() => setTutorialOpen(true), 600);
+      return () => clearTimeout(t);
+    }
   }, []);
 
   const required = today.filter((i) => i.task.is_required);
@@ -64,6 +73,8 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
+      <Tutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />
+
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}

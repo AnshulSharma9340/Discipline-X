@@ -9,6 +9,7 @@ import {
   FileJson,
   User as UserIcon,
   ExternalLink,
+  Sparkles,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -16,6 +17,7 @@ import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { Tutorial, resetTutorial } from '@/components/Tutorial';
 import { api } from '@/lib/api';
 import { useAuth } from '@/store/auth';
 
@@ -26,6 +28,12 @@ export default function Settings() {
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url ?? '');
   const [bio, setBio] = useState(user?.bio ?? '');
   const [saving, setSaving] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
+
+  function startTour() {
+    resetTutorial();
+    setTourOpen(true);
+  }
 
   async function save(e: FormEvent) {
     e.preventDefault();
@@ -63,6 +71,8 @@ export default function Settings() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+      <Tutorial open={tourOpen} onClose={() => setTourOpen(false)} />
+
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-3xl font-display font-bold flex items-center gap-3">
           <SettingsIcon className="w-7 h-7" />
@@ -70,6 +80,23 @@ export default function Settings() {
         </h1>
         <p className="text-white/60 mt-1">Manage your profile and account.</p>
       </motion.div>
+
+      <Card className="bg-gradient-to-br from-neon-violet/10 to-neon-cyan/5 border-neon-violet/20">
+        <div className="flex items-start gap-4 flex-wrap">
+          <div className="w-10 h-10 rounded-xl bg-neon-violet/20 border border-neon-violet/30 grid place-items-center shrink-0">
+            <Sparkles className="w-5 h-5 text-neon-violet" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h2 className="font-display font-semibold">New here? Take the tour.</h2>
+            <p className="text-sm text-white/60 mt-1">
+              A 60-second walkthrough of how DisciplineX works — tasks, streaks, focus, and your AI coach.
+            </p>
+          </div>
+          <Button onClick={startTour}>
+            <Sparkles className="w-4 h-4" /> Show me around
+          </Button>
+        </div>
+      </Card>
 
       <Card>
         <h2 className="font-display font-semibold text-lg mb-4">Profile</h2>
