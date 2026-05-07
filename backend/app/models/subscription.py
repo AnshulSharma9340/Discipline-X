@@ -37,12 +37,20 @@ class Subscription(Base, TimestampMixin):
     )
 
     plan: Mapped[PlanCode] = mapped_column(
-        Enum(PlanCode, name="plan_code"),
+        # values_callable: serialize using `.value` (lowercase) instead of
+        # the enum member name. Matches the lowercase DB enum we created
+        # in the migration; without this, asyncpg rejects "TRIAL" as
+        # invalid for plan_code.
+        Enum(PlanCode, name="plan_code", values_callable=lambda x: [e.value for e in x]),
         default=PlanCode.TRIAL,
         nullable=False,
     )
     status: Mapped[SubscriptionStatus] = mapped_column(
-        Enum(SubscriptionStatus, name="subscription_status"),
+        Enum(
+            SubscriptionStatus,
+            name="subscription_status",
+            values_callable=lambda x: [e.value for e in x],
+        ),
         default=SubscriptionStatus.TRIAL,
         nullable=False,
         index=True,
