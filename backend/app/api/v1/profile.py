@@ -74,5 +74,8 @@ async def public_profile(user_id: uuid.UUID, viewer: OrgActiveUser, db: DBSessio
         "discipline_score": target.discipline_score,
         "tasks_approved": int(approved),
         "badges": badges,
+        "active_title": target.active_title,
+        "active_frame": target.active_frame,
+        "theme": target.theme,
         "joined": target.created_at.isoformat(),
     }

@@ -2,15 +2,25 @@ import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
+import { useAuth } from '@/store/auth';
 
 export function Layout() {
-  // Subtle grid background on the authenticated app shell only
+  const theme = useAuth((s) => s.user?.theme) ?? 'violet';
+
+  // Subtle grid background + active theme on the authenticated app shell only.
   useEffect(() => {
     document.body.dataset.grid = '1';
     return () => {
       delete document.body.dataset.grid;
     };
   }, []);
+
+  useEffect(() => {
+    document.body.dataset.theme = theme;
+    return () => {
+      delete document.body.dataset.theme;
+    };
+  }, [theme]);
 
   return (
     <div className="min-h-screen flex">

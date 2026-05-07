@@ -19,6 +19,11 @@ export interface AppUser {
   bio: string;
   theme: string;
   unlocked_themes: string;
+  inventory: string;
+  active_title: string;
+  active_frame: string;
+  xp_boost_until: string | null;
+  xp_boost_multiplier: number;
   org_id: string | null;
   org_role: OrgRole | null;
   created_at: string;
@@ -198,23 +203,85 @@ export interface PublicProfile {
   discipline_score: number;
   tasks_approved: number;
   badges: Badge[];
+  active_title?: string;
+  active_frame?: string;
+  theme?: string;
   joined: string;
 }
 
-export interface ShopItem {
+export type ShopTier = 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
+
+export interface ThemeItem {
   code: string;
   name: string;
   cost: number;
   preview: string;
+  accent: string;
+  tier: ShopTier;
+  blurb: string;
   owned: boolean;
+  active: boolean;
+}
+
+export interface TitleItem {
+  code: string;
+  name: string;
+  cost: number;
+  tier: ShopTier;
+  blurb: string;
+  owned: boolean;
+  active: boolean;
+}
+
+export interface FrameItem {
+  code: string;
+  name: string;
+  cost: number;
+  tier: ShopTier;
+  preview: string; // tailwind gradient stops, e.g. "from-violet-400 via-fuchsia-400 to-cyan-400"
+  blurb: string;
+  owned: boolean;
+  active: boolean;
+}
+
+export interface ShieldItem {
+  code: string;
+  name: string;
+  cost: number;
+  grants: number;
+  tier: ShopTier;
+  blurb: string;
+}
+
+export interface BoosterItem {
+  code: string;
+  name: string;
+  cost: number;
+  multiplier: number;
+  hours: number;
+  tier: ShopTier;
+  blurb: string;
+  is_active_boost: boolean;
+}
+
+export interface ActiveBoost {
+  multiplier: number;
+  expires_at: string;
+  seconds_left: number;
 }
 
 export interface ShopState {
   xp: number;
   freeze_tokens: number;
   current_theme: string;
-  themes: ShopItem[];
-  freeze_token: { cost: number; name: string; icon: string };
+  active_title: string;
+  active_frame: string;
+  active_boost: ActiveBoost | null;
+  themes: ThemeItem[];
+  titles: TitleItem[];
+  frames: FrameItem[];
+  shields: ShieldItem[];
+  boosters: BoosterItem[];
 }
 
 export interface NudgeResponse {

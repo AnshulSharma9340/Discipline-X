@@ -22,9 +22,16 @@ async def award_points_on_approve(
     db: AsyncSession, user: User, submission: TaskSubmission, task: DailyTask
 ) -> None:
     """Bump user XP + scores when a submission is approved."""
-    submission.points_awarded = task.points
-    user.xp += task.points
-    user.productivity_score += task.points
+    base = task.points
+    multiplier = 1.0
+    now = datetime.now(timezone.utc)
+    if user.xp_boost_until and user.xp_boost_until > now and user.xp_boost_multiplier > 1.0:
+        multiplier = float(user.xp_boost_multiplier)
+    awarded = int(round(base * multiplier))
+
+    submission.points_awarded = awarded
+    user.xp += awarded
+    user.productivity_score += awarded
     # Discipline tracks consistency; +1 for any approved required task
     if task.is_required:
         user.discipline_score += 2

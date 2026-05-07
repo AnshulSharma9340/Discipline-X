@@ -29,6 +29,11 @@ class UserPublic(UserBase):
     bio: str
     theme: str
     unlocked_themes: str
+    inventory: str = ""
+    active_title: str = ""
+    active_frame: str = ""
+    xp_boost_until: datetime | None = None
+    xp_boost_multiplier: float = 1.0
     org_id: uuid.UUID | None = None
     org_role: OrgRole | None = None
     created_at: datetime

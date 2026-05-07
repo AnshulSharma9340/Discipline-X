@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, String
+from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -65,6 +65,15 @@ class User(Base, TimestampMixin):
     theme: Mapped[str] = mapped_column(String(40), default="violet", nullable=False)
     unlocked_themes: Mapped[str] = mapped_column(
         String(400), default="violet", nullable=False
+    )
+    inventory: Mapped[str] = mapped_column(String(800), default="", nullable=False)
+    active_title: Mapped[str] = mapped_column(String(40), default="", nullable=False)
+    active_frame: Mapped[str] = mapped_column(String(40), default="", nullable=False)
+    xp_boost_until: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    xp_boost_multiplier: Mapped[float] = mapped_column(
+        Float, default=1.0, nullable=False
     )
 
     last_active_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
