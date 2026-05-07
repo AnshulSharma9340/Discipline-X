@@ -19,6 +19,7 @@ import { api } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/store/auth';
 import { cn } from '@/lib/cn';
+import { frameGradient } from '@/lib/cosmetics';
 import type {
   ShopState,
   ThemeItem,
@@ -30,9 +31,10 @@ import type {
   ActiveBoost,
 } from '@/types';
 
-type Tab = 'themes' | 'boosters' | 'shields' | 'titles' | 'frames';
+type Tab = 'collection' | 'themes' | 'boosters' | 'shields' | 'titles' | 'frames';
 
 const TABS: { id: Tab; label: string; icon: typeof Palette }[] = [
+  { id: 'collection', label: 'Collection', icon: Sparkles },
   { id: 'themes', label: 'Themes', icon: Palette },
   { id: 'boosters', label: 'Boosters', icon: Rocket },
   { id: 'shields', label: 'Shields', icon: ShieldCheck },
@@ -81,13 +83,31 @@ export default function Shop() {
   const [state, setState] = useState<ShopState | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
-  const [tab, setTab] = useState<Tab>('themes');
+  const [tab, setTab] = useState<Tab>('collection');
 
   async function load() {
     setLoading(true);
     try {
       const r = await api.get<ShopState>('/shop/');
-      setState(r.data);
+      // Defensive: if the backend is an older build, fall back to empty arrays so
+      // the page still renders rather than crashing on undefined.map().
+      setState({
+        xp: r.data.xp ?? 0,
+        freeze_tokens: r.data.freeze_tokens ?? 0,
+        current_theme: r.data.current_theme ?? 'violet',
+        active_title: r.data.active_title ?? '',
+        active_frame: r.data.active_frame ?? '',
+        active_boost: r.data.active_boost ?? null,
+        themes: r.data.themes ?? [],
+        titles: r.data.titles ?? [],
+        frames: r.data.frames ?? [],
+        shields: r.data.shields ?? [],
+        boosters: r.data.boosters ?? [],
+      });
+    } catch (e) {
+      const message =
+        (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail ?? 'Could not load shop';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -137,7 +157,14 @@ export default function Shop() {
     );
   }
 
+  const ownedThemes = state.themes.filter((t) => t.owned);
+  const ownedTitles = state.titles.filter((t) => t.owned);
+  const ownedFrames = state.frames.filter((f) => f.owned);
+  const collectionCount =
+    ownedThemes.length + ownedTitles.length + ownedFrames.length;
+
   const counts: Record<Tab, number> = {
+    collection: collectionCount,
     themes: state.themes.length,
     boosters: state.boosters.length,
     shields: state.shields.length,
@@ -189,6 +216,17 @@ export default function Shop() {
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.18 }}
         >
+          {tab === 'collection' && (
+            <CollectionView
+              state={state}
+              ownedThemes={ownedThemes}
+              ownedTitles={ownedTitles}
+              ownedFrames={ownedFrames}
+              busy={busy}
+              equip={equip}
+              setTab={setTab}
+            />
+          )}
           {tab === 'themes' && (
             <ThemeGrid items={state.themes} xp={state.xp} busy={busy} buy={buy} equip={equip} />
           )}
@@ -772,6 +810,348 @@ function TitleGrid({
   );
 }
 
+/* ─────────────────────────── Collection ─────────────────────────── */
+
+function CollectionView({
+  state,
+  ownedThemes,
+  ownedTitles,
+  ownedFrames,
+  busy,
+  equip,
+  setTab,
+}: {
+  state: ShopState;
+  ownedThemes: ThemeItem[];
+  ownedTitles: TitleItem[];
+  ownedFrames: FrameItem[];
+  busy: string | null;
+  equip: (kind: 'theme' | 'title' | 'frame', code: string) => void;
+  setTab: (t: Tab) => void;
+}) {
+  const totalSpent = useMemo(() => {
+    const themeCost = ownedThemes.reduce((sum, t) => sum + t.cost, 0);
+    const titleCost = ownedTitles.reduce((sum, t) => sum + t.cost, 0);
+    const frameCost = ownedFrames.reduce((sum, f) => sum + f.cost, 0);
+    return themeCost + titleCost + frameCost;
+  }, [ownedThemes, ownedTitles, ownedFrames]);
+
+  const isEmpty =
+    ownedThemes.length === 0 && ownedTitles.length === 0 && ownedFrames.length === 0;
+
+  if (isEmpty) {
+    return (
+      <div className="rounded-3xl border border-white/[0.08] bg-white/[0.015] p-12 text-center">
+        <div className="mx-auto w-14 h-14 rounded-2xl grid place-items-center accent-ring mb-5">
+          <Sparkles className="w-6 h-6" style={{ color: 'rgb(var(--accent))' }} />
+        </div>
+        <h2 className="font-display text-2xl font-bold">Your trophy room is empty</h2>
+        <p className="text-white/55 mt-2 max-w-sm mx-auto">
+          Buy your first theme, title or frame and it'll show up here. Everything you own
+          stays here forever.
+        </p>
+        <div className="mt-6 flex flex-wrap justify-center gap-2">
+          <button
+            onClick={() => setTab('themes')}
+            className="btn-primary"
+          >
+            <Palette className="w-4 h-4" /> Browse themes
+          </button>
+          <button
+            onClick={() => setTab('boosters')}
+            className="btn-ghost"
+          >
+            <Rocket className="w-4 h-4" /> XP boosters
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      {/* Stats strip */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <CollectionStat
+          label="Themes owned"
+          value={`${ownedThemes.length} / ${state.themes.length}`}
+          icon={<Palette className="w-3.5 h-3.5" style={{ color: 'rgb(var(--accent))' }} />}
+        />
+        <CollectionStat
+          label="Titles owned"
+          value={`${ownedTitles.length} / ${state.titles.length}`}
+          icon={<Crown className="w-3.5 h-3.5 text-amber-300" />}
+        />
+        <CollectionStat
+          label="Frames owned"
+          value={`${ownedFrames.length} / ${state.frames.length}`}
+          icon={<Frame className="w-3.5 h-3.5 text-pink-300" />}
+        />
+        <CollectionStat
+          label="XP invested"
+          value={fmt(totalSpent)}
+          icon={<Zap className="w-3.5 h-3.5 text-violet-300" />}
+        />
+      </div>
+
+      {/* Themes */}
+      <CollectionSection
+        title="Themes"
+        empty="No themes owned yet"
+        onBrowse={() => setTab('themes')}
+        count={ownedThemes.length}
+      >
+        {ownedThemes.map((t) => (
+          <motion.button
+            key={t.code}
+            whileHover={{ y: -2 }}
+            onClick={() => equip('theme', t.code)}
+            disabled={busy === `equip:theme:${t.code}` || t.active}
+            className={cn(
+              'group relative rounded-2xl overflow-hidden text-left bg-black/40 border',
+              t.active
+                ? 'border-emerald-400/50 ring-1 ring-emerald-400/40'
+                : 'border-white/[0.08] hover:border-white/20',
+              tierClass(t.tier),
+            )}
+          >
+            <div className="h-24 relative" style={{ background: t.preview }}>
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background:
+                    'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.35) 100%)',
+                }}
+              />
+              {t.active && (
+                <div className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-full bg-black/55 backdrop-blur px-2 py-0.5 text-[10px] uppercase tracking-wider text-emerald-200">
+                  <Check className="w-3 h-3" /> Active
+                </div>
+              )}
+            </div>
+            <div className="p-3">
+              <div className="font-display font-semibold text-sm truncate">{t.name}</div>
+              <div className={cn('text-[10px] uppercase tracking-[0.16em]', TIER_TEXT[t.tier])}>
+                {TIER_LABEL[t.tier]}
+              </div>
+              {!t.active && (
+                <div className="mt-1.5 text-[11px] text-white/55 group-hover:text-white transition">
+                  Click to apply →
+                </div>
+              )}
+            </div>
+          </motion.button>
+        ))}
+      </CollectionSection>
+
+      {/* Titles */}
+      <CollectionSection
+        title="Titles"
+        empty="No titles unlocked yet"
+        onBrowse={() => setTab('titles')}
+        count={ownedTitles.length}
+      >
+        {ownedTitles.map((t) => (
+          <motion.button
+            key={t.code}
+            whileHover={{ y: -2 }}
+            onClick={() => equip('title', t.active ? '' : t.code)}
+            disabled={busy === `equip:title:${t.code}`}
+            className={cn(
+              'group relative rounded-2xl overflow-hidden text-left bg-black/40 border p-4',
+              t.active
+                ? 'border-emerald-400/50 ring-1 ring-emerald-400/40'
+                : 'border-white/[0.08] hover:border-white/20',
+              tierClass(t.tier),
+            )}
+          >
+            <div
+              className={cn('font-display text-xl truncate', TIER_TEXT[t.tier])}
+              style={{ textShadow: '0 0 18px currentColor' }}
+            >
+              «&nbsp;{t.name}&nbsp;»
+            </div>
+            <div className="text-xs text-white/50 mt-1 line-clamp-2">{t.blurb}</div>
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <span className={cn('text-[10px] uppercase tracking-[0.16em]', TIER_TEXT[t.tier])}>
+                {TIER_LABEL[t.tier]}
+              </span>
+              <span
+                className={cn(
+                  'text-[11px]',
+                  t.active ? 'text-emerald-300' : 'text-white/55 group-hover:text-white',
+                )}
+              >
+                {t.active ? '✓ Equipped — click to remove' : 'Click to equip →'}
+              </span>
+            </div>
+          </motion.button>
+        ))}
+      </CollectionSection>
+
+      {/* Frames */}
+      <CollectionSection
+        title="Frames"
+        empty="No frames unlocked yet"
+        onBrowse={() => setTab('frames')}
+        count={ownedFrames.length}
+      >
+        {ownedFrames.map((f) => (
+          <motion.button
+            key={f.code}
+            whileHover={{ y: -2 }}
+            onClick={() => equip('frame', f.active ? '' : f.code)}
+            disabled={busy === `equip:frame:${f.code}`}
+            className={cn(
+              'group relative rounded-2xl overflow-hidden text-left bg-black/40 border p-4',
+              f.active
+                ? 'border-emerald-400/50 ring-1 ring-emerald-400/40'
+                : 'border-white/[0.08] hover:border-white/20',
+              tierClass(f.tier),
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className={cn(
+                  'p-[3px] rounded-full bg-gradient-to-br animate-[gradient-x_6s_ease_infinite]',
+                  frameGradient(f.code),
+                )}
+                style={{ backgroundSize: '200% 200%' }}
+              >
+                <div className="w-12 h-12 rounded-full bg-black grid place-items-center text-white font-display font-bold">
+                  A
+                </div>
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="font-display font-semibold truncate">{f.name}</div>
+                <div className="text-xs text-white/50 line-clamp-2">{f.blurb}</div>
+              </div>
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <span className={cn('text-[10px] uppercase tracking-[0.16em]', TIER_TEXT[f.tier])}>
+                {TIER_LABEL[f.tier]}
+              </span>
+              <span
+                className={cn(
+                  'text-[11px]',
+                  f.active ? 'text-emerald-300' : 'text-white/55 group-hover:text-white',
+                )}
+              >
+                {f.active ? '✓ Equipped — click to remove' : 'Click to equip →'}
+              </span>
+            </div>
+          </motion.button>
+        ))}
+      </CollectionSection>
+
+      {/* Consumables stat */}
+      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5">
+        <div className="eyebrow mb-3">Consumables &amp; status</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="rounded-xl border border-cyan-400/25 bg-cyan-400/[0.04] p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-cyan-400/15 grid place-items-center">
+              <ShieldCheck className="w-5 h-5 text-cyan-300" />
+            </div>
+            <div>
+              <div className="font-display text-2xl text-cyan-100 tabular-nums">
+                {state.freeze_tokens}
+              </div>
+              <div className="text-xs text-cyan-200/60">streak shield{state.freeze_tokens === 1 ? '' : 's'} held</div>
+            </div>
+          </div>
+          {state.active_boost ? (
+            <div className="rounded-xl border border-amber-300/30 bg-amber-300/[0.06] p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-300/15 grid place-items-center">
+                <Sparkles className="w-5 h-5 text-amber-300" />
+              </div>
+              <div>
+                <div className="font-display text-2xl text-amber-100 tabular-nums">
+                  {state.active_boost.multiplier}× XP
+                </div>
+                <div className="text-xs text-amber-200/60 tabular-nums">
+                  {formatCountdown(state.active_boost.seconds_left)} remaining
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/[0.04] grid place-items-center">
+                <Rocket className="w-5 h-5 text-white/40" />
+              </div>
+              <div>
+                <div className="font-display text-base text-white/55">No active boost</div>
+                <div className="text-xs text-white/35">Activate one in Boosters →</div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CollectionStat({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] px-4 py-3">
+      <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-white/40">
+        {icon} {label}
+      </div>
+      <div className="mt-1 font-display text-xl tabular-nums">{value}</div>
+    </div>
+  );
+}
+
+function CollectionSection({
+  title,
+  count,
+  children,
+  empty,
+  onBrowse,
+}: {
+  title: string;
+  count: number;
+  children: React.ReactNode;
+  empty: string;
+  onBrowse: () => void;
+}) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm uppercase tracking-[0.18em] text-white/55">{title}</h2>
+          <span className="text-[10px] tabular-nums px-1.5 py-0.5 rounded-full bg-white/[0.06] text-white/50">
+            {count}
+          </span>
+        </div>
+        <button
+          onClick={onBrowse}
+          className="text-[11px] uppercase tracking-[0.16em] text-white/45 hover:text-white transition"
+        >
+          Browse all →
+        </button>
+      </div>
+      {count === 0 ? (
+        <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.01] p-8 text-center">
+          <div className="text-sm text-white/45">{empty}</div>
+          <button onClick={onBrowse} className="btn-ghost mt-3">
+            Browse store
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">{children}</div>
+      )}
+    </div>
+  );
+}
+
 /* ─────────────────────────── Frames ─────────────────────────── */
 
 function FrameGrid({
@@ -831,7 +1211,7 @@ function FrameGrid({
                 <div
                   className={cn(
                     'p-[3px] rounded-full bg-gradient-to-br animate-[gradient-x_6s_ease_infinite]',
-                    f.preview,
+                    frameGradient(f.code),
                   )}
                   style={{ backgroundSize: '200% 200%' }}
                 >

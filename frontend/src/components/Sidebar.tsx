@@ -21,6 +21,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { frameGradient } from '@/lib/cosmetics';
 import { useAuth } from '@/store/auth';
 
 const userLinks = [
@@ -61,9 +62,9 @@ export function Sidebar() {
 
   return (
     <aside className="w-64 shrink-0 hidden md:flex flex-col gap-0.5 p-3 border-r border-white/[0.06] bg-black/40 backdrop-blur-xl overflow-y-auto">
-      {/* Brand — minimal, matches landing */}
+      {/* Brand — minimal, matches landing; tile picks up active theme */}
       <Link to="/dashboard" className="flex items-center gap-2.5 px-3 py-4 mb-2 group">
-        <div className="w-7 h-7 rounded-md bg-white grid place-items-center transition group-hover:scale-105">
+        <div className="w-7 h-7 rounded-md brand-tile grid place-items-center transition group-hover:scale-105">
           <span className="text-black font-display font-bold text-sm leading-none">D</span>
         </div>
         <span className="font-display font-semibold tracking-tight text-[15px]">DisciplineX</span>
@@ -93,11 +94,17 @@ export function Sidebar() {
           to="/settings"
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-white/[0.06] hover:border-white/15 hover:bg-white/[0.02] transition"
         >
-          <div className="w-8 h-8 rounded-full bg-white grid place-items-center text-sm font-semibold text-black shrink-0">
-            {user?.name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? '?'}
-          </div>
+          <SidebarAvatar
+            initial={user?.name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? '?'}
+            frameCode={user?.active_frame ?? ''}
+          />
           <div className="min-w-0 flex-1">
             <div className="text-sm font-medium truncate">{user?.name || user?.email}</div>
+            {user?.active_title ? (
+              <div className="text-[10px] uppercase tracking-[0.16em] truncate accent-text font-medium">
+                « {humanTitle(user.active_title)} »
+              </div>
+            ) : null}
             <div className="text-[11px] text-white/45 capitalize">
               {user?.org_role ?? user?.role} · Lv {user?.level ?? 1}
             </div>
@@ -105,6 +112,44 @@ export function Sidebar() {
         </Link>
       </div>
     </aside>
+  );
+}
+
+const TITLE_LABELS: Record<string, string> = {
+  early_riser: 'Early Riser',
+  iron_will: 'Iron Will',
+  night_owl: 'Night Owl',
+  code_wizard: 'Code Wizard',
+  marathoner: 'The Marathoner',
+  ascendant: 'Ascendant',
+  mythic_one: 'The Mythic',
+};
+
+function humanTitle(code: string): string {
+  return TITLE_LABELS[code] ?? code.replace(/_/g, ' ');
+}
+
+function SidebarAvatar({ initial, frameCode }: { initial: string; frameCode: string }) {
+  const gradient = frameGradient(frameCode);
+  if (!gradient) {
+    return (
+      <div className="w-8 h-8 rounded-full bg-white grid place-items-center text-sm font-semibold text-black shrink-0">
+        {initial}
+      </div>
+    );
+  }
+  return (
+    <div
+      className={cn(
+        'p-[2px] rounded-full bg-gradient-to-br shrink-0 animate-[gradient-x_6s_ease_infinite]',
+        gradient,
+      )}
+      style={{ backgroundSize: '200% 200%' }}
+    >
+      <div className="w-7 h-7 rounded-full bg-white grid place-items-center text-[13px] font-semibold text-black">
+        {initial}
+      </div>
+    </div>
   );
 }
 
@@ -136,9 +181,9 @@ function SideLink({
       end={to === '/dashboard' || to === '/admin'}
       className={({ isActive }) =>
         cn(
-          'flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-colors duration-150',
+          'flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-all duration-150',
           isActive
-            ? 'bg-white/[0.07] text-white'
+            ? 'nav-active text-white'
             : 'text-white/55 hover:text-white hover:bg-white/[0.03]',
         )
       }
