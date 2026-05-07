@@ -32,9 +32,13 @@ export function PlanBadge() {
 
   if (!sub) return null;
 
+  // Defensive fallback: older backend revisions don't include premium_active
+  // in the /billing/me payload. Use is_active (the personal-sub-only flag)
+  // when the new field is missing, so we never show false "Expired" pills
+  // during a Cloud Run revision rollover.
+  const premiumActive = sub.premium_active ?? sub.is_active;
   const isSponsored = sub.premium_source === 'sponsored';
-  // Personal sub state — used when not sponsored.
-  const isExpired = !sub.premium_active;
+  const isExpired = !premiumActive;
   const isTrial = sub.status === 'trial' && !isSponsored;
   const isActive = sub.status === 'active' && !isSponsored;
 

@@ -11,10 +11,12 @@ export interface SubscriptionState {
   has_used_intro: boolean;
 
   // Hybrid premium signal — true iff personal sub OR org sponsorship covers them.
-  premium_active: boolean;
-  premium_source: 'personal' | 'sponsored' | 'none';
-  sponsoring_org_id: string | null;
-  sponsoring_org_name: string | null;
+  // Optional: older backend revisions may omit these fields. Callers should
+  // fall back to `is_active` if these are undefined.
+  premium_active?: boolean;
+  premium_source?: 'personal' | 'sponsored' | 'none';
+  sponsoring_org_id?: string | null;
+  sponsoring_org_name?: string | null;
 }
 
 export interface SeatsState {

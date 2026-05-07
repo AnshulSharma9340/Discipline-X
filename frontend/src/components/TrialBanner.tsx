@@ -41,7 +41,9 @@ export function TrialBanner() {
   if (sub.status === 'trial' && sub.days_left > 3) return null;
   if (sub.status === 'trial' && dismissedToday()) return null;
 
-  const isExpired = !sub.is_active;
+  // Fallback: missing premium_active (old backend) → use is_active.
+  const premiumActive = sub.premium_active ?? sub.is_active;
+  const isExpired = !premiumActive;
   const isTrial = sub.status === 'trial';
 
   const tone = isExpired
