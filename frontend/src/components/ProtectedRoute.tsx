@@ -13,7 +13,18 @@ export function ProtectedRoute({ children, requireRole }: Props) {
   const { session, user, initialized, loading, fetchProfile, signOut } = useAuth();
   const location = useLocation();
 
-  if (!initialized || loading) {
+  // If the URL hash carries a Supabase auth token (magic-link / OAuth callback),
+  // Supabase is still parsing it asynchronously. We must NOT bounce to /login
+  // here — that's the visible flash the user sees right after signing in.
+  // Wait it out with the loading spinner; the hash will be replaced as soon
+  // as the session is established.
+  const hasAuthHash =
+    typeof window !== 'undefined' &&
+    /access_token=|refresh_token=|type=(magiclink|recovery|signup)/.test(
+      window.location.hash,
+    );
+
+  if (!initialized || loading || (hasAuthHash && !session)) {
     return (
       <div className="min-h-screen grid place-items-center">
         <Loader2 className="w-8 h-8 animate-spin text-neon-violet" />

@@ -21,6 +21,30 @@ export const useAuth = create<AuthState>((set, get) => ({
   initialized: false,
 
   init: async () => {
+    // If the URL has an auth hash (magic-link / OAuth return), supabase-js
+    // parses it asynchronously and fires SIGNED_IN. Calling getSession()
+    // before that fires can return null briefly, which would race-condition
+    // ProtectedRoute into bouncing the user to /login. So when we detect
+    // the hash, wait up to 3s for the SIGNED_IN event before continuing.
+    const hasAuthHash =
+      typeof window !== 'undefined' &&
+      /access_token=|refresh_token=|type=(magiclink|recovery|signup)/.test(
+        window.location.hash,
+      );
+
+    if (hasAuthHash) {
+      await new Promise<void>((resolve) => {
+        const timeout = setTimeout(resolve, 3000);
+        const sub = supabase.auth.onAuthStateChange((event, session) => {
+          if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+            clearTimeout(timeout);
+            sub.data.subscription.unsubscribe();
+            resolve();
+          }
+        });
+      });
+    }
+
     const { data } = await supabase.auth.getSession();
     set({ session: data.session });
 
