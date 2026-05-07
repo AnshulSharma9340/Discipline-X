@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Crown, Users, ArrowRight, KeyRound, Building2 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -11,10 +11,12 @@ import { cn } from '@/lib/cn';
 export default function Onboarding() {
   const { user, fetchProfile } = useAuth();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const isAddMode = params.get('add') === '1';
   const [mode, setMode] = useState<'choose' | 'create' | 'join'>('choose');
 
-  // Already in an org → bounce
-  if (user?.org_id) return <Navigate to="/dashboard" replace />;
+  // Already in an org → bounce, unless they explicitly came here to add another.
+  if (user?.org_id && !isAddMode) return <Navigate to="/dashboard" replace />;
 
   return (
     <div className="min-h-screen bg-black text-white grid place-items-center p-4 sm:p-6">
@@ -29,12 +31,16 @@ export default function Onboarding() {
             <span className="text-black font-display font-bold text-lg leading-none">D</span>
           </div>
           <h1 className="font-display font-semibold tracking-[-0.03em] text-3xl sm:text-4xl md:text-5xl leading-[1.05]">
-            One last step.
+            {isAddMode ? 'Add another' : 'One last step.'}
             <br />
-            <span className="italic font-light text-white/70">Pick your seat.</span>
+            <span className="italic font-light text-white/70">
+              {isAddMode ? 'organization.' : 'Pick your seat.'}
+            </span>
           </h1>
           <p className="text-white/55 mt-4 text-sm sm:text-base max-w-md mx-auto">
-            DisciplineX is built around organizations. Lead one or join one — you can switch later.
+            {isAddMode
+              ? 'Create a new room or join one with an invite code. You can switch between them anytime from the topbar.'
+              : 'DisciplineX is built around organizations. Lead one or join one — you can switch later.'}
           </p>
         </div>
 

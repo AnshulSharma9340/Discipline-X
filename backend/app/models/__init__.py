@@ -5,6 +5,7 @@ from app.models.buddy import BuddyPair, BuddyStatus
 from app.models.chat import ChatMessage
 from app.models.emergency import EmergencyRequest, EmergencyStatus
 from app.models.habit import Habit, HabitCheck
+from app.models.membership import OrganizationMembership
 from app.models.organization import Organization, OrgRole
 from app.models.otp_code import OtpCode
 from app.models.reaction import SubmissionReaction
@@ -40,4 +41,5 @@ __all__ = [
     "BuddyStatus",
     "ChatMessage",
     "OtpCode",
+    "OrganizationMembership",
 ]

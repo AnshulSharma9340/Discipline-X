@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/store/auth';
 import { useUI } from '@/store/ui';
 import { useActiveBoost, formatBoostCountdown } from '@/hooks/useActiveBoost';
+import { OrgSwitcher } from '@/components/OrgSwitcher';
 
 export function Topbar() {
   const { user, signOut } = useAuth();
@@ -23,11 +24,12 @@ export function Topbar() {
         <Menu className="w-5 h-5" strokeWidth={1.75} />
       </button>
 
-      <div className="flex-1 min-w-0">
-        <div className="text-sm text-white/55 truncate">
-          <span className="hidden sm:inline">Welcome back, </span>
+      <div className="flex-1 min-w-0 flex items-center gap-3">
+        <div className="text-sm text-white/55 truncate hidden md:block">
+          <span>Welcome back, </span>
           <span className="text-white font-medium">{user?.name || 'Operator'}</span>
         </div>
+        <OrgSwitcher />
       </div>
 
       {boost && (
