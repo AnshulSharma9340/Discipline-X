@@ -38,10 +38,10 @@ router = APIRouter(prefix="/billing", tags=["billing"])
 
 PLAN_CATALOG: dict[str, dict] = {
     PlanCode.FIRST_MONTH.value: {
-        "label": "Free first month",
+        "label": "₹0 first month",
         "amount_paise": 0,           # ₹0 — bypasses Razorpay, redeemed via /redeem-intro
         "duration_days": 30,
-        "description": "First month free — try paid features for 30 days, no card needed.",
+        "description": "After your 7-day trial — get 30 more days for ₹0. No card needed.",
         "intro_only": True,
     },
     PlanCode.MONTHLY.value: {

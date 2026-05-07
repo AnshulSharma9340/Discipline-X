@@ -211,7 +211,7 @@ function PlanCard({
       )}
       {isIntro && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-emerald-500 text-black text-[10px] uppercase tracking-[0.18em] font-semibold whitespace-nowrap">
-          {isFree ? 'Free first month' : 'Try it for ₹1'}
+          {isFree ? '₹0 first month' : 'Try it for ₹1'}
         </div>
       )}
 
@@ -219,23 +219,17 @@ function PlanCard({
       <div className="text-sm text-white/55 mt-1 min-h-[40px]">{plan.description}</div>
 
       <div className="mt-6 flex items-baseline gap-1">
-        {isFree ? (
-          <>
-            <span className="text-4xl font-display font-bold tracking-tight text-emerald-300">
-              Free
-            </span>
-            <span className="text-sm text-white/45">/ first month</span>
-          </>
-        ) : (
-          <>
-            <span className="text-4xl font-display font-bold tracking-tight">
-              ₹{plan.amount_inr}
-            </span>
-            <span className="text-sm text-white/45">
-              / {plan.duration_days >= 365 ? 'year' : plan.duration_days >= 90 ? '6 mo' : 'month'}
-            </span>
-          </>
-        )}
+        <span
+          className={cn(
+            'text-4xl font-display font-bold tracking-tight',
+            isFree && 'text-emerald-300',
+          )}
+        >
+          ₹{plan.amount_inr}
+        </span>
+        <span className="text-sm text-white/45">
+          / {plan.duration_days >= 365 ? 'year' : plan.duration_days >= 90 ? '6 mo' : 'month'}
+        </span>
       </div>
 
       <ul className="mt-6 space-y-2 text-sm text-white/65 flex-1">
@@ -276,7 +270,7 @@ function PlanCard({
         ) : (
           <>
             <CreditCard className="w-4 h-4" />
-            {isFree ? 'Claim free month' : isIntro ? 'Try for ₹1' : 'Subscribe'}
+            {isFree ? 'Claim for ₹0' : isIntro ? 'Try for ₹1' : 'Subscribe'}
           </>
         )}
       </button>
