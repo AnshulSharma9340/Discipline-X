@@ -23,6 +23,7 @@ import Shop from '@/pages/Shop';
 import Profile from '@/pages/Profile';
 import Squads from '@/pages/Squads';
 import BuddyPage from '@/pages/Buddy';
+import Chat from '@/pages/Chat';
 import ManageSquads from '@/pages/admin/ManageSquads';
 import Leaderboard from '@/pages/Leaderboard';
 import Streak from '@/pages/Streak';
@@ -86,6 +87,7 @@ export default function App() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/squads" element={<Squads />} />
         <Route path="/buddy" element={<BuddyPage />} />
+        <Route path="/chat" element={<Chat />} />
         <Route path="/u/:userId" element={<Profile />} />
         <Route path="/emergency" element={<Emergency />} />
         <Route path="/settings" element={<Settings />} />

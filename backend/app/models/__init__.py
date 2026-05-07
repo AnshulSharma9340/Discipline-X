@@ -2,6 +2,7 @@ from app.models.analytics import DailyAnalytics
 from app.models.audit import AuditLog
 from app.models.badge import UserBadge
 from app.models.buddy import BuddyPair, BuddyStatus
+from app.models.chat import ChatMessage
 from app.models.emergency import EmergencyRequest, EmergencyStatus
 from app.models.habit import Habit, HabitCheck
 from app.models.organization import Organization, OrgRole
@@ -36,4 +37,5 @@ __all__ = [
     "SquadMember",
     "BuddyPair",
     "BuddyStatus",
+    "ChatMessage",
 ]

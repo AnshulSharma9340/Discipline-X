@@ -43,20 +43,24 @@ async def connect(sid: str, environ: dict, auth: dict | None) -> None:  # noqa: 
 
     user_id = claims["sub"]
     role: str | None = None
+    org_id: str | None = None
     try:
         async with AsyncSessionLocal() as db:
             db_user = await db.get(User, uuid.UUID(user_id))
             if db_user:
                 role = db_user.role.value
+                org_id = str(db_user.org_id) if db_user.org_id else None
     except Exception as e:
         logger.warning("Socket role lookup failed: {}", e)
 
-    await sio.save_session(sid, {"user_id": user_id, "role": role})
+    await sio.save_session(sid, {"user_id": user_id, "role": role, "org_id": org_id})
     await sio.enter_room(sid, "global")
     await sio.enter_room(sid, f"user:{user_id}")
+    if org_id:
+        await sio.enter_room(sid, f"org:{org_id}")
     if role == UserRole.ADMIN.value:
         await sio.enter_room(sid, "admins")
-    logger.info("Socket connect: user={} role={} sid={}", user_id, role, sid)
+    logger.info("Socket connect: user={} role={} org={} sid={}", user_id, role, org_id, sid)
 
 
 @sio.event
@@ -77,3 +81,7 @@ async def emit_global(event: str, payload: dict[str, Any]) -> None:
 
 async def emit_admins(event: str, payload: dict[str, Any]) -> None:
     await sio.emit(event, payload, room="admins")
+
+
+async def emit_to_room(room: str, event: str, payload: dict[str, Any]) -> None:
+    await sio.emit(event, payload, room=room)

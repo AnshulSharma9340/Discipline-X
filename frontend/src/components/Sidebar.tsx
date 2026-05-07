@@ -18,6 +18,7 @@ import {
   Heart,
   Swords,
   Building2,
+  MessageSquare,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useAuth } from '@/store/auth';
@@ -28,6 +29,7 @@ const userLinks = [
   { to: '/focus', icon: Timer, label: 'Focus Timer' },
   { to: '/habits', icon: Check, label: 'Habits' },
   { to: '/reflection', icon: BookOpen, label: 'Reflection' },
+  { to: '/chat', icon: MessageSquare, label: 'Chat' },
   { to: '/coach', icon: Brain, label: 'AI Coach' },
 ];
 

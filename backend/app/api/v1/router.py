@@ -7,6 +7,7 @@ from app.api.v1 import (
     auth,
     badges,
     buddy,
+    chat,
     dev,
     emergency,
     export_data,
@@ -46,3 +47,4 @@ api_router.include_router(dev.router)
 api_router.include_router(squads.router)
 api_router.include_router(buddy.router)
 api_router.include_router(github.router)
+api_router.include_router(chat.router)

@@ -1,61 +1,48 @@
 import { Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import {
-  ArrowRight,
-  Brain,
-  Flame,
-  Github,
-  ShieldCheck,
-  Sparkles,
-  Target,
-  Timer,
-  Trophy,
-  Zap,
-} from 'lucide-react';
+import { ArrowRight, Brain, Github, Lock, Target, Timer, Trophy } from 'lucide-react';
 import { useAuth } from '@/store/auth';
+import { ShaderAnimation } from '@/components/ui/ShaderAnimation';
 
 export default function Landing() {
   const session = useAuth((s) => s.session);
   const initialized = useAuth((s) => s.initialized);
 
-  // Logged-in users skip straight to their dashboard
   if (initialized && session) return <Navigate to="/dashboard" replace />;
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Aurora backdrop */}
-      <div className="absolute inset-0 bg-aurora opacity-50 animate-gradient-x [background-size:200%_200%] pointer-events-none" />
-
+    <div className="min-h-screen bg-black text-white">
       <Nav />
-
-      <main className="relative z-10">
-        <Hero />
-        <SocialProof />
-        <Features />
-        <HowItWorks />
-        <FinalCTA />
-        <Footer />
-      </main>
+      <Hero />
+      <Features />
+      <Workflow />
+      <CTA />
+      <Footer />
     </div>
   );
 }
 
 function Nav() {
   return (
-    <nav className="relative z-20 max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-neon-violet to-neon-cyan grid place-items-center">
-          <Sparkles className="w-4 h-4" />
+    <nav className="fixed top-0 inset-x-0 z-30 backdrop-blur-md bg-black/40 border-b border-white/5">
+      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-md bg-white grid place-items-center">
+            <span className="text-black font-display font-bold text-sm leading-none">D</span>
+          </div>
+          <span className="font-display font-semibold tracking-tight">DisciplineX</span>
+        </Link>
+        <div className="flex items-center gap-1 text-sm">
+          <Link to="/login" className="px-3 py-1.5 text-white/70 hover:text-white transition">
+            Sign in
+          </Link>
+          <Link
+            to="/register"
+            className="ml-2 px-3.5 py-1.5 rounded-full bg-white text-black font-medium hover:bg-white/90 transition inline-flex items-center gap-1.5"
+          >
+            Get started <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
-        <div className="text-xl font-display font-bold neon-text">DisciplineX</div>
-      </div>
-      <div className="flex items-center gap-3">
-        <Link to="/login" className="btn-ghost">
-          Sign in
-        </Link>
-        <Link to="/register" className="btn-primary">
-          Get started <ArrowRight className="w-4 h-4" />
-        </Link>
       </div>
     </nav>
   );
@@ -63,109 +50,71 @@ function Nav() {
 
 function Hero() {
   return (
-    <section className="max-w-7xl mx-auto px-6 pt-12 pb-20 text-center">
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs mb-6"
-      >
-        <Sparkles className="w-3.5 h-3.5 text-neon-cyan" />
-        AI-powered productivity & discipline OS
-      </motion.div>
+    <section className="relative h-[100vh] min-h-[680px] overflow-hidden">
+      <ShaderAnimation />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black pointer-events-none" />
 
-      <motion.h1
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="font-display font-bold tracking-tight text-5xl md:text-7xl leading-[1.05]"
-      >
-        Discipline isn't a feeling. <br />
-        <span className="neon-text">It's a system.</span>
-      </motion.h1>
+      <div className="relative z-10 h-full max-w-5xl mx-auto px-6 flex flex-col justify-center items-center text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs backdrop-blur-md mb-8"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          Built for operators who refuse to drift
+        </motion.div>
 
-      <motion.p
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="mt-6 text-lg md:text-xl text-white/70 max-w-2xl mx-auto"
-      >
-        Daily tasks. Verified proof. Streaks that mean something. Compete with the room and stay
-        accountable to yourself — or your account gets locked at midnight.
-      </motion.p>
+        <motion.h1
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.05 }}
+          className="font-display font-semibold tracking-[-0.04em] text-5xl md:text-7xl lg:text-8xl leading-[0.95]"
+        >
+          Discipline isn't a feeling.
+          <br />
+          <span className="italic font-light text-white/80">It's a system.</span>
+        </motion.h1>
 
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="mt-10 flex flex-wrap justify-center gap-3"
-      >
-        <Link to="/register" className="btn-primary text-base px-7 py-3">
-          Start your streak <ArrowRight className="w-4 h-4" />
-        </Link>
-        <Link to="/login" className="btn-ghost text-base px-7 py-3">
-          I already have an account
-        </Link>
-      </motion.div>
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.15 }}
+          className="mt-6 max-w-xl text-base md:text-lg text-white/70 leading-relaxed"
+        >
+          Daily tasks. Verified proof. Real consequences.
+          <br className="hidden sm:inline" />
+          Your account locks at midnight if you skip the work.
+        </motion.p>
 
-      {/* Live preview card */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.6 }}
-        className="mt-16 max-w-5xl mx-auto"
-      >
-        <div className="glass p-1.5 shadow-glow">
-          <div className="rounded-xl bg-ink-950/60 p-6 grid md:grid-cols-3 gap-4 text-left">
-            <MiniStat icon={Flame} label="Streak" value="42d" accent="text-orange-400" />
-            <MiniStat icon={Zap} label="XP" value="3,184" accent="text-neon-violet" />
-            <MiniStat icon={Trophy} label="Rank" value="#7" accent="text-neon-cyan" />
-          </div>
-        </div>
-      </motion.div>
-    </section>
-  );
-}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.25 }}
+          className="mt-10 flex flex-wrap items-center justify-center gap-3"
+        >
+          <Link
+            to="/register"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black font-medium hover:bg-white/90 transition"
+          >
+            Start your streak <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/20 text-white/90 hover:bg-white/5 backdrop-blur-md transition"
+          >
+            I have an account
+          </Link>
+        </motion.div>
 
-function MiniStat({
-  icon: Icon,
-  label,
-  value,
-  accent,
-}: {
-  icon: typeof Flame;
-  label: string;
-  value: string;
-  accent: string;
-}) {
-  return (
-    <div className="glass p-5 relative overflow-hidden">
-      <div className="text-xs uppercase tracking-wider text-white/50">{label}</div>
-      <div className="flex items-end justify-between mt-1">
-        <div className="text-3xl font-display font-bold">{value}</div>
-        <Icon className={`w-5 h-5 ${accent}`} />
-      </div>
-    </div>
-  );
-}
-
-function SocialProof() {
-  return (
-    <section className="max-w-5xl mx-auto px-6 py-10">
-      <div className="text-center text-xs uppercase tracking-widest text-white/40 mb-6">
-        Built for operators who refuse to drift
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-        {[
-          ['Tasks shipped', '2.1k+'],
-          ['Streaks held', '184'],
-          ['Active rooms', '12'],
-          ['Avg discipline', '78'],
-        ].map(([label, value]) => (
-          <div key={label} className="glass p-5">
-            <div className="text-2xl font-display font-bold neon-text">{value}</div>
-            <div className="text-xs text-white/50 mt-1">{label}</div>
-          </div>
-        ))}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[11px] uppercase tracking-[0.25em] text-white/40"
+        >
+          ↓ Scroll
+        </motion.div>
       </div>
     </section>
   );
@@ -175,58 +124,61 @@ function Features() {
   const items = [
     {
       icon: Target,
-      title: 'Daily Mission',
-      body: 'Admins assign required tasks. Miss one and the system locks you out at midnight.',
+      title: 'Tasks with proof',
+      copy: 'Every task needs evidence — screenshot, PDF, GitHub commit, focus log. Reviewed by a human.',
     },
     {
-      icon: ShieldCheck,
-      title: 'Proof or it didn\'t happen',
-      body: 'Every task needs proof — screenshots, PDFs, code, GitHub links. Reviewed by humans.',
-    },
-    {
-      icon: Timer,
-      title: 'Focus timer',
-      body: 'Pomodoro and custom focus sessions. Logged automatically and submittable as proof.',
+      icon: Lock,
+      title: 'Real consequences',
+      copy: 'Miss a required task and your account locks at midnight. Submit an emergency to plead your case.',
     },
     {
       icon: Trophy,
       title: 'Live leaderboard',
-      body: 'Daily / weekly / monthly / streak rankings. See who\'s shipping. Be the one who\'s shipping.',
+      copy: 'Daily, weekly, monthly, streak. See who\'s actually shipping. Be the one who\'s shipping.',
+    },
+    {
+      icon: Timer,
+      title: 'Focus timer',
+      copy: 'Pomodoro and custom focus blocks. Survives tab close. Submits as proof in one click.',
     },
     {
       icon: Brain,
-      title: 'AI Coach',
-      body: 'Burnout risk. Procrastination index. Forecast. Behavioral recommendations from your patterns.',
+      title: 'AI coach',
+      copy: 'Burnout score. Procrastination index. Personalized nudges from the last 30 days of your patterns.',
     },
     {
-      icon: Flame,
-      title: 'Streaks that hurt to break',
-      body: 'Real consequences. Lost streak resets to zero. Locked account until you submit an emergency request.',
+      icon: Github,
+      title: 'GitHub auto-verify',
+      copy: 'Paste a commit URL — backend hits the public GitHub API and confirms the work without OAuth.',
     },
   ];
   return (
-    <section className="max-w-7xl mx-auto px-6 py-16">
-      <div className="text-center mb-12">
-        <div className="text-xs uppercase tracking-widest text-neon-cyan mb-3">Features</div>
-        <h2 className="text-3xl md:text-4xl font-display font-bold">
-          Built like an operating system, <br />
-          <span className="neon-text">not a to-do list.</span>
+    <section className="relative max-w-6xl mx-auto px-6 py-32">
+      <div className="max-w-2xl mb-16">
+        <div className="text-xs uppercase tracking-[0.2em] text-white/40 mb-3">Features</div>
+        <h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tight leading-tight">
+          Built like an operating system,
+          <br />
+          <span className="text-white/50">not a to-do list.</span>
         </h2>
       </div>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {items.map((it) => (
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/5 border border-white/5 rounded-2xl overflow-hidden">
+        {items.map((it, i) => (
           <motion.div
             key={it.title}
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="glass p-6 group"
+            viewport={{ once: true, margin: '-50px' }}
+            transition={{ duration: 0.4, delay: i * 0.04 }}
+            className="bg-black p-7 hover:bg-white/[0.02] transition group"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-violet/30 to-neon-cyan/20 grid place-items-center mb-3 group-hover:shadow-glow transition">
-              <it.icon className="w-5 h-5 text-neon-cyan" />
-            </div>
-            <div className="font-display font-semibold text-lg">{it.title}</div>
-            <p className="text-sm text-white/60 mt-1.5">{it.body}</p>
+            <it.icon
+              className="w-5 h-5 text-white/40 group-hover:text-white transition mb-5"
+              strokeWidth={1.5}
+            />
+            <h3 className="font-display font-medium text-lg tracking-tight">{it.title}</h3>
+            <p className="text-sm text-white/55 mt-2 leading-relaxed">{it.copy}</p>
           </motion.div>
         ))}
       </div>
@@ -234,36 +186,33 @@ function Features() {
   );
 }
 
-function HowItWorks() {
+function Workflow() {
   const steps = [
-    ['Admin publishes today\'s tasks', 'Required tasks count toward streak. Optional tasks earn XP.'],
-    ['You ship and upload proof', 'Screenshot, PDF, GitHub link — whatever proves the work.'],
-    ['Admin verifies', 'Approved → XP awarded, streak ticks. Rejected → resubmit.'],
-    ['Midnight check', 'Missed required tasks? Account locks. Submit emergency or wait it out.'],
+    { n: '01', t: 'Admin publishes', d: "Today's tasks. Required ones count toward your streak." },
+    { n: '02', t: 'You ship', d: 'Upload proof — image, PDF, code, GitHub link, focus log.' },
+    { n: '03', t: 'Admin verifies', d: 'Approved → XP awarded, streak ticks. Rejected → resubmit.' },
+    { n: '04', t: 'Midnight check', d: 'Missed required tasks? Account locks. Submit emergency or wait.' },
   ];
   return (
-    <section className="max-w-4xl mx-auto px-6 py-16">
-      <div className="text-center mb-12">
-        <div className="text-xs uppercase tracking-widest text-neon-cyan mb-3">How it works</div>
-        <h2 className="text-3xl md:text-4xl font-display font-bold">
-          Four steps. Daily. <span className="neon-text">Forever.</span>
-        </h2>
-      </div>
-      <ol className="space-y-3">
-        {steps.map(([title, body], i) => (
+    <section className="relative max-w-5xl mx-auto px-6 py-32 border-t border-white/5">
+      <div className="text-xs uppercase tracking-[0.2em] text-white/40 mb-3">How it works</div>
+      <h2 className="font-display font-semibold text-3xl md:text-5xl tracking-tight leading-tight mb-12">
+        Four steps. Daily. Forever.
+      </h2>
+      <ol className="space-y-px bg-white/5 rounded-2xl overflow-hidden border border-white/5">
+        {steps.map((s, i) => (
           <motion.li
-            key={title}
-            initial={{ opacity: 0, x: -12 }}
+            key={s.n}
+            initial={{ opacity: 0, x: -8 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="glass p-5 flex gap-4 items-start"
+            viewport={{ once: true, margin: '-30px' }}
+            transition={{ duration: 0.4, delay: i * 0.06 }}
+            className="bg-black p-6 md:p-8 flex gap-6 md:gap-10 items-baseline hover:bg-white/[0.02] transition"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-violet to-neon-indigo grid place-items-center font-display font-bold shrink-0">
-              {i + 1}
-            </div>
-            <div>
-              <div className="font-display font-semibold">{title}</div>
-              <p className="text-sm text-white/60 mt-1">{body}</p>
+            <div className="font-mono text-xs text-white/30 tabular-nums">{s.n}</div>
+            <div className="flex-1 min-w-0">
+              <div className="font-display font-medium text-xl tracking-tight">{s.t}</div>
+              <p className="text-sm text-white/55 mt-1 leading-relaxed">{s.d}</p>
             </div>
           </motion.li>
         ))}
@@ -272,28 +221,30 @@ function HowItWorks() {
   );
 }
 
-function FinalCTA() {
+function CTA() {
   return (
-    <section className="max-w-4xl mx-auto px-6 py-20 text-center">
-      <div className="glass p-10 md:p-14 shadow-glow relative overflow-hidden">
-        <div className="absolute inset-0 bg-aurora opacity-30 animate-gradient-x [background-size:200%_200%]" />
-        <div className="relative">
-          <h2 className="text-3xl md:text-5xl font-display font-bold leading-tight">
-            Stop drifting. <br />
-            <span className="neon-text">Start shipping.</span>
-          </h2>
-          <p className="mt-4 text-white/70 max-w-xl mx-auto">
-            Free to start. First user in your room becomes the admin. Build your streak today.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/register" className="btn-primary text-base px-7 py-3">
-              Create your account <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link to="/login" className="btn-ghost text-base px-7 py-3">
-              Sign in
-            </Link>
-          </div>
-        </div>
+    <section className="relative max-w-4xl mx-auto px-6 py-32 text-center border-t border-white/5">
+      <h2 className="font-display font-semibold text-4xl md:text-6xl tracking-[-0.03em] leading-[0.95]">
+        Stop drifting.
+        <br />
+        <span className="italic font-light text-white/60">Start shipping.</span>
+      </h2>
+      <p className="mt-6 text-white/60 max-w-md mx-auto">
+        Free to start. Create your room — students join with an invite code.
+      </p>
+      <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+        <Link
+          to="/register"
+          className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-white text-black font-medium hover:bg-white/90 transition"
+        >
+          Create your account <ArrowRight className="w-4 h-4" />
+        </Link>
+        <Link
+          to="/login"
+          className="inline-flex items-center gap-2 px-7 py-3 rounded-full border border-white/20 text-white/80 hover:bg-white/5 transition"
+        >
+          Sign in
+        </Link>
       </div>
     </section>
   );
@@ -301,16 +252,18 @@ function FinalCTA() {
 
 function Footer() {
   return (
-    <footer className="max-w-7xl mx-auto px-6 py-10 flex items-center justify-between text-xs text-white/40 border-t border-white/5">
-      <div>© DisciplineX — Stay sharp. Ship daily.</div>
-      <a
-        href="https://github.com"
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex items-center gap-1.5 hover:text-white/70 transition"
-      >
-        <Github className="w-3.5 h-3.5" /> Source
-      </a>
+    <footer className="border-t border-white/5">
+      <div className="max-w-6xl mx-auto px-6 py-8 flex items-center justify-between text-xs text-white/30">
+        <div>© DisciplineX</div>
+        <a
+          href="https://github.com/AnshulSharma9340/Discipline-X"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 hover:text-white/60 transition"
+        >
+          <Github className="w-3.5 h-3.5" /> Source
+        </a>
+      </div>
     </footer>
   );
 }
