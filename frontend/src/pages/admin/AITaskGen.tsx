@@ -186,33 +186,38 @@ export default function AITaskGen() {
                   key={p.code}
                   onClick={() => setProfile(p.code)}
                   className={cn(
-                    'rounded-xl border p-3 text-left transition group',
+                    // High-contrast selection: solid violet ring + filled tint when active.
+                    'relative rounded-xl border-2 p-3 text-left transition group',
                     isActive
-                      ? 'border-neon-cyan/50 bg-neon-cyan/[0.07] shadow-[inset_0_0_0_1px_rgba(34,211,238,0.18)]'
-                      : 'border-white/8 bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/15',
+                      ? 'border-neon-violet bg-neon-violet/15 ring-2 ring-neon-violet/30'
+                      : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20',
                   )}
                 >
                   <div
                     className={cn(
                       'w-9 h-9 rounded-lg grid place-items-center mb-2 transition',
                       isActive
-                        ? 'bg-neon-cyan/20 text-neon-cyan'
+                        ? 'bg-neon-violet/30 text-white'
                         : 'bg-white/[0.04] text-white/60 group-hover:text-white',
                     )}
                   >
                     <Icon className="w-4 h-4" strokeWidth={2} />
                   </div>
-                  <div className="font-display font-medium text-sm leading-tight">
+                  <div
+                    className={cn(
+                      'font-display font-medium text-sm leading-tight',
+                      isActive ? 'text-white' : 'text-white/85',
+                    )}
+                  >
                     {p.label}
                   </div>
-                  <div className="text-[11px] text-white/40 mt-1">
+                  <div className={cn('text-[11px] mt-1', isActive ? 'text-white/70' : 'text-white/40')}>
                     {p.task_count} preset tasks
                   </div>
                   {isActive && (
-                    <Check
-                      className="absolute w-3.5 h-3.5 text-neon-cyan top-2 right-2"
-                      strokeWidth={2.5}
-                    />
+                    <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-neon-violet grid place-items-center">
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                    </div>
                   )}
                 </button>
               );
@@ -239,10 +244,10 @@ export default function AITaskGen() {
                   key={n}
                   onClick={() => setCount(n)}
                   className={cn(
-                    'px-3.5 py-1 rounded-full text-xs font-medium transition',
+                    'px-4 py-1.5 rounded-full text-xs font-semibold transition',
                     count === n
-                      ? 'bg-white text-black'
-                      : 'text-white/60 hover:text-white',
+                      ? 'bg-neon-violet text-white shadow-[0_0_18px_-4px_rgba(139,92,246,0.6)]'
+                      : 'text-white/55 hover:text-white hover:bg-white/[0.05]',
                   )}
                 >
                   {n}

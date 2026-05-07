@@ -143,14 +143,9 @@ export default function OrgSettings() {
     }
   }
 
-  if (loading || !org) {
-    return (
-      <div className="grid place-items-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-neon-violet" />
-      </div>
-    );
-  }
-
+  // Hooks MUST run before any conditional returns — keep useMemo above
+  // the `if (loading)` guard or React throws "Rendered more hooks than
+  // during the previous render."
   const tabs = useMemo(() => {
     const t: { id: OrgTab; label: string; icon: typeof Users }[] = [
       { id: 'overview', label: 'Overview', icon: Building2 },
@@ -163,6 +158,14 @@ export default function OrgSettings() {
     t.push({ id: 'settings', label: 'Settings', icon: SettingsIcon });
     return t;
   }, [isOwner, members.length]);
+
+  if (loading || !org) {
+    return (
+      <div className="grid place-items-center py-20">
+        <Loader2 className="w-8 h-8 animate-spin text-neon-violet" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
