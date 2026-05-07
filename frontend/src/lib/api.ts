@@ -26,7 +26,9 @@ api.interceptors.response.use(
 
     if (status === 401) {
       toast.error('Session expired. Please log in again.');
-      supabase.auth.signOut();
+      supabase.auth.signOut().then(() => {
+        if (typeof window !== 'undefined') window.location.href = '/';
+      });
     } else if (status === 423) {
       toast.error('Account locked. Submit an emergency request to unlock.');
     } else if (status && status >= 500) {

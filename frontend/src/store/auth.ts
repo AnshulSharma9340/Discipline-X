@@ -54,5 +54,10 @@ export const useAuth = create<AuthState>((set, get) => ({
   signOut: async () => {
     await supabase.auth.signOut();
     set({ session: null, user: null });
+    // Hard redirect to landing — clears any in-flight requests, socket
+    // connections, and ensures a clean slate for the next sign-in.
+    if (typeof window !== 'undefined') {
+      window.location.href = '/';
+    }
   },
 }));

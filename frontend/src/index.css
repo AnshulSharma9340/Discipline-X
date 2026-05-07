@@ -14,23 +14,24 @@
   }
 
   body {
-    @apply bg-ink-950 text-white font-sans;
-    background-image:
-      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(139, 92, 246, 0.18), transparent),
-      radial-gradient(ellipse 60% 50% at 100% 100%, rgba(34, 211, 238, 0.10), transparent);
+    @apply bg-black text-white font-sans;
+    background:
+      radial-gradient(ellipse 70% 40% at 50% -10%, rgba(139, 92, 246, 0.08), transparent 60%),
+      #000;
     background-attachment: fixed;
   }
 
-  body::before {
+  /* Subtle grid texture only on app shell pages, not landing */
+  body[data-grid='1']::before {
     content: '';
     position: fixed;
     inset: 0;
     pointer-events: none;
     background-image:
-      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: radial-gradient(ellipse at center, black 20%, transparent 80%);
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
     z-index: 0;
   }
 
@@ -47,69 +48,83 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.06);
     border-radius: 8px;
   }
   ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  ::selection {
     background: rgba(255, 255, 255, 0.15);
+    color: white;
   }
 }
 
 @layer components {
+  /* Refined card — softer, monochrome, less gradient soup */
   .glass {
-    @apply backdrop-blur-xl border rounded-2xl;
-    background:
-      linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+    @apply rounded-2xl border;
+    background: rgba(255, 255, 255, 0.025);
     border-color: rgba(255, 255, 255, 0.08);
-    box-shadow:
-      0 1px 0 0 rgba(255, 255, 255, 0.05) inset,
-      0 8px 24px -12px rgba(0, 0, 0, 0.5);
-  }
-  .glass-hover {
-    @apply transition-all duration-200;
-  }
-  .glass-hover:hover {
-    border-color: rgba(255, 255, 255, 0.16);
-    background:
-      linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-    box-shadow:
-      0 1px 0 0 rgba(255, 255, 255, 0.08) inset,
-      0 12px 32px -10px rgba(0, 0, 0, 0.6),
-      0 0 0 1px rgba(139, 92, 246, 0.1);
-  }
-  .neon-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-neon-violet via-neon-indigo to-neon-cyan;
-  }
-  .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl
-           bg-gradient-to-r from-neon-violet to-neon-indigo
-           text-white font-medium shadow-glow
-           hover:shadow-glow-cyan hover:scale-[1.02]
-           active:scale-[0.98]
-           transition-all duration-200
-           disabled:opacity-50 disabled:pointer-events-none;
-  }
-  .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl
-           bg-white/5 border border-white/10 text-white/80
-           hover:bg-white/10 hover:text-white hover:border-white/20
-           transition-all duration-200;
-  }
-  .input {
-    @apply w-full px-4 py-3 rounded-xl text-white placeholder:text-white/40
-           focus:outline-none transition-all duration-200;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
     box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.04) inset;
   }
-  .input:focus {
-    border-color: rgba(139, 92, 246, 0.5);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(139, 92, 246, 0.03) 100%);
-    box-shadow:
-      0 0 0 4px rgba(139, 92, 246, 0.12),
-      0 1px 0 0 rgba(255, 255, 255, 0.08) inset;
+  .glass-hover {
+    @apply transition-colors duration-200;
   }
+  .glass-hover:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.14);
+  }
+
+  /* Brand wordmark — kept but used sparingly */
+  .neon-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #ffffff 0%, #a78bfa 50%, #67e8f9 100%);
+  }
+
+  /* Primary button — white-on-black pill, matches landing */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full
+           bg-white text-black font-medium
+           hover:bg-white/90 active:scale-[0.98]
+           transition-all duration-200
+           disabled:opacity-40 disabled:pointer-events-none;
+  }
+
+  /* Ghost — outline pill */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full
+           border border-white/15 text-white/80
+           hover:border-white/30 hover:text-white hover:bg-white/[0.03]
+           active:scale-[0.98]
+           transition-all duration-200
+           disabled:opacity-40 disabled:pointer-events-none;
+  }
+
+  /* Input — clean monochrome */
+  .input {
+    @apply w-full px-4 py-2.5 rounded-xl text-white placeholder:text-white/35
+           focus:outline-none transition-all duration-150;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .input:hover {
+    border-color: rgba(255, 255, 255, 0.14);
+  }
+  .input:focus {
+    border-color: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06);
+  }
+
   .label {
-    @apply block text-sm font-medium text-white/70 mb-1.5;
+    @apply block text-xs font-medium text-white/60 mb-1.5 uppercase tracking-wider;
+  }
+
+  /* Section subhead used across pages */
+  .eyebrow {
+    @apply text-[11px] uppercase tracking-[0.18em] text-white/40 font-medium;
   }
 }

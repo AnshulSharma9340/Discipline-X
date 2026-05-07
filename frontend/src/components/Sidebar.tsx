@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   ClipboardList,
@@ -57,31 +57,31 @@ const adminLinks = [
 
 export function Sidebar() {
   const user = useAuth((s) => s.user);
-  // Show admin section if user is org owner OR moderator
   const isAdmin = user?.org_role === 'owner' || user?.org_role === 'moderator';
 
   return (
-    <aside className="w-64 shrink-0 hidden md:flex flex-col gap-1 p-4 border-r border-white/5 bg-ink-900/40 backdrop-blur-xl overflow-y-auto">
-      <div className="px-3 py-4 mb-2">
-        <div className="text-2xl font-display font-bold neon-text">DisciplineX</div>
-        <div className="text-xs text-white/40 mt-0.5 tracking-wider uppercase">
-          Stay Sharp · Ship Daily
+    <aside className="w-64 shrink-0 hidden md:flex flex-col gap-0.5 p-3 border-r border-white/[0.06] bg-black/40 backdrop-blur-xl overflow-y-auto">
+      {/* Brand — minimal, matches landing */}
+      <Link to="/dashboard" className="flex items-center gap-2.5 px-3 py-4 mb-2 group">
+        <div className="w-7 h-7 rounded-md bg-white grid place-items-center transition group-hover:scale-105">
+          <span className="text-black font-display font-bold text-sm leading-none">D</span>
         </div>
-      </div>
+        <span className="font-display font-semibold tracking-tight text-[15px]">DisciplineX</span>
+      </Link>
 
       <SectionTitle>Daily</SectionTitle>
       {userLinks.map((l) => (
         <SideLink key={l.to} {...l} />
       ))}
 
-      <SectionTitle className="mt-4">Progress</SectionTitle>
+      <SectionTitle className="mt-5">Progress</SectionTitle>
       {userLinks2.map((l) => (
         <SideLink key={l.to} {...l} />
       ))}
 
       {isAdmin && (
         <>
-          <SectionTitle className="mt-4">Admin</SectionTitle>
+          <SectionTitle className="mt-5">Admin</SectionTitle>
           {adminLinks.map((l) => (
             <SideLink key={l.to} {...l} />
           ))}
@@ -89,19 +89,20 @@ export function Sidebar() {
       )}
 
       <div className="mt-auto pt-4">
-        <div className="p-3 glass">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-neon-violet to-neon-cyan grid place-items-center text-sm font-semibold">
-              {user?.name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? '?'}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="text-sm font-medium truncate">{user?.name || user?.email}</div>
-              <div className="text-xs text-white/50 capitalize">
-                {user?.role} · Lv {user?.level ?? 1}
-              </div>
+        <Link
+          to="/settings"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-white/[0.06] hover:border-white/15 hover:bg-white/[0.02] transition"
+        >
+          <div className="w-8 h-8 rounded-full bg-white grid place-items-center text-sm font-semibold text-black shrink-0">
+            {user?.name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? '?'}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-medium truncate">{user?.name || user?.email}</div>
+            <div className="text-[11px] text-white/45 capitalize">
+              {user?.org_role ?? user?.role} · Lv {user?.level ?? 1}
             </div>
           </div>
-        </div>
+        </Link>
       </div>
     </aside>
   );
@@ -109,7 +110,12 @@ export function Sidebar() {
 
 function SectionTitle({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn('px-3 text-[10px] uppercase tracking-widest text-white/40 mb-1', className)}>
+    <div
+      className={cn(
+        'px-3 mt-2 mb-1 text-[10px] uppercase tracking-[0.18em] text-white/35 font-medium',
+        className,
+      )}
+    >
       {children}
     </div>
   );
@@ -130,14 +136,14 @@ function SideLink({
       end={to === '/dashboard' || to === '/admin'}
       className={({ isActive }) =>
         cn(
-          'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all',
+          'flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-colors duration-150',
           isActive
-            ? 'bg-white/10 text-white shadow-soft'
-            : 'text-white/60 hover:text-white hover:bg-white/5',
+            ? 'bg-white/[0.07] text-white'
+            : 'text-white/55 hover:text-white hover:bg-white/[0.03]',
         )
       }
     >
-      <Icon className="w-4 h-4" />
+      <Icon className="w-4 h-4" strokeWidth={1.75} />
       {label}
     </NavLink>
   );
