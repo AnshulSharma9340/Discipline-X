@@ -100,6 +100,18 @@ export default function Register() {
               {loading ? 'Creating account…' : 'Create account'}
               {!loading && <ArrowRight className="w-4 h-4" />}
             </button>
+
+            <p className="text-xs text-white/40 text-center leading-relaxed">
+              By creating an account you agree to our{' '}
+              <Link to="/terms" className="text-white/70 hover:text-white underline underline-offset-2">
+                Terms
+              </Link>{' '}
+              and{' '}
+              <Link to="/privacy" className="text-white/70 hover:text-white underline underline-offset-2">
+                Privacy Policy
+              </Link>
+              .
+            </p>
           </form>
 
           <div className="mt-8 text-sm text-white/55 text-center">

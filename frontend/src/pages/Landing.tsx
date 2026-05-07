@@ -1,28 +1,43 @@
+import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Brain, Github, Lock, Target, Timer, Trophy } from 'lucide-react';
+import { ArrowRight, Brain, Github, Lock, Smartphone, Target, Timer, Trophy } from 'lucide-react';
 import { useAuth } from '@/store/auth';
 import { ShaderAnimation } from '@/components/ui/ShaderAnimation';
+import { InstallAppModal, shouldAutoShowInstall } from '@/components/InstallAppModal';
+import { getCookieConsent } from '@/components/CookieBanner';
 
 export default function Landing() {
   const session = useAuth((s) => s.session);
   const initialized = useAuth((s) => s.initialized);
+  const [installOpen, setInstallOpen] = useState(false);
+
+  // Auto-show the install prompt once on first visit — but wait until the cookie
+  // banner is dismissed so the two don't fight for screen space.
+  useEffect(() => {
+    if (!shouldAutoShowInstall()) return;
+    const t = setTimeout(() => {
+      if (getCookieConsent() !== null) setInstallOpen(true);
+    }, 4500);
+    return () => clearTimeout(t);
+  }, []);
 
   if (initialized && session) return <Navigate to="/dashboard" replace />;
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <Nav />
-      <Hero />
+      <Nav onGetApp={() => setInstallOpen(true)} />
+      <Hero onGetApp={() => setInstallOpen(true)} />
       <Features />
       <Workflow />
-      <CTA />
+      <CTA onGetApp={() => setInstallOpen(true)} />
       <Footer />
+      <InstallAppModal open={installOpen} onClose={() => setInstallOpen(false)} />
     </div>
   );
 }
 
-function Nav() {
+function Nav({ onGetApp }: { onGetApp: () => void }) {
   return (
     <nav className="fixed top-0 inset-x-0 z-30 backdrop-blur-md bg-black/40 border-b border-white/5">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -33,6 +48,12 @@ function Nav() {
           <span className="font-display font-semibold tracking-tight">DisciplineX</span>
         </Link>
         <div className="flex items-center gap-1 text-sm">
+          <button
+            onClick={onGetApp}
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-white/70 hover:text-white transition"
+          >
+            <Smartphone className="w-3.5 h-3.5" /> Get app
+          </button>
           <Link to="/login" className="px-3 py-1.5 text-white/70 hover:text-white transition">
             Sign in
           </Link>
@@ -48,7 +69,7 @@ function Nav() {
   );
 }
 
-function Hero() {
+function Hero({ onGetApp }: { onGetApp: () => void }) {
   return (
     <section className="relative h-[100vh] min-h-[680px] overflow-hidden">
       <ShaderAnimation />
@@ -105,6 +126,12 @@ function Hero() {
           >
             I have an account
           </Link>
+          <button
+            onClick={onGetApp}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/20 text-white/90 hover:bg-white/5 backdrop-blur-md transition"
+          >
+            <Smartphone className="w-4 h-4" /> Get the app
+          </button>
         </motion.div>
 
         <motion.div
@@ -221,7 +248,7 @@ function Workflow() {
   );
 }
 
-function CTA() {
+function CTA({ onGetApp }: { onGetApp: () => void }) {
   return (
     <section className="relative max-w-4xl mx-auto px-6 py-32 text-center border-t border-white/5">
       <h2 className="font-display font-semibold text-4xl md:text-6xl tracking-[-0.03em] leading-[0.95]">
@@ -245,6 +272,12 @@ function CTA() {
         >
           Sign in
         </Link>
+        <button
+          onClick={onGetApp}
+          className="inline-flex items-center gap-2 px-7 py-3 rounded-full border border-white/20 text-white/80 hover:bg-white/5 transition"
+        >
+          <Smartphone className="w-4 h-4" /> Get the app
+        </button>
       </div>
     </section>
   );
@@ -253,13 +286,16 @@ function CTA() {
 function Footer() {
   return (
     <footer className="border-t border-white/5">
-      <div className="max-w-6xl mx-auto px-6 py-8 flex items-center justify-between text-xs text-white/30">
+      <div className="max-w-6xl mx-auto px-6 py-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-white/30">
         <div>© DisciplineX</div>
+        <Link to="/docs" className="hover:text-white/60 transition">Docs</Link>
+        <Link to="/privacy" className="hover:text-white/60 transition">Privacy</Link>
+        <Link to="/terms" className="hover:text-white/60 transition">Terms</Link>
         <a
           href="https://github.com/AnshulSharma9340/Discipline-X"
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1.5 hover:text-white/60 transition"
+          className="inline-flex items-center gap-1.5 hover:text-white/60 transition ml-auto"
         >
           <Github className="w-3.5 h-3.5" /> Source
         </a>

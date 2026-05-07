@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { OnboardingGate } from '@/components/OnboardingGate';
+import { CookieBanner } from '@/components/CookieBanner';
 import { useAuth } from '@/store/auth';
 import { useRealtime } from '@/hooks/useRealtime';
 import { isConfigured } from '@/lib/supabase';
@@ -11,6 +12,9 @@ import ConfigError from '@/pages/ConfigError';
 import Landing from '@/pages/Landing';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
+import Privacy from '@/pages/Privacy';
+import Terms from '@/pages/Terms';
+import Docs from '@/pages/Docs';
 import Onboarding from '@/pages/Onboarding';
 import OrgSettings from '@/pages/OrgSettings';
 import Dashboard from '@/pages/Dashboard';
@@ -35,6 +39,7 @@ import ManageTasks from '@/pages/admin/ManageTasks';
 import AITaskGen from '@/pages/admin/AITaskGen';
 import Submissions from '@/pages/admin/Submissions';
 import EmergencyQueue from '@/pages/admin/EmergencyQueue';
+import AdminUsers from '@/pages/admin/Users';
 import NotFound from '@/pages/NotFound';
 
 export default function App() {
@@ -51,10 +56,14 @@ export default function App() {
   }
 
   return (
+    <>
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/docs" element={<Docs />} />
 
       {/* Onboarding lives outside the org gate but still requires auth */}
       <Route
@@ -99,9 +108,12 @@ export default function App() {
         <Route path="/admin/submissions" element={<Submissions />} />
         <Route path="/admin/emergency" element={<EmergencyQueue />} />
         <Route path="/admin/squads" element={<ManageSquads />} />
+        <Route path="/admin/users" element={<AdminUsers />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
     </Routes>
+    <CookieBanner />
+    </>
   );
 }
