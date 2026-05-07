@@ -19,10 +19,12 @@ import {
   Swords,
   Building2,
   MessageSquare,
+  X,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { frameGradient } from '@/lib/cosmetics';
 import { useAuth } from '@/store/auth';
+import { useUI } from '@/store/ui';
 
 const userLinks = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -59,59 +61,97 @@ const adminLinks = [
 export function Sidebar() {
   const user = useAuth((s) => s.user);
   const isAdmin = user?.org_role === 'owner' || user?.org_role === 'moderator';
+  const sidebarOpen = useUI((s) => s.sidebarOpen);
+  const setSidebarOpen = useUI((s) => s.setSidebarOpen);
 
   return (
-    <aside className="w-64 shrink-0 hidden md:flex flex-col gap-0.5 p-3 border-r border-white/[0.06] bg-black/40 backdrop-blur-xl overflow-y-auto">
-      {/* Brand — minimal, matches landing; tile picks up active theme */}
-      <Link to="/dashboard" className="flex items-center gap-2.5 px-3 py-4 mb-2 group">
-        <div className="w-7 h-7 rounded-md brand-tile grid place-items-center transition group-hover:scale-105">
-          <span className="text-black font-display font-bold text-sm leading-none">D</span>
-        </div>
-        <span className="font-display font-semibold tracking-tight text-[15px]">DisciplineX</span>
-      </Link>
+    <>
+      {/* Mobile backdrop */}
+      <div
+        onClick={() => setSidebarOpen(false)}
+        className={cn(
+          'fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden transition-opacity duration-200',
+          sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none',
+        )}
+        aria-hidden
+      />
 
-      <SectionTitle>Daily</SectionTitle>
-      {userLinks.map((l) => (
-        <SideLink key={l.to} {...l} />
-      ))}
-
-      <SectionTitle className="mt-5">Progress</SectionTitle>
-      {userLinks2.map((l) => (
-        <SideLink key={l.to} {...l} />
-      ))}
-
-      {isAdmin && (
-        <>
-          <SectionTitle className="mt-5">Admin</SectionTitle>
-          {adminLinks.map((l) => (
-            <SideLink key={l.to} {...l} />
-          ))}
-        </>
-      )}
-
-      <div className="mt-auto pt-4">
-        <Link
-          to="/settings"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-white/[0.06] hover:border-white/15 hover:bg-white/[0.02] transition"
-        >
-          <SidebarAvatar
-            initial={user?.name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? '?'}
-            frameCode={user?.active_frame ?? ''}
-          />
-          <div className="min-w-0 flex-1">
-            <div className="text-sm font-medium truncate">{user?.name || user?.email}</div>
-            {user?.active_title ? (
-              <div className="text-[10px] uppercase tracking-[0.16em] truncate accent-text font-medium">
-                « {humanTitle(user.active_title)} »
-              </div>
-            ) : null}
-            <div className="text-[11px] text-white/45 capitalize">
-              {user?.org_role ?? user?.role} · Lv {user?.level ?? 1}
+      <aside
+        className={cn(
+          // Base layout
+          'flex flex-col gap-0.5 p-3 border-r border-white/[0.06] backdrop-blur-xl overflow-y-auto',
+          // Mobile: fixed slide-over drawer
+          'fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-black/90 transition-transform duration-200',
+          // Desktop: static, in flow
+          'md:static md:z-0 md:w-64 md:max-w-none md:translate-x-0 md:bg-black/40 md:shrink-0',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+        )}
+      >
+        {/* Brand row + mobile close button */}
+        <div className="flex items-center justify-between mb-2">
+          <Link
+            to="/dashboard"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-2.5 px-3 py-4 group"
+          >
+            <div className="w-7 h-7 rounded-md brand-tile grid place-items-center transition group-hover:scale-105">
+              <span className="text-black font-display font-bold text-sm leading-none">D</span>
             </div>
-          </div>
-        </Link>
-      </div>
-    </aside>
+            <span className="font-display font-semibold tracking-tight text-[15px]">DisciplineX</span>
+          </Link>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="md:hidden mr-2 w-9 h-9 grid place-items-center rounded-lg border border-white/10 hover:border-white/30 hover:bg-white/[0.03] transition"
+            aria-label="Close menu"
+          >
+            <X className="w-4 h-4" strokeWidth={1.75} />
+          </button>
+        </div>
+
+        <SectionTitle>Daily</SectionTitle>
+        {userLinks.map((l) => (
+          <SideLink key={l.to} {...l} onNavigate={() => setSidebarOpen(false)} />
+        ))}
+
+        <SectionTitle className="mt-5">Progress</SectionTitle>
+        {userLinks2.map((l) => (
+          <SideLink key={l.to} {...l} onNavigate={() => setSidebarOpen(false)} />
+        ))}
+
+        {isAdmin && (
+          <>
+            <SectionTitle className="mt-5">Admin</SectionTitle>
+            {adminLinks.map((l) => (
+              <SideLink key={l.to} {...l} onNavigate={() => setSidebarOpen(false)} />
+            ))}
+          </>
+        )}
+
+        <div className="mt-auto pt-4">
+          <Link
+            to="/settings"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-white/[0.06] hover:border-white/15 hover:bg-white/[0.02] transition"
+          >
+            <SidebarAvatar
+              initial={user?.name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? '?'}
+              frameCode={user?.active_frame ?? ''}
+            />
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-medium truncate">{user?.name || user?.email}</div>
+              {user?.active_title ? (
+                <div className="text-[10px] uppercase tracking-[0.16em] truncate accent-text font-medium">
+                  « {humanTitle(user.active_title)} »
+                </div>
+              ) : null}
+              <div className="text-[11px] text-white/45 capitalize">
+                {user?.org_role ?? user?.role} · Lv {user?.level ?? 1}
+              </div>
+            </div>
+          </Link>
+        </div>
+      </aside>
+    </>
   );
 }
 
@@ -170,15 +210,18 @@ function SideLink({
   to,
   icon: Icon,
   label,
+  onNavigate,
 }: {
   to: string;
   icon: typeof LayoutDashboard;
   label: string;
+  onNavigate?: () => void;
 }) {
   return (
     <NavLink
       to={to}
       end={to === '/dashboard' || to === '/admin'}
+      onClick={onNavigate}
       className={({ isActive }) =>
         cn(
           'flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-all duration-150',

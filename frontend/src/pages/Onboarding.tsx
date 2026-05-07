@@ -1,12 +1,10 @@
 import { useState, type FormEvent } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Crown, Users, ArrowRight, Sparkles, KeyRound, Building2 } from 'lucide-react';
+import { Crown, Users, ArrowRight, KeyRound, Building2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
-import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/store/auth';
 import { cn } from '@/lib/cn';
 
@@ -19,41 +17,42 @@ export default function Onboarding() {
   if (user?.org_id) return <Navigate to="/dashboard" replace />;
 
   return (
-    <div className="min-h-screen grid place-items-center p-6 relative overflow-hidden">
-      <div className="absolute inset-0 bg-aurora opacity-30 animate-gradient-x [background-size:200%_200%] pointer-events-none" />
-
+    <div className="min-h-screen bg-black text-white grid place-items-center p-4 sm:p-6">
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative max-w-2xl w-full space-y-6"
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-2xl space-y-6"
       >
         <div className="text-center">
-          <div className="inline-flex w-16 h-16 rounded-2xl bg-gradient-to-br from-neon-violet to-neon-cyan grid place-items-center mb-4 shadow-glow">
-            <Sparkles className="w-7 h-7" />
+          <div className="inline-flex w-12 h-12 rounded-xl brand-tile grid place-items-center mb-5">
+            <span className="text-black font-display font-bold text-lg leading-none">D</span>
           </div>
-          <h1 className="text-4xl font-display font-bold neon-text">Welcome to DisciplineX</h1>
-          <p className="text-white/70 mt-3">
-            One last step — choose how you'll use the platform.
+          <h1 className="font-display font-semibold tracking-[-0.03em] text-3xl sm:text-4xl md:text-5xl leading-[1.05]">
+            One last step.
+            <br />
+            <span className="italic font-light text-white/70">Pick your seat.</span>
+          </h1>
+          <p className="text-white/55 mt-4 text-sm sm:text-base max-w-md mx-auto">
+            DisciplineX is built around organizations. Lead one or join one — you can switch later.
           </p>
         </div>
 
         {mode === 'choose' && (
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
             <ChoiceCard
               icon={Crown}
               title="Create an organization"
-              body="You're a teacher, mentor, or team leader. Invite your students/team. You manage tasks, verify proof, and run the discipline engine."
+              body="Teachers, mentors, team leaders. Invite members, manage tasks, verify proof, run the discipline engine."
               cta="I'm a leader"
               onClick={() => setMode('create')}
-              accent="violet"
             />
             <ChoiceCard
               icon={Users}
               title="Join an existing one"
-              body="Your leader gave you an invite code. Enter it to join their workspace, get assigned tasks, and start your streak."
+              body="Got an invite code from your leader? Enter it to join their workspace and start your streak."
               cta="I have a code"
               onClick={() => setMode('join')}
-              accent="cyan"
             />
           </div>
         )}
@@ -92,47 +91,29 @@ function ChoiceCard({
   body,
   cta,
   onClick,
-  accent,
 }: {
   icon: typeof Crown;
   title: string;
   body: string;
   cta: string;
   onClick: () => void;
-  accent: 'violet' | 'cyan';
 }) {
   return (
     <motion.button
-      whileHover={{ y: -4 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ y: -3 }}
+      whileTap={{ scale: 0.99 }}
       onClick={onClick}
       className={cn(
-        'glass p-6 text-left group relative overflow-hidden border-2 border-transparent transition',
-        accent === 'violet' ? 'hover:border-neon-violet/40' : 'hover:border-neon-cyan/40',
+        'glass p-5 sm:p-6 text-left group relative overflow-hidden',
       )}
     >
-      <div
-        className={cn(
-          'absolute -right-8 -top-8 w-32 h-32 rounded-full blur-2xl opacity-50',
-          accent === 'violet' ? 'bg-neon-violet/30' : 'bg-neon-cyan/30',
-        )}
-      />
-      <div className="relative">
-        <div
-          className={cn(
-            'w-12 h-12 rounded-xl grid place-items-center mb-4',
-            accent === 'violet'
-              ? 'bg-gradient-to-br from-neon-violet to-neon-indigo'
-              : 'bg-gradient-to-br from-neon-cyan to-neon-violet',
-          )}
-        >
-          <Icon className="w-6 h-6" />
-        </div>
-        <h3 className="font-display font-semibold text-xl">{title}</h3>
-        <p className="text-sm text-white/60 mt-2 leading-relaxed">{body}</p>
-        <div className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium group-hover:translate-x-1 transition">
-          {cta} <ArrowRight className="w-4 h-4" />
-        </div>
+      <div className="w-10 h-10 rounded-lg border border-white/10 bg-white/[0.03] grid place-items-center mb-4">
+        <Icon className="w-5 h-5 text-white/85" strokeWidth={1.75} />
+      </div>
+      <h3 className="font-display font-semibold text-lg sm:text-xl tracking-tight">{title}</h3>
+      <p className="text-sm text-white/55 mt-2 leading-relaxed">{body}</p>
+      <div className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-white group-hover:translate-x-0.5 transition">
+        {cta} <ArrowRight className="w-4 h-4" />
       </div>
     </motion.button>
   );
@@ -159,12 +140,14 @@ function CreateForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: 
   }
 
   return (
-    <Card>
+    <div className="glass p-5 sm:p-6">
       <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-violet to-neon-indigo grid place-items-center">
-          <Building2 className="w-5 h-5" />
+        <div className="w-10 h-10 rounded-lg border border-white/10 bg-white/[0.03] grid place-items-center">
+          <Building2 className="w-5 h-5 text-white/85" strokeWidth={1.75} />
         </div>
-        <h2 className="font-display font-semibold text-xl">Create your organization</h2>
+        <h2 className="font-display font-semibold text-lg sm:text-xl tracking-tight">
+          Create your organization
+        </h2>
       </div>
       <form onSubmit={submit} className="space-y-4">
         <Input
@@ -183,16 +166,17 @@ function CreateForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: 
             placeholder="What's the focus? Who's it for?"
           />
         </div>
-        <div className="flex justify-between gap-3 pt-2">
-          <Button type="button" variant="ghost" onClick={onCancel}>
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-between gap-3 pt-2">
+          <button type="button" onClick={onCancel} className="btn-ghost">
             Back
-          </Button>
-          <Button type="submit" loading={loading}>
-            <Crown className="w-4 h-4" /> Create & become owner
-          </Button>
+          </button>
+          <button type="submit" disabled={loading} className="btn-primary">
+            <Crown className="w-4 h-4" />
+            {loading ? 'Creating…' : 'Create & become owner'}
+          </button>
         </div>
       </form>
-    </Card>
+    </div>
   );
 }
 
@@ -213,12 +197,14 @@ function JoinForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: ()
   }
 
   return (
-    <Card>
+    <div className="glass p-5 sm:p-6">
       <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-cyan to-neon-violet grid place-items-center">
-          <KeyRound className="w-5 h-5" />
+        <div className="w-10 h-10 rounded-lg border border-white/10 bg-white/[0.03] grid place-items-center">
+          <KeyRound className="w-5 h-5 text-white/85" strokeWidth={1.75} />
         </div>
-        <h2 className="font-display font-semibold text-xl">Join with invite code</h2>
+        <h2 className="font-display font-semibold text-lg sm:text-xl tracking-tight">
+          Join with invite code
+        </h2>
       </div>
       <form onSubmit={submit} className="space-y-4">
         <div>
@@ -229,22 +215,23 @@ function JoinForm({ onCancel, onSuccess }: { onCancel: () => void; onSuccess: ()
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="XXX-XXX-XXX"
-            className="input text-center text-2xl font-mono tracking-widest"
+            className="input text-center text-xl sm:text-2xl font-mono tracking-widest"
             maxLength={20}
           />
-          <p className="text-xs text-white/40 mt-1">
+          <p className="text-xs text-white/40 mt-1.5">
             Ask your leader for the code from their org settings page.
           </p>
         </div>
-        <div className="flex justify-between gap-3 pt-2">
-          <Button type="button" variant="ghost" onClick={onCancel}>
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-between gap-3 pt-2">
+          <button type="button" onClick={onCancel} className="btn-ghost">
             Back
-          </Button>
-          <Button type="submit" loading={loading}>
-            <Users className="w-4 h-4" /> Join
-          </Button>
+          </button>
+          <button type="submit" disabled={loading} className="btn-primary">
+            <Users className="w-4 h-4" />
+            {loading ? 'Joining…' : 'Join'}
+          </button>
         </div>
       </form>
-    </Card>
+    </div>
   );
 }
