@@ -52,12 +52,30 @@ export const useAuth = create<AuthState>((set, get) => ({
   },
 
   signOut: async () => {
-    await supabase.auth.signOut();
-    set({ session: null, user: null });
-    // Hard redirect to landing — clears any in-flight requests, socket
-    // connections, and ensures a clean slate for the next sign-in.
+    // Belt-and-suspenders: clear Supabase's persisted session from
+    // localStorage directly. This guarantees the next page load sees no
+    // session even if the API call below fails or is slow, and prevents
+    // the brief flash of /login that happens when ProtectedRoute reacts
+    // to the cleared session before our redirect runs.
     if (typeof window !== 'undefined') {
-      window.location.href = '/';
+      try {
+        Object.keys(window.localStorage)
+          .filter((k) => k.startsWith('sb-') || k.includes('supabase'))
+          .forEach((k) => window.localStorage.removeItem(k));
+      } catch {
+        // localStorage may be unavailable in sandboxed contexts; ignore.
+      }
+    }
+
+    // Best-effort server-side invalidation — fire-and-forget so the redirect
+    // happens immediately. The localStorage purge above already logged the
+    // user out client-side regardless of network outcome.
+    void supabase.auth.signOut().catch(() => {});
+
+    // Hard redirect to landing using replace() so the back button doesn't
+    // return them to the protected page they just signed out of.
+    if (typeof window !== 'undefined') {
+      window.location.replace('/');
     }
   },
 }));
