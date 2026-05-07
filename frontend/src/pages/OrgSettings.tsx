@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building2,
   Copy,
@@ -9,9 +9,11 @@ import {
   User as UserIcon,
   Trash2,
   Loader2,
-  Check,
   AlertTriangle,
   LogOut,
+  Users,
+  Sparkles,
+  Settings as SettingsIcon,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
@@ -28,6 +30,8 @@ import type { Org, OrgMember, OrgRole } from '@/types';
 const roleIcon = { owner: Crown, moderator: Shield, member: UserIcon } as const;
 const roleTone = { owner: 'violet', moderator: 'cyan', member: 'neutral' } as const;
 
+type OrgTab = 'overview' | 'members' | 'seats' | 'sponsorship' | 'settings';
+
 export default function OrgSettings() {
   const me = useAuth((s) => s.user);
   const fetchProfile = useAuth((s) => s.fetchProfile);
@@ -35,6 +39,7 @@ export default function OrgSettings() {
   const [members, setMembers] = useState<OrgMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
+  const [tab, setTab] = useState<OrgTab>('overview');
 
   const isOwner = me?.org_role === 'owner';
 
@@ -146,64 +151,175 @@ export default function OrgSettings() {
     );
   }
 
+  const tabs = useMemo(() => {
+    const t: { id: OrgTab; label: string; icon: typeof Users }[] = [
+      { id: 'overview', label: 'Overview', icon: Building2 },
+      { id: 'members', label: `Members · ${members.length}`, icon: Users },
+      { id: 'seats', label: 'Seats', icon: Users },
+    ];
+    if (isOwner) {
+      t.push({ id: 'sponsorship', label: 'Sponsorship', icon: Sparkles });
+    }
+    t.push({ id: 'settings', label: 'Settings', icon: SettingsIcon });
+    return t;
+  }, [isOwner, members.length]);
+
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6">
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-3xl font-display font-bold flex items-center gap-3">
-          <Building2 className="w-7 h-7 text-neon-violet" />
-          Organization
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-neon-violet/10 border border-neon-violet/30 text-[11px] uppercase tracking-[0.18em] text-neon-violet mb-3">
+          <Building2 className="w-3 h-3" /> Organization
+        </div>
+        <h1 className="text-3xl md:text-4xl font-display font-bold tracking-[-0.02em]">
+          {org.name}
         </h1>
-        <p className="text-white/60 mt-1">
-          {isOwner ? 'Manage members, invite code, and permissions.' : 'Your organization details.'}
-        </p>
+        {org.description && (
+          <p className="text-white/55 mt-2 text-sm max-w-2xl">{org.description}</p>
+        )}
+        <div className="mt-2 text-xs text-white/40">
+          {org.member_count} member{org.member_count === 1 ? '' : 's'} · created{' '}
+          {new Date(org.created_at).toLocaleDateString()}
+        </div>
       </motion.div>
 
-      <Card className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-aurora opacity-20 animate-gradient-x [background-size:200%_200%] pointer-events-none" />
-        <div className="relative">
-          <div className="flex items-start justify-between gap-4 flex-wrap">
-            <div>
-              <div className="text-xs uppercase tracking-wider text-white/50">Workspace</div>
-              <h2 className="text-2xl font-display font-bold mt-1">{org.name}</h2>
-              {org.description && (
-                <p className="text-sm text-white/60 mt-2 max-w-xl">{org.description}</p>
-              )}
-              <div className="mt-3 text-xs text-white/50">
-                {org.member_count} member{org.member_count === 1 ? '' : 's'} · created{' '}
-                {new Date(org.created_at).toLocaleDateString()}
-              </div>
-            </div>
-
-            {(isOwner || me?.org_role === 'moderator') && org.invite_code && (
-              <div className="glass p-4 min-w-[220px]">
-                <div className="text-xs uppercase tracking-wider text-white/50 mb-1">
-                  Invite code
-                </div>
-                <div className="font-mono text-xl tracking-wider text-neon-violet font-semibold">
-                  {org.invite_code}
-                </div>
-                <div className="flex gap-2 mt-3">
-                  <Button variant="ghost" onClick={copyInvite}>
-                    <Copy className="w-4 h-4" /> Copy
-                  </Button>
-                  {isOwner && (
-                    <Button variant="ghost" loading={busy === 'regen'} onClick={regenerateInvite}>
-                      <RefreshCw className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+      {/* Tab nav — sticky for desktop, horizontal scroll on mobile */}
+      <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 py-2 bg-black/60 backdrop-blur-md border-b border-white/[0.06]">
+        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+          {tabs.map((t) => {
+            const isActive = tab === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                className={cn(
+                  'inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm transition shrink-0',
+                  isActive
+                    ? 'bg-white text-black font-medium'
+                    : 'text-white/55 hover:text-white hover:bg-white/[0.04]',
+                )}
+              >
+                <t.icon className="w-3.5 h-3.5" strokeWidth={2} />
+                {t.label}
+              </button>
+            );
+          })}
         </div>
-      </Card>
+      </div>
 
-      <OrgSeatsCard isOwner={isOwner} />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={tab}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.18 }}
+          className="space-y-6"
+        >
+          {/* Overview tab */}
+          {tab === 'overview' && (
+            <>
+              {(isOwner || me?.org_role === 'moderator') && org.invite_code && (
+                <Card>
+                  <div className="flex items-start justify-between gap-4 flex-wrap">
+                    <div className="min-w-0">
+                      <div className="text-xs uppercase tracking-[0.18em] text-white/45 mb-1">
+                        Invite code
+                      </div>
+                      <div className="font-mono text-2xl tracking-[0.2em] text-neon-violet font-semibold">
+                        {org.invite_code}
+                      </div>
+                      <p className="text-xs text-white/45 mt-2">
+                        Share this with new members. They'll need it to join.
+                      </p>
+                    </div>
+                    <div className="flex gap-2 shrink-0">
+                      <Button variant="ghost" onClick={copyInvite}>
+                        <Copy className="w-4 h-4" /> Copy
+                      </Button>
+                      {isOwner && (
+                        <Button variant="ghost" loading={busy === 'regen'} onClick={regenerateInvite}>
+                          <RefreshCw className="w-4 h-4" /> Regenerate
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              )}
 
-      {isOwner && <SponsorMembersCard />}
+              <div className="grid sm:grid-cols-3 gap-3">
+                <StatTile
+                  label="Members"
+                  value={members.length}
+                  icon={Users}
+                  accent="cyan"
+                />
+                <StatTile
+                  label="Owners + mods"
+                  value={
+                    members.filter((m) => m.org_role === 'owner' || m.org_role === 'moderator').length
+                  }
+                  icon={Shield}
+                  accent="violet"
+                />
+                <StatTile
+                  label="Total XP"
+                  value={members.reduce((s, m) => s + (m.xp || 0), 0).toLocaleString()}
+                  icon={Crown}
+                  accent="amber"
+                />
+              </div>
+            </>
+          )}
 
-      <Card>
-        <h2 className="font-display font-semibold text-lg mb-4">Members ({members.length})</h2>
+          {/* Seats tab */}
+          {tab === 'seats' && <OrgSeatsCard isOwner={isOwner} />}
+
+          {/* Sponsorship tab */}
+          {tab === 'sponsorship' && isOwner && <SponsorMembersCard />}
+
+          {/* Settings (danger zone) tab */}
+          {tab === 'settings' && (
+            <Card className="border-red-500/20 bg-red-500/[0.03]">
+              <h2 className="font-display font-semibold text-lg mb-2 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-red-400" /> Danger zone
+              </h2>
+              <div className="space-y-3 mt-3">
+                {!isOwner && (
+                  <div className="flex items-center justify-between gap-3 flex-wrap rounded-xl border border-white/8 bg-white/[0.02] p-4">
+                    <div className="text-sm">
+                      <div className="font-medium">Leave organization</div>
+                      <div className="text-white/50 text-xs">
+                        Your data stays. You can rejoin with an invite code.
+                      </div>
+                    </div>
+                    <Button variant="danger" onClick={leaveOrg}>
+                      <LogOut className="w-4 h-4" /> Leave
+                    </Button>
+                  </div>
+                )}
+                {isOwner && (
+                  <div className="flex items-center justify-between gap-3 flex-wrap rounded-xl border border-red-500/20 bg-red-500/[0.05] p-4">
+                    <div className="text-sm">
+                      <div className="font-medium">Delete entire organization</div>
+                      <div className="text-white/50 text-xs">
+                        Removes all tasks and squads, detaches every member. Cannot be undone.
+                      </div>
+                    </div>
+                    <Button variant="danger" onClick={deleteOrg}>
+                      <Trash2 className="w-4 h-4" /> Delete org
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
+
+          {/* Members tab */}
+          {tab === 'members' && (
+            <Card>
+              <h2 className="font-display font-semibold text-lg mb-4">
+                Members ({members.length})
+              </h2>
         <div className="space-y-2">
           {members.map((m) => {
             const Icon = roleIcon[(m.org_role ?? 'member') as keyof typeof roleIcon];
@@ -279,47 +395,39 @@ export default function OrgSettings() {
                 )}
               </div>
             );
-          })}
-        </div>
-      </Card>
-
-      <Card className="border-red-500/20 bg-red-500/5">
-        <h2 className="font-display font-semibold text-lg mb-2 flex items-center gap-2">
-          <AlertTriangle className="w-5 h-5 text-red-400" /> Danger zone
-        </h2>
-        <div className="space-y-3 mt-3">
-          {!isOwner && (
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div className="text-sm">
-                <div className="font-medium">Leave organization</div>
-                <div className="text-white/50 text-xs">
-                  Your data stays. You can rejoin with an invite code.
-                </div>
-              </div>
-              <Button variant="danger" onClick={leaveOrg}>
-                <LogOut className="w-4 h-4" /> Leave
-              </Button>
+              })}
             </div>
+          </Card>
           )}
-          {isOwner && (
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div className="text-sm">
-                <div className="font-medium">Delete entire organization</div>
-                <div className="text-white/50 text-xs">
-                  Removes all tasks, squads, and detaches all members. Cannot be undone.
-                </div>
-              </div>
-              <Button variant="danger" onClick={deleteOrg}>
-                <Trash2 className="w-4 h-4" /> Delete org
-              </Button>
-            </div>
-          )}
-        </div>
-      </Card>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
 
-// Suppress unused import warning
-const _check = Check;
-void _check;
+function StatTile({
+  label,
+  value,
+  icon: Icon,
+  accent,
+}: {
+  label: string;
+  value: string | number;
+  icon: typeof Building2;
+  accent: 'cyan' | 'violet' | 'amber';
+}) {
+  const accents: Record<string, string> = {
+    cyan: 'border-neon-cyan/25 bg-neon-cyan/[0.05] text-neon-cyan',
+    violet: 'border-neon-violet/25 bg-neon-violet/[0.05] text-neon-violet',
+    amber: 'border-amber-400/25 bg-amber-400/[0.05] text-amber-300',
+  };
+  return (
+    <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+      <div className={cn('w-8 h-8 rounded-lg border grid place-items-center mb-3', accents[accent])}>
+        <Icon className="w-4 h-4" strokeWidth={2} />
+      </div>
+      <div className="text-2xl font-display font-bold tracking-tight">{value}</div>
+      <div className="text-[11px] uppercase tracking-[0.16em] text-white/45 mt-0.5">{label}</div>
+    </div>
+  );
+}

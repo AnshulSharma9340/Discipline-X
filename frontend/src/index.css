@@ -105,6 +105,15 @@
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18) inset, 0 0 24px -6px rgb(var(--accent) / 0.55);
   }
 
+  /* Hide native scrollbar — used on horizontal tab navs that overflow on mobile. */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Sidebar accent strip — sits on the right edge of an active nav item. */
   .nav-active {
     background: linear-gradient(90deg, rgb(var(--accent) / 0.18) 0%, rgb(var(--accent-2) / 0.10) 100%);

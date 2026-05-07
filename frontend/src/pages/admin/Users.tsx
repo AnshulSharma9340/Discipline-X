@@ -51,7 +51,7 @@ export default function Users() {
     async function load() {
       setLoading(true);
       try {
-        const res = await api.get<Member[]>('/organizations/me/members');
+        const res = await api.get<Member[]>('/orgs/me/members');
         if (!cancelled) setMembers(res.data);
       } finally {
         if (!cancelled) setLoading(false);
