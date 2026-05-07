@@ -1,0 +1,51 @@
+# Fly.io app config — DisciplineX backend
+# https://fly.io/docs/reference/configuration/
+#
+# Build context is this directory (backend/), so run flyctl commands from here:
+#   cd backend
+#   flyctl launch --no-deploy --copy-config --name disciplinex-api
+#   flyctl secrets set ...
+#   flyctl deploy
+
+app = "disciplinex-api"
+primary_region = "bom"  # Mumbai — closest to India
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  BACKEND_PORT = "8000"
+  PYTHONUNBUFFERED = "1"
+  # Production defaults — secrets override the rest
+  BACKEND_ENV = "production"
+  AUTO_PROMOTE_FIRST_USER = "false"
+  LOG_LEVEL = "INFO"
+  SUPABASE_STORAGE_BUCKET = "proofs"
+  GROQ_MODEL = "llama-3.3-70b-versatile"
+  DAILY_CUTOFF_HOUR = "23"
+  DAILY_CUTOFF_MINUTE = "59"
+
+# Run Alembic migrations before each deploy. If migration fails, deploy aborts.
+[deploy]
+  release_command = "alembic upgrade head"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  # Auto-stop saves money but Fly's restart is <1s vs Render's 30s
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/health"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512
