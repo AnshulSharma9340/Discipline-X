@@ -143,6 +143,11 @@ export interface LeaderboardEntry {
   productivity_score: number;
   xp: number;
   streak: number;
+  level?: number;
+  active_title?: string;
+  active_frame?: string;
+  theme?: string;
+  period_points?: number;
 }
 
 export interface DailyAnalytics {

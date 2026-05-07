@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { api } from '@/lib/api';
 import { Card } from '@/components/ui/Card';
 import { StatCard } from '@/components/ui/StatCard';
+import { UserAvatar, UserTitle } from '@/components/ui/UserChip';
 import { cn } from '@/lib/cn';
 import type { PublicProfile } from '@/types';
 
@@ -49,16 +50,33 @@ export default function Profile() {
         <Card className="relative overflow-hidden">
           <div className="absolute inset-0 bg-aurora opacity-30 animate-gradient-x [background-size:200%_200%] pointer-events-none" />
           <div className="relative flex items-start gap-5 flex-wrap">
-            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-neon-violet to-neon-cyan grid place-items-center text-4xl font-display font-bold shadow-glow shrink-0">
-              {profile.name[0]?.toUpperCase()}
-            </div>
+            <UserAvatar
+              name={profile.name}
+              avatarUrl={null}
+              frameCode={profile.active_frame}
+              size="xl"
+              brandFallback
+              className="shadow-glow"
+            />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-3xl font-display font-bold">{profile.name}</h1>
-                <span className="px-2 py-0.5 rounded-full bg-neon-violet/20 border border-neon-violet/30 text-xs font-mono">
+                <span
+                  className="px-2 py-0.5 rounded-full text-xs font-mono"
+                  style={{
+                    background: 'rgb(var(--accent) / 0.18)',
+                    borderColor: 'rgb(var(--accent) / 0.35)',
+                    border: '1px solid',
+                  }}
+                >
                   Lv {profile.level}
                 </span>
               </div>
+              {profile.active_title ? (
+                <div className="mt-1">
+                  <UserTitle code={profile.active_title} inline />
+                </div>
+              ) : null}
               {profile.bio && (
                 <p className="text-white/70 mt-2 max-w-xl">{profile.bio}</p>
               )}

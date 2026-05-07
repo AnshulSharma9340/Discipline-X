@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Trophy, Flame, Crown, Medal, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Card } from '@/components/ui/Card';
+import { UserAvatar, UserTitle } from '@/components/ui/UserChip';
 import { useAuth } from '@/store/auth';
 import { cn } from '@/lib/cn';
 import type { LeaderboardEntry } from '@/types';
@@ -98,7 +100,18 @@ export default function Leaderboard() {
                     <Medal className="w-6 h-6 text-white/60 mx-auto mb-1" />
                   )}
                   <div className="text-xs text-white/50 uppercase tracking-wider">#{e.rank}</div>
-                  <div className="font-display font-semibold mt-1 truncate">{e.name}</div>
+                  <Link to={`/u/${e.user_id}`} className="mt-3 inline-flex flex-col items-center gap-1.5 group">
+                    <UserAvatar
+                      name={e.name}
+                      avatarUrl={e.avatar_url}
+                      frameCode={e.active_frame}
+                      size="lg"
+                      brandFallback
+                      className="group-hover:scale-105 transition"
+                    />
+                    <div className="font-display font-semibold mt-1 truncate max-w-full">{e.name}</div>
+                    {e.active_title ? <UserTitle code={e.active_title} inline /> : null}
+                  </Link>
                   <div className="text-2xl font-display font-bold neon-text mt-2">
                     {period === 'streak' ? `${e.streak}d` : e.xp.toLocaleString()}
                   </div>
@@ -130,24 +143,48 @@ export default function Leaderboard() {
                         key={e.user_id}
                         className={cn(
                           'border-b border-white/5 hover:bg-white/[0.03]',
-                          isMe && 'bg-neon-violet/5',
+                          isMe && 'bg-white/[0.04]',
                         )}
+                        style={
+                          isMe
+                            ? { boxShadow: 'inset 3px 0 0 0 rgb(var(--accent))' }
+                            : undefined
+                        }
                       >
                         <td className="p-3 font-mono text-white/60">#{e.rank}</td>
                         <td className="p-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-neon-violet to-neon-cyan grid place-items-center text-xs font-semibold">
-                              {e.name[0]?.toUpperCase()}
-                            </div>
-                            <div>
-                              <div className="font-medium">
-                                {e.name} {isMe && <span className="text-neon-violet text-xs ml-1">(you)</span>}
+                          <Link
+                            to={`/u/${e.user_id}`}
+                            className="flex items-center gap-3 group"
+                          >
+                            <UserAvatar
+                              name={e.name}
+                              avatarUrl={e.avatar_url}
+                              frameCode={e.active_frame}
+                              size="md"
+                              brandFallback
+                              className="group-hover:scale-105 transition"
+                            />
+                            <div className="min-w-0">
+                              <div className="font-medium truncate">
+                                {e.name}
+                                {isMe && (
+                                  <span
+                                    className="text-xs ml-1"
+                                    style={{ color: 'rgb(var(--accent))' }}
+                                  >
+                                    (you)
+                                  </span>
+                                )}
                               </div>
+                              {e.active_title ? (
+                                <UserTitle code={e.active_title} inline />
+                              ) : null}
                             </div>
-                          </div>
+                          </Link>
                         </td>
                         <td className="p-3 text-right font-mono">{e.xp.toLocaleString()}</td>
-                        <td className="p-3 text-right font-mono text-neon-cyan">
+                        <td className="p-3 text-right font-mono text-cyan-300">
                           {e.discipline_score}
                         </td>
                         <td className="p-3 text-right font-mono">

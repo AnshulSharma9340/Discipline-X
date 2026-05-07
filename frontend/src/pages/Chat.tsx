@@ -8,6 +8,7 @@ import { api } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
 import { useAuth } from '@/store/auth';
 import { Button } from '@/components/ui/Button';
+import { UserAvatar, UserTitle } from '@/components/ui/UserChip';
 import { cn } from '@/lib/cn';
 
 interface Message {
@@ -16,6 +17,9 @@ interface Message {
   user_id: string | null;
   user_name: string;
   avatar_url: string | null;
+  active_title?: string;
+  active_frame?: string;
+  user_level?: number | null;
   body: string;
   created_at: string;
 }
@@ -145,7 +149,13 @@ export default function Chat() {
       {/* Header */}
       <div className="px-6 py-4 border-b border-white/5 bg-ink-900/40 backdrop-blur-xl flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-neon-violet to-neon-cyan grid place-items-center">
+          <div
+            className="w-9 h-9 rounded-xl grid place-items-center"
+            style={{
+              background:
+                'linear-gradient(135deg, rgb(var(--accent)) 0%, rgb(var(--accent-2)) 100%)',
+            }}
+          >
             <MessageSquare className="w-4 h-4" />
           </div>
           <div>
@@ -240,7 +250,6 @@ function MessageGroup({
   onDelete: (m: Message) => void;
 }) {
   const first = messages[0];
-  const initial = (first.user_name || '?')[0]?.toUpperCase();
 
   return (
     <motion.div
@@ -251,18 +260,28 @@ function MessageGroup({
     >
       <Link
         to={first.user_id ? `/u/${first.user_id}` : '#'}
-        className={cn(
-          'w-8 h-8 rounded-full grid place-items-center text-xs font-semibold shrink-0 mt-0.5',
-          isMine
-            ? 'bg-gradient-to-br from-neon-cyan to-neon-violet'
-            : 'bg-gradient-to-br from-neon-violet to-neon-pink',
-        )}
+        className="shrink-0 mt-0.5"
+        title={first.user_name}
       >
-        {initial}
+        <UserAvatar
+          name={first.user_name}
+          avatarUrl={first.avatar_url}
+          frameCode={first.active_frame}
+          size="sm"
+          brandFallback={!first.active_frame}
+        />
       </Link>
-      <div className={cn('flex flex-col gap-1 max-w-[75%]', isMine && 'items-end')}>
-        <div className={cn('flex items-baseline gap-2', isMine && 'flex-row-reverse')}>
+      <div className={cn('flex flex-col gap-1 max-w-[75%] min-w-0', isMine && 'items-end')}>
+        <div className={cn('flex items-baseline gap-2 flex-wrap', isMine && 'flex-row-reverse')}>
           <span className="text-xs font-medium text-white/80">{first.user_name}</span>
+          {first.active_title ? (
+            <UserTitle code={first.active_title} inline />
+          ) : null}
+          {typeof first.user_level === 'number' ? (
+            <span className="text-[10px] font-mono text-white/40 tabular-nums">
+              Lv {first.user_level}
+            </span>
+          ) : null}
           <span className="text-[10px] text-white/40">
             {format(new Date(first.created_at), 'p')}
           </span>
@@ -273,9 +292,17 @@ function MessageGroup({
             className={cn(
               'relative px-4 py-2.5 rounded-2xl max-w-full break-words whitespace-pre-wrap text-sm',
               isMine
-                ? 'bg-gradient-to-br from-neon-violet to-neon-indigo text-white rounded-br-sm'
+                ? 'text-white rounded-br-sm'
                 : 'bg-white/5 border border-white/10 text-white/90 rounded-bl-sm',
             )}
+            style={
+              isMine
+                ? {
+                    background:
+                      'linear-gradient(135deg, rgb(var(--accent) / 0.85) 0%, rgb(var(--accent-2) / 0.65) 100%)',
+                  }
+                : undefined
+            }
           >
             {m.body}
             {canDelete(m) && (

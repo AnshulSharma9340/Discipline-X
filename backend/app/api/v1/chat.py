@@ -22,12 +22,17 @@ class MessageCreate(BaseModel):
 
 
 def _serialize(m: ChatMessage) -> dict:
+    u = m.user
     return {
         "id": str(m.id),
         "org_id": str(m.org_id),
         "user_id": str(m.user_id) if m.user_id else None,
-        "user_name": (m.user.name if m.user else None) or (m.user.email.split("@")[0] if m.user else "deleted user"),
-        "avatar_url": m.user.avatar_url if m.user else None,
+        "user_name": (u.name if u else None) or (u.email.split("@")[0] if u else "deleted user"),
+        "avatar_url": u.avatar_url if u else None,
+        # Cosmetics so other people see the buyer's flair on every message.
+        "active_title": u.active_title if u else "",
+        "active_frame": u.active_frame if u else "",
+        "user_level": u.level if u else None,
         "body": m.body,
         "created_at": m.created_at.isoformat(),
     }

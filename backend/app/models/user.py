@@ -75,6 +75,9 @@ class User(Base, TimestampMixin):
     xp_boost_multiplier: Mapped[float] = mapped_column(
         Float, default=1.0, nullable=False
     )
+    shielded_dates: Mapped[str] = mapped_column(
+        String(2000), default="", nullable=False
+    )
 
     last_active_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     locked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

@@ -168,6 +168,22 @@ async def leaderboard(
     org_id: uuid.UUID | None = None,
 ) -> list[dict[str, Any]]:
     """Rank users by composite score, optionally scoped to an org."""
+    def _row_from_user(i: int, u: User) -> dict:
+        return {
+            "rank": i + 1,
+            "user_id": str(u.id),
+            "name": u.name or u.email.split("@")[0],
+            "avatar_url": u.avatar_url,
+            "discipline_score": u.discipline_score,
+            "productivity_score": u.productivity_score,
+            "xp": u.xp,
+            "streak": u.streak,
+            "level": u.level,
+            "active_title": u.active_title,
+            "active_frame": u.active_frame,
+            "theme": u.theme,
+        }
+
     if period == "streak":
         stmt = (
             select(User)
@@ -178,19 +194,7 @@ async def leaderboard(
         if org_id:
             stmt = stmt.where(User.org_id == org_id)
         rows = (await db.scalars(stmt)).all()
-        return [
-            {
-                "rank": i + 1,
-                "user_id": str(u.id),
-                "name": u.name or u.email.split("@")[0],
-                "avatar_url": u.avatar_url,
-                "discipline_score": u.discipline_score,
-                "productivity_score": u.productivity_score,
-                "xp": u.xp,
-                "streak": u.streak,
-            }
-            for i, u in enumerate(rows)
-        ]
+        return [_row_from_user(i, u) for i, u in enumerate(rows)]
 
     if period == "all":
         stmt = (
@@ -202,19 +206,7 @@ async def leaderboard(
         if org_id:
             stmt = stmt.where(User.org_id == org_id)
         rows = (await db.scalars(stmt)).all()
-        return [
-            {
-                "rank": i + 1,
-                "user_id": str(u.id),
-                "name": u.name or u.email.split("@")[0],
-                "avatar_url": u.avatar_url,
-                "discipline_score": u.discipline_score,
-                "productivity_score": u.productivity_score,
-                "xp": u.xp,
-                "streak": u.streak,
-            }
-            for i, u in enumerate(rows)
-        ]
+        return [_row_from_user(i, u) for i, u in enumerate(rows)]
 
     # period-bucketed by points
     days_map = {"daily": 1, "weekly": 7, "monthly": 30}
@@ -231,6 +223,10 @@ async def leaderboard(
             User.discipline_score,
             User.productivity_score,
             User.xp,
+            User.level,
+            User.active_title,
+            User.active_frame,
+            User.theme,
             func.coalesce(func.sum(DailyAnalytics.points_earned), 0).label("period_points"),
         )
         .join(DailyAnalytics, DailyAnalytics.user_id == User.id, isouter=True)
@@ -253,6 +249,10 @@ async def leaderboard(
             "productivity_score": int(r.productivity_score),
             "xp": int(r.xp),
             "streak": int(r.streak),
+            "level": int(r.level or 1),
+            "active_title": r.active_title or "",
+            "active_frame": r.active_frame or "",
+            "theme": r.theme or "violet",
             "period_points": int(r.period_points),
         }
         for i, r in enumerate(rows)
