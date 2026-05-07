@@ -4,6 +4,7 @@ import { useAuth } from '@/store/auth';
 import { useUI } from '@/store/ui';
 import { useActiveBoost, formatBoostCountdown } from '@/hooks/useActiveBoost';
 import { OrgSwitcher } from '@/components/OrgSwitcher';
+import { PlanBadge } from '@/components/PlanBadge';
 
 export function Topbar() {
   const { user, signOut } = useAuth();
@@ -86,6 +87,8 @@ export function Topbar() {
           {(user?.xp ?? 0).toLocaleString()}
         </span>
       </div>
+
+      <PlanBadge />
 
       <button
         className="hidden sm:grid w-9 h-9 place-items-center rounded-full border border-white/10 hover:border-white/30 hover:bg-white/[0.03] transition shrink-0"
