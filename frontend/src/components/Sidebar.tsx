@@ -21,6 +21,7 @@ import {
   Building2,
   MessageSquare,
   ChevronDown,
+  CreditCard,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
@@ -55,6 +56,7 @@ const socialLinks: LinkItem[] = [
 ];
 
 const accountLinks: LinkItem[] = [
+  { to: '/billing', icon: CreditCard, label: 'Billing & Plans' },
   { to: '/shop', icon: ShoppingBag, label: 'XP Shop' },
   { to: '/emergency', icon: AlertTriangle, label: 'Emergency' },
   { to: '/org', icon: Building2, label: 'Organization' },

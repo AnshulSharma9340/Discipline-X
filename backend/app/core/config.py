@@ -64,6 +64,12 @@ class Settings(BaseSettings):
     # ---- Frontend URL (used as redirect target after OAuth / password reset) ----
     FRONTEND_URL: str = "http://localhost:5173"
 
+    # ---- Razorpay (subscriptions / billing) ----
+    RAZORPAY_KEY_ID: str = ""
+    RAZORPAY_KEY_SECRET: str = ""
+    RAZORPAY_WEBHOOK_SECRET: str = ""  # set when you wire the webhook in Razorpay dashboard
+    TRIAL_DAYS: int = 7
+
     @property
     def groq_enabled(self) -> bool:
         return bool(self.GROQ_API_KEY.strip())
@@ -79,6 +85,10 @@ class Settings(BaseSettings):
     @property
     def brevo_enabled(self) -> bool:
         return bool(self.BREVO_API_KEY.strip() and self.BREVO_FROM_EMAIL.strip())
+
+    @property
+    def razorpay_enabled(self) -> bool:
+        return bool(self.RAZORPAY_KEY_ID.strip() and self.RAZORPAY_KEY_SECRET.strip())
 
     @property
     def is_production(self) -> bool:

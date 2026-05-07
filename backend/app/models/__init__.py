@@ -12,6 +12,7 @@ from app.models.reaction import SubmissionReaction
 from app.models.reflection import Reflection
 from app.models.squad import Squad, SquadMember
 from app.models.submission import ProofType, SubmissionStatus, TaskSubmission
+from app.models.subscription import PlanCode, Subscription, SubscriptionStatus
 from app.models.task import DailyTask, TaskDifficulty
 from app.models.user import AccessStatus, User, UserRole
 
@@ -42,4 +43,7 @@ __all__ = [
     "ChatMessage",
     "OtpCode",
     "OrganizationMembership",
+    "Subscription",
+    "SubscriptionStatus",
+    "PlanCode",
 ]

@@ -6,6 +6,7 @@ from app.api.v1 import (
     analytics,
     auth,
     badges,
+    billing,
     buddy,
     chat,
     dev,
@@ -33,6 +34,7 @@ api_router.include_router(auth.router)
 api_router.include_router(otp.router)
 api_router.include_router(oauth_google.router)
 api_router.include_router(password_reset.router)
+api_router.include_router(billing.router)
 api_router.include_router(organizations.router)
 api_router.include_router(users.router)
 api_router.include_router(tasks.router)

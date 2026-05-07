@@ -35,6 +35,7 @@ import Leaderboard from '@/pages/Leaderboard';
 import Streak from '@/pages/Streak';
 import Emergency from '@/pages/Emergency';
 import Settings from '@/pages/Settings';
+import Billing from '@/pages/Billing';
 import AICoach from '@/pages/AICoach';
 import AdminDashboard from '@/pages/AdminDashboard';
 import ManageTasks from '@/pages/admin/ManageTasks';
@@ -104,6 +105,7 @@ export default function App() {
         <Route path="/u/:userId" element={<Profile />} />
         <Route path="/emergency" element={<Emergency />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/billing" element={<Billing />} />
         <Route path="/org" element={<OrgSettings />} />
 
         <Route path="/admin" element={<AdminDashboard />} />

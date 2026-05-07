@@ -1,6 +1,7 @@
 """FastAPI dependencies: DB session, current user, RBAC + org-scoped guards."""
 
 import uuid
+from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 from fastapi import Depends, Header, HTTPException, status
@@ -11,6 +12,7 @@ from app.core.config import settings
 from app.core.database import get_db
 from app.core.security import decode_supabase_token
 from app.models.organization import OrgRole
+from app.models.subscription import PlanCode, Subscription, SubscriptionStatus
 from app.models.user import AccessStatus, User, UserRole
 
 DBSession = Annotated[AsyncSession, Depends(get_db)]
@@ -33,6 +35,18 @@ async def _get_or_sync_user(db: AsyncSession, claims: dict) -> User:
 
     user = User(id=user_id, email=email, name=name, role=role)
     db.add(user)
+    await db.flush()  # need user.id committed before linking subscription
+
+    # Grant a free trial that starts now and lasts TRIAL_DAYS.
+    db.add(
+        Subscription(
+            user_id=user.id,
+            plan=PlanCode.TRIAL,
+            status=SubscriptionStatus.TRIAL,
+            expires_at=datetime.now(timezone.utc) + timedelta(days=settings.TRIAL_DAYS),
+        )
+    )
+
     await db.commit()
     await db.refresh(user)
     return user
