@@ -1,10 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <defs>
-    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0%" stop-color="#8b5cf6"/>
+    <linearGradient id="dx-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1f1640"/>
+      <stop offset="55%" stop-color="#0c0a1a"/>
+      <stop offset="100%" stop-color="#06070b"/>
+    </linearGradient>
+    <linearGradient id="dx-mark" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0%" stop-color="#e9d5ff"/>
+      <stop offset="40%" stop-color="#a78bfa"/>
       <stop offset="100%" stop-color="#22d3ee"/>
     </linearGradient>
+    <linearGradient id="dx-shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="dx-glow" cx="0.3" cy="0.5" r="0.55">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
   </defs>
-  <rect width="64" height="64" rx="14" fill="#06070b"/>
-  <path d="M16 14h18a18 18 0 1 1 0 36H16V14zm10 8v20h8a10 10 0 0 0 0-20h-8z" fill="url(#g)"/>
+
+  <rect width="64" height="64" rx="14" fill="url(#dx-bg)"/>
+  <rect x="6" y="6" width="52" height="52" rx="10" fill="url(#dx-glow)"/>
+  <rect width="64" height="36" rx="14" fill="url(#dx-shine)"/>
+  <rect x="0.5" y="0.5" width="63" height="63" rx="13.5"
+        fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="1"/>
+
+  <path fill="url(#dx-mark)" fill-rule="evenodd"
+        d="M 16 14 H 33 C 42.94 14 51 22.06 51 32 C 51 41.94 42.94 50 33 50 H 16 V 14 Z
+           M 24.5 22.5 V 41.5 H 33 C 38.25 41.5 42.5 37.25 42.5 32 C 42.5 26.75 38.25 22.5 33 22.5 H 24.5 Z"/>
+
+  <circle cx="48.5" cy="14.5" r="2" fill="#22d3ee"/>
 </svg>

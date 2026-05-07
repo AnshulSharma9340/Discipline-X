@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { frameGradient } from '@/lib/cosmetics';
+import { Logo } from '@/components/Logo';
 import { useAuth } from '@/store/auth';
 import { useUI } from '@/store/ui';
 
@@ -141,9 +142,7 @@ export function Sidebar() {
             onClick={() => setSidebarOpen(false)}
             className="flex items-center gap-2.5 px-3 py-4 group"
           >
-            <div className="w-7 h-7 rounded-md brand-tile grid place-items-center transition group-hover:scale-105">
-              <span className="text-black font-display font-bold text-sm leading-none">D</span>
-            </div>
+            <Logo size={28} className="transition group-hover:scale-105" />
             <span className="font-display font-semibold tracking-tight text-[15px]">DisciplineX</span>
           </Link>
           <button

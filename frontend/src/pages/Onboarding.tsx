@@ -5,6 +5,7 @@ import { Crown, Users, ArrowRight, KeyRound, Building2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
 import { Input } from '@/components/ui/Input';
+import { Logo } from '@/components/Logo';
 import { useAuth } from '@/store/auth';
 import { cn } from '@/lib/cn';
 
@@ -27,8 +28,8 @@ export default function Onboarding() {
         className="w-full max-w-2xl space-y-6"
       >
         <div className="text-center">
-          <div className="inline-flex w-12 h-12 rounded-xl brand-tile grid place-items-center mb-5">
-            <span className="text-black font-display font-bold text-lg leading-none">D</span>
+          <div className="inline-flex mb-5">
+            <Logo size={48} />
           </div>
           <h1 className="font-display font-semibold tracking-[-0.03em] text-3xl sm:text-4xl md:text-5xl leading-[1.05]">
             {isAddMode ? 'Add another' : 'One last step.'}

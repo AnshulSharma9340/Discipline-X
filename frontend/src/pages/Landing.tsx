@@ -6,6 +6,7 @@ import { useAuth } from '@/store/auth';
 import { ShaderAnimation } from '@/components/ui/ShaderAnimation';
 import { InstallAppModal, shouldAutoShowInstall } from '@/components/InstallAppModal';
 import { getCookieConsent } from '@/components/CookieBanner';
+import { Logo } from '@/components/Logo';
 
 export default function Landing() {
   const session = useAuth((s) => s.session);
@@ -42,9 +43,7 @@ function Nav({ onGetApp }: { onGetApp: () => void }) {
     <nav className="fixed top-0 inset-x-0 z-30 backdrop-blur-md bg-black/40 border-b border-white/5">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-md bg-white grid place-items-center">
-            <span className="text-black font-display font-bold text-sm leading-none">D</span>
-          </div>
+          <Logo size={28} />
           <span className="font-display font-semibold tracking-tight">DisciplineX</span>
         </Link>
         <div className="flex items-center gap-1 text-sm">

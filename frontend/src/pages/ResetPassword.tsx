@@ -5,6 +5,7 @@ import { ArrowRight, Lock, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
 import { AuthHero } from './Login';
+import { Logo } from '@/components/Logo';
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -75,10 +76,8 @@ export default function ResetPassword() {
           transition={{ duration: 0.5 }}
           className="w-full max-w-sm"
         >
-          <Link to="/" className="inline-flex items-center gap-2 mb-10 lg:hidden">
-            <div className="w-7 h-7 rounded-md bg-white grid place-items-center">
-              <span className="text-black font-display font-bold text-sm leading-none">D</span>
-            </div>
+          <Link to="/" className="inline-flex items-center gap-2.5 mb-10 lg:hidden">
+            <Logo size={28} />
             <span className="font-display font-semibold tracking-tight">DisciplineX</span>
           </Link>
 

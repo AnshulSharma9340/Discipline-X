@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Github } from 'lucide-react';
 import { type ReactNode } from 'react';
+import { Logo } from '@/components/Logo';
 
 export function LegalPage({
   title,
@@ -16,9 +17,7 @@ export function LegalPage({
       <nav className="fixed top-0 inset-x-0 z-30 backdrop-blur-md bg-black/40 border-b border-white/5">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-md bg-white grid place-items-center">
-              <span className="text-black font-display font-bold text-sm leading-none">D</span>
-            </div>
+            <Logo size={28} />
             <span className="font-display font-semibold tracking-tight">DisciplineX</span>
           </Link>
           <Link
