@@ -11,6 +11,7 @@ from app.models.otp_code import OtpCode
 from app.models.reaction import SubmissionReaction
 from app.models.reflection import Reflection
 from app.models.seat_purchase import SeatPurchase, SeatPurchaseStatus
+from app.models.sponsorship_purchase import SponsorshipPurchase
 from app.models.squad import Squad, SquadMember
 from app.models.submission import ProofType, SubmissionStatus, TaskSubmission
 from app.models.subscription import PlanCode, Subscription, SubscriptionStatus
@@ -49,4 +50,5 @@ __all__ = [
     "PlanCode",
     "SeatPurchase",
     "SeatPurchaseStatus",
+    "SponsorshipPurchase",
 ]

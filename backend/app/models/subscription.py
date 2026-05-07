@@ -70,3 +70,17 @@ class Subscription(Base, TimestampMixin):
     last_paid_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
+
+    # Set when an org owner paid for this subscription on the user's behalf.
+    # NULL = self-funded. The two FKs are SET NULL on parent delete so an
+    # org/user wipe doesn't cascade-lock a paid period.
+    sponsored_by_user_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    sponsored_by_org_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("organizations.id", ondelete="SET NULL"),
+        nullable=True,
+    )

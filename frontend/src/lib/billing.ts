@@ -36,6 +36,37 @@ interface SeatCheckoutOrder {
   seats: number;
 }
 
+export type SponsorablePlan = 'monthly' | 'six_month' | 'yearly';
+
+export interface SponsorMember {
+  user_id: string;
+  name: string;
+  email: string;
+  avatar_url: string | null;
+  org_role: 'owner' | 'moderator' | 'member' | null;
+  plan: string;
+  status: 'trial' | 'active' | 'expired' | 'cancelled';
+  expires_at: string;
+  days_left: number;
+  is_active: boolean;
+  is_sponsored: boolean;
+  sponsored_by_org_id: string | null;
+}
+
+export interface SponsorMembersResponse {
+  members: SponsorMember[];
+  org_id: string;
+}
+
+interface SponsorshipCheckoutOrder {
+  order_id: string;
+  amount_paise: number;
+  currency: string;
+  key_id: string;
+  plan: SponsorablePlan;
+  members_count: number;
+}
+
 export interface Plan {
   code: PlanCode;
   label: string;
@@ -114,6 +145,71 @@ export async function setSponsorship(enabled: boolean): Promise<{ sponsorship_en
  * End-to-end seat purchase: ₹5 × N → Razorpay overlay → /verify on success.
  * Resolves with the new SeatsState (used + total now reflect the purchase).
  */
+export async function fetchSponsorMembers(): Promise<SponsorMembersResponse> {
+  const res = await api.get<SponsorMembersResponse>('/orgs/me/sponsorship/members');
+  return res.data;
+}
+
+export const SPONSOR_PLAN_PRICE: Record<SponsorablePlan, { paise: number; days: number; label: string }> = {
+  monthly: { paise: 4900, days: 30, label: 'Monthly' },
+  six_month: { paise: 24900, days: 182, label: '6 months' },
+  yearly: { paise: 44900, days: 365, label: '1 year' },
+};
+
+/**
+ * End-to-end bulk sponsorship: ₹49/249/449 × N members → Razorpay overlay
+ * → /verify on success. Resolves with members_sponsored count.
+ */
+export async function sponsorMembers(
+  plan: SponsorablePlan,
+  memberIds: string[],
+  user: { email?: string; name?: string },
+): Promise<{ members_sponsored: number }> {
+  if (typeof window === 'undefined' || !window.Razorpay) {
+    throw new Error('Payment gateway is still loading. Please retry in a moment.');
+  }
+
+  const order = (
+    await api.post<SponsorshipCheckoutOrder>('/orgs/me/sponsorship/checkout', {
+      plan,
+      member_ids: memberIds,
+    })
+  ).data;
+
+  return new Promise<{ members_sponsored: number }>((resolve, reject) => {
+    const Razorpay = window.Razorpay!;
+    const rzp = new Razorpay({
+      key: order.key_id,
+      amount: order.amount_paise,
+      currency: order.currency,
+      name: 'DisciplineX',
+      description: `Sponsor ${order.members_count} member${order.members_count === 1 ? '' : 's'} — ${SPONSOR_PLAN_PRICE[plan].label}`,
+      order_id: order.order_id,
+      prefill: { email: user.email, name: user.name },
+      theme: { color: '#7c3aed' },
+      handler: async (resp) => {
+        try {
+          const verified = await api.post<{ ok: boolean; members_sponsored: number }>(
+            '/orgs/me/sponsorship/verify',
+            {
+              razorpay_order_id: resp.razorpay_order_id,
+              razorpay_payment_id: resp.razorpay_payment_id,
+              razorpay_signature: resp.razorpay_signature,
+            },
+          );
+          resolve(verified.data);
+        } catch (err) {
+          reject(err);
+        }
+      },
+      modal: {
+        ondismiss: () => reject(new Error('Payment cancelled')),
+      },
+    });
+    rzp.open();
+  });
+}
+
 export async function buySeats(
   seats: number,
   user: { email?: string; name?: string },

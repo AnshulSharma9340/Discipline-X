@@ -41,36 +41,32 @@ def _sub_is_live(sub: Subscription | None) -> bool:
 async def get_premium_status(db: AsyncSession, user: User) -> PremiumStatus:
     """Resolve whether the given user currently has premium access.
 
-    Order of precedence:
-      1. Personal subscription is live (trial OR paid) → "personal".
-      2. Active org has sponsorship_enabled AND that org's owner has a live
-         personal sub → "sponsored".
-      3. Neither → "none".
+    With explicit per-member sponsorship, premium = "is your subscription
+    live?". The Subscription row carries `sponsored_by_user_id` /
+    `sponsored_by_org_id` if an org owner paid for it; that only changes
+    the *source* label, not whether access is granted.
     """
-    # 1) Personal sub
-    own_sub = await db.get(Subscription, user.id)
-    if _sub_is_live(own_sub):
+    sub = await db.get(Subscription, user.id)
+    if not _sub_is_live(sub):
+        return PremiumStatus(active=False, source="none")
+
+    if sub.sponsored_by_user_id is None:
         return PremiumStatus(active=True, source="personal")
 
-    # 2) Sponsored?
-    if user.org_id is None:
-        return PremiumStatus(active=False, source="none")
-
-    org = await db.get(Organization, user.org_id)
-    if org is None or not org.sponsorship_enabled:
-        return PremiumStatus(active=False, source="none")
-
-    # If the user IS the owner, fall back to their own (already-checked) sub.
-    # Members get covered by the OWNER's payment, not their own.
-    owner_sub = await db.get(Subscription, org.owner_id)
-    if not _sub_is_live(owner_sub):
-        return PremiumStatus(active=False, source="none")
+    # Sponsored sub — look up the org name for friendly UI.
+    org_name: str | None = None
+    org_id_str: str | None = None
+    if sub.sponsored_by_org_id is not None:
+        org = await db.get(Organization, sub.sponsored_by_org_id)
+        if org is not None:
+            org_name = org.name
+            org_id_str = str(org.id)
 
     return PremiumStatus(
         active=True,
         source="sponsored",
-        sponsoring_org_id=str(org.id),
-        sponsoring_org_name=org.name,
+        sponsoring_org_id=org_id_str,
+        sponsoring_org_name=org_name,
     )
 
 
