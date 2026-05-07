@@ -38,10 +38,10 @@ router = APIRouter(prefix="/billing", tags=["billing"])
 
 PLAN_CATALOG: dict[str, dict] = {
     PlanCode.FIRST_MONTH.value: {
-        "label": "Intro month",
-        "amount_paise": 100,        # ₹1
+        "label": "Free first month",
+        "amount_paise": 0,           # ₹0 — bypasses Razorpay, redeemed via /redeem-intro
         "duration_days": 30,
-        "description": "First month for ₹1 — try paid features risk-free.",
+        "description": "First month free — try paid features for 30 days, no card needed.",
         "intro_only": True,
     },
     PlanCode.MONTHLY.value: {
@@ -169,12 +169,17 @@ async def list_plans(user: CurrentUser, db: DBSession) -> dict:
 async def start_checkout(
     payload: CheckoutRequest, user: CurrentUser, db: DBSession
 ) -> CheckoutResponse:
-    if not settings.razorpay_enabled:
-        raise HTTPException(503, "Payments not configured")
-
     info = PLAN_CATALOG.get(payload.plan)
     if not info:
         raise HTTPException(400, "Unknown plan")
+
+    if info["amount_paise"] <= 0:
+        # Free plans (₹0 intro) can't go through Razorpay — minimum is 1 INR.
+        # Frontend should call /redeem-intro instead.
+        raise HTTPException(400, "Use /redeem-intro for free plans")
+
+    if not settings.razorpay_enabled:
+        raise HTTPException(503, "Payments not configured")
 
     sub = await _get_or_create_sub(db, user)
     if info["intro_only"] and sub.has_used_intro:
@@ -192,6 +197,35 @@ async def start_checkout(
         key_id=settings.RAZORPAY_KEY_ID,
         plan=payload.plan,
     )
+
+
+@router.post("/redeem-intro", response_model=SubscriptionState)
+async def redeem_intro(user: CurrentUser, db: DBSession) -> SubscriptionState:
+    """Claim the one-time free intro month. No payment, no Razorpay — just
+    extends the subscription's expires_at. Single-use per user (gated by
+    has_used_intro)."""
+    info = PLAN_CATALOG[PlanCode.FIRST_MONTH.value]
+    if info["amount_paise"] > 0:
+        # Catalog has been changed back to a paid intro — force payment flow.
+        raise HTTPException(409, "Intro is no longer free — use /checkout")
+
+    sub = await _get_or_create_sub(db, user)
+    if sub.has_used_intro:
+        raise HTTPException(409, "Intro pricing already redeemed")
+
+    now = datetime.now(timezone.utc)
+    base = sub.expires_at if sub.expires_at > now else now
+    sub.expires_at = base + timedelta(days=info["duration_days"])
+    sub.plan = PlanCode.FIRST_MONTH
+    sub.status = SubscriptionStatus.ACTIVE
+    sub.has_used_intro = True
+    sub.last_paid_at = now
+    sub.last_amount_paise = 0
+    sub.last_payment_id = None
+
+    await db.commit()
+    logger.info("Free intro redeemed for {} until {}", user.email, sub.expires_at.isoformat())
+    return _state(sub)
 
 
 @router.post("/verify")

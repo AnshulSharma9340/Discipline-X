@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { useAuth } from '@/store/auth';
-import { fetchPlans, startCheckout, type Plan, type SubscriptionState } from '@/lib/billing';
+import { fetchPlans, redeemIntro, startCheckout, type Plan, type SubscriptionState } from '@/lib/billing';
 import { cn } from '@/lib/cn';
 
 export default function Billing() {
@@ -42,12 +42,20 @@ export default function Billing() {
     if (paying) return;
     setPaying(plan.code);
     try {
-      const newSub = await startCheckout(plan.code, {
-        email: user?.email,
-        name: user?.name,
-      });
+      const newSub =
+        plan.amount_paise === 0
+          ? // Free intro — no Razorpay, just extend the subscription on the server.
+            await redeemIntro()
+          : await startCheckout(plan.code, {
+              email: user?.email,
+              name: user?.name,
+            });
       setSub(newSub);
-      toast.success(`Subscribed to ${plan.label} — see you tomorrow.`);
+      toast.success(
+        plan.amount_paise === 0
+          ? `Free month activated — enjoy.`
+          : `Subscribed to ${plan.label} — see you tomorrow.`,
+      );
       // Refresh plan list (intro might now be hidden if we just used it).
       load();
     } catch (err) {
@@ -179,6 +187,7 @@ function PlanCard({
 }) {
   const isIntro = plan.code === 'first_month';
   const isFeatured = plan.code === 'yearly';
+  const isFree = plan.amount_paise === 0;
 
   return (
     <motion.div
@@ -201,8 +210,8 @@ function PlanCard({
         </div>
       )}
       {isIntro && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-emerald-500 text-black text-[10px] uppercase tracking-[0.18em] font-semibold">
-          Try it for ₹1
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-emerald-500 text-black text-[10px] uppercase tracking-[0.18em] font-semibold whitespace-nowrap">
+          {isFree ? 'Free first month' : 'Try it for ₹1'}
         </div>
       )}
 
@@ -210,12 +219,23 @@ function PlanCard({
       <div className="text-sm text-white/55 mt-1 min-h-[40px]">{plan.description}</div>
 
       <div className="mt-6 flex items-baseline gap-1">
-        <span className="text-4xl font-display font-bold tracking-tight">
-          ₹{plan.amount_inr}
-        </span>
-        <span className="text-sm text-white/45">
-          / {plan.duration_days >= 365 ? 'year' : plan.duration_days >= 90 ? '6 mo' : 'month'}
-        </span>
+        {isFree ? (
+          <>
+            <span className="text-4xl font-display font-bold tracking-tight text-emerald-300">
+              Free
+            </span>
+            <span className="text-sm text-white/45">/ first month</span>
+          </>
+        ) : (
+          <>
+            <span className="text-4xl font-display font-bold tracking-tight">
+              ₹{plan.amount_inr}
+            </span>
+            <span className="text-sm text-white/45">
+              / {plan.duration_days >= 365 ? 'year' : plan.duration_days >= 90 ? '6 mo' : 'month'}
+            </span>
+          </>
+        )}
       </div>
 
       <ul className="mt-6 space-y-2 text-sm text-white/65 flex-1">
@@ -255,7 +275,8 @@ function PlanCard({
           </>
         ) : (
           <>
-            <CreditCard className="w-4 h-4" /> {isIntro ? 'Try for ₹1' : 'Subscribe'}
+            <CreditCard className="w-4 h-4" />
+            {isFree ? 'Claim free month' : isIntro ? 'Try for ₹1' : 'Subscribe'}
           </>
         )}
       </button>

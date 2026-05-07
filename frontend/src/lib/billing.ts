@@ -66,6 +66,11 @@ export async function fetchPlans(): Promise<PlansResponse> {
   return res.data;
 }
 
+export async function redeemIntro(): Promise<SubscriptionState> {
+  const res = await api.post<SubscriptionState>('/billing/redeem-intro');
+  return res.data;
+}
+
 /**
  * End-to-end checkout: create order on backend, open Razorpay overlay,
  * verify signature on success. Resolves with the new SubscriptionState
