@@ -3,7 +3,7 @@ import secrets
 import uuid
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, Enum, ForeignKey, String, Text
+from sqlalchemy import Boolean, Enum, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -44,6 +44,18 @@ class Organization(Base, TimestampMixin):
     is_open: Mapped[bool] = mapped_column(
         Boolean, default=True, nullable=False
     )  # if False, only invite code works (always true for now; future: applications)
+
+    # Seat capacity — total members allowed = seat_limit + extra_seats_purchased.
+    # Default is 15; owners can buy more at ₹5/seat via Razorpay (one-time).
+    seat_limit: Mapped[int] = mapped_column(Integer, default=15, nullable=False)
+    extra_seats_purchased: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+
+    # When true, members of this org get premium access regardless of their
+    # personal subscription — provided the OWNER has an active personal
+    # subscription. The owner's payment funds the sponsorship.
+    sponsorship_enabled: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False
+    )
 
     owner_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),

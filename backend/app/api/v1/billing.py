@@ -24,6 +24,7 @@ from sqlalchemy import select
 from app.api.deps import CurrentUser, DBSession
 from app.core.config import settings
 from app.models.subscription import PlanCode, Subscription, SubscriptionStatus
+from app.services.access import get_premium_status
 from app.services.razorpay_client import (
     create_order,
     make_receipt,
@@ -77,6 +78,13 @@ class SubscriptionState(BaseModel):
     days_left: int
     is_active: bool
     has_used_intro: bool
+
+    # Combined premium signal — `is_active` is the personal-sub-only legacy
+    # flag; `premium_active` accounts for org sponsorship as well.
+    premium_active: bool = False
+    premium_source: str = "none"  # "personal" | "sponsored" | "none"
+    sponsoring_org_id: str | None = None
+    sponsoring_org_name: str | None = None
 
 
 class CheckoutRequest(BaseModel):
@@ -136,11 +144,24 @@ def _state(sub: Subscription) -> SubscriptionState:
 # --- Endpoints -------------------------------------------------------------
 
 
+async def _state_with_premium(db, user, sub: Subscription) -> SubscriptionState:
+    base = _state(sub)
+    premium = await get_premium_status(db, user)
+    return base.model_copy(
+        update={
+            "premium_active": premium.active,
+            "premium_source": premium.source,
+            "sponsoring_org_id": premium.sponsoring_org_id,
+            "sponsoring_org_name": premium.sponsoring_org_name,
+        }
+    )
+
+
 @router.get("/me", response_model=SubscriptionState)
 async def my_subscription(user: CurrentUser, db: DBSession) -> SubscriptionState:
     sub = await _get_or_create_sub(db, user)
     await db.commit()
-    return _state(sub)
+    return await _state_with_premium(db, user, sub)
 
 
 @router.get("/plans")

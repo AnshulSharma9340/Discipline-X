@@ -14,6 +14,7 @@ from app.api.deps import CurrentUser, DBSession, OrgMember, OrgOwner
 from app.models.membership import OrganizationMembership
 from app.models.organization import Organization, OrgRole, generate_invite_code
 from app.models.user import User, UserRole
+from app.services.access import org_seat_usage
 
 router = APIRouter(prefix="/orgs", tags=["organizations"])
 
@@ -109,7 +110,15 @@ async def join_org(payload: OrgJoin, user: CurrentUser, db: DBSession):
             OrganizationMembership.org_id == org.id,
         )
     )
+
     if existing is None:
+        # Capacity gate — only enforce for NEW members (rejoins skip it).
+        used, total = await org_seat_usage(db, org.id)
+        if used >= total:
+            raise HTTPException(
+                403,
+                "This organization is at capacity. Ask the owner to add more seats.",
+            )
         db.add(OrganizationMembership(user_id=user.id, org_id=org.id, role=OrgRole.MEMBER))
         new_role = OrgRole.MEMBER
     else:

@@ -31,6 +31,9 @@ export function TrialBanner() {
 
   if (!sub || hidden) return null;
 
+  // Sponsored users don't need any nag — their org is paying.
+  if (sub.premium_source === 'sponsored') return null;
+
   // Hide entirely for healthy paid subscribers (mid-period).
   if (sub.status === 'active' && sub.days_left > 5) return null;
 

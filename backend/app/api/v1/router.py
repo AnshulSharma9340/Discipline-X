@@ -16,6 +16,7 @@ from app.api.v1 import (
     habits,
     leaderboard,
     oauth_google,
+    org_seats,
     organizations,
     otp,
     password_reset,
@@ -36,6 +37,7 @@ api_router.include_router(oauth_google.router)
 api_router.include_router(password_reset.router)
 api_router.include_router(billing.router)
 api_router.include_router(organizations.router)
+api_router.include_router(org_seats.router)
 api_router.include_router(users.router)
 api_router.include_router(tasks.router)
 api_router.include_router(submissions.router)

@@ -129,13 +129,40 @@ export default function Billing() {
 }
 
 function CurrentPlanCard({ sub }: { sub: SubscriptionState }) {
+  // If the user is covered by their org, show that prominently — they don't
+  // need to buy anything personally.
+  if (sub.premium_source === 'sponsored') {
+    return (
+      <Card className="bg-gradient-to-br from-emerald-500/15 to-neon-cyan/10 border-emerald-500/30">
+        <div className="flex items-start gap-4 flex-wrap">
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 grid place-items-center shrink-0">
+            <Crown className="w-6 h-6 text-emerald-300" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap mb-1">
+              <span className="font-display font-semibold text-lg">
+                Premium — sponsored by {sub.sponsoring_org_name ?? 'your organization'}
+              </span>
+              <Badge tone="green">active</Badge>
+            </div>
+            <p className="text-sm text-white/60">
+              Your org owner is covering your premium access. You don't need a personal plan
+              while sponsorship is on. If it gets disabled or your org owner's plan lapses, you
+              can buy any plan below.
+            </p>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
   const expiresAt = new Date(sub.expires_at);
   const tone = sub.status === 'expired' ? 'red' : sub.status === 'trial' ? 'amber' : 'green';
   const planLabel =
     sub.plan === 'trial'
       ? 'Free trial'
       : sub.plan === 'first_month'
-      ? 'Intro month'
+      ? '₹0 first month'
       : sub.plan === 'monthly'
       ? 'Monthly'
       : sub.plan === 'six_month'

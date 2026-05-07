@@ -19,6 +19,7 @@ import { api } from '@/lib/api';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { OrgSeatsCard } from '@/components/OrgSeatsCard';
 import { useAuth } from '@/store/auth';
 import { cn } from '@/lib/cn';
 import type { Org, OrgMember, OrgRole } from '@/types';
@@ -195,6 +196,8 @@ export default function OrgSettings() {
           </div>
         </div>
       </Card>
+
+      <OrgSeatsCard isOwner={isOwner} />
 
       <Card>
         <h2 className="font-display font-semibold text-lg mb-4">Members ({members.length})</h2>
