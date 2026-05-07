@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/store/auth';
 import { AuthHero } from './Login';
+import { GoogleButton, AuthDivider } from '@/components/GoogleButton';
 
 export default function Register() {
   const { session, fetchProfile } = useAuth();
@@ -69,7 +70,13 @@ export default function Register() {
           </h1>
           <p className="text-white/55 mt-2 text-sm">Start your discipline streak today.</p>
 
-          <form onSubmit={onSubmit} className="space-y-4 mt-8">
+          <div className="mt-8">
+            <GoogleButton label="Sign up with Google" />
+          </div>
+
+          <AuthDivider />
+
+          <form onSubmit={onSubmit} className="space-y-4">
             <Field label="Name" icon={User} required value={name} onChange={setName} placeholder="Your name" />
             <Field
               label="Email"

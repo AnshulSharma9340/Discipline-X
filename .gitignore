@@ -58,6 +58,10 @@ pnpm-debug.log*
 # Uploads (local dev fallback)
 uploads/
 
+# Android build outputs — APK lives on Supabase Storage, not in git
+*.apk
+*.aab
+
 # Docker
 .docker/
 

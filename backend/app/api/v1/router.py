@@ -14,7 +14,10 @@ from app.api.v1 import (
     github,
     habits,
     leaderboard,
+    oauth_google,
     organizations,
+    otp,
+    password_reset,
     profile,
     reactions,
     reflections,
@@ -27,6 +30,9 @@ from app.api.v1 import (
 
 api_router = APIRouter()
 api_router.include_router(auth.router)
+api_router.include_router(otp.router)
+api_router.include_router(oauth_google.router)
+api_router.include_router(password_reset.router)
 api_router.include_router(organizations.router)
 api_router.include_router(users.router)
 api_router.include_router(tasks.router)

@@ -49,9 +49,36 @@ class Settings(BaseSettings):
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.3-70b-versatile"
 
+    # ---- Google OAuth (backend-driven flow) ----
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    # Public URL Google calls back to. Must match what's registered in Google Console.
+    # Example prod: https://discipline-x-XXXXX.asia-south1.run.app/api/v1/auth/google/callback
+    GOOGLE_REDIRECT_URI: str = ""
+
+    # ---- Brevo (email for OTP / password reset) ----
+    BREVO_API_KEY: str = ""
+    BREVO_FROM_EMAIL: str = ""
+    BREVO_FROM_NAME: str = "DisciplineX"
+
+    # ---- Frontend URL (used as redirect target after OAuth / password reset) ----
+    FRONTEND_URL: str = "http://localhost:5173"
+
     @property
     def groq_enabled(self) -> bool:
         return bool(self.GROQ_API_KEY.strip())
+
+    @property
+    def google_oauth_enabled(self) -> bool:
+        return bool(
+            self.GOOGLE_CLIENT_ID.strip()
+            and self.GOOGLE_CLIENT_SECRET.strip()
+            and self.GOOGLE_REDIRECT_URI.strip()
+        )
+
+    @property
+    def brevo_enabled(self) -> bool:
+        return bool(self.BREVO_API_KEY.strip() and self.BREVO_FROM_EMAIL.strip())
 
     @property
     def is_production(self) -> bool:
