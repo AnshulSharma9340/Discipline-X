@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /tasks
+Disallow: /focus
+Disallow: /habits
+Disallow: /reflection
+Disallow: /leaderboard
+Disallow: /streak
+Disallow: /coach
+Disallow: /achievements
+Disallow: /shop
+Disallow: /squads
+Disallow: /buddy
+Disallow: /chat
+Disallow: /u/
+Disallow: /emergency
+Disallow: /settings
+Disallow: /billing
+Disallow: /org
+Disallow: /onboarding
+Disallow: /admin
+Disallow: /reset-password
+
+Sitemap: https://discipline-x.me/sitemap.xml
