@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>DisciplineX — Don't Break the Chain</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet" />
+<style>
+  html { font-size: min(calc(100vw / 1080), calc(100vh / 1920)); background:#000; }
+  body { margin:0; padding:0; min-height:100vh; background:#000; color:#fff;
+    font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased;
+    display:grid; place-items:center; overflow:hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+
+  .reel { position:relative; width:1080rem; height:1920rem; overflow:hidden;
+    background: radial-gradient(120% 80% at 50% 50%, #1a0939 0%, #08021a 60%, #03000c 100%);
+    isolation: isolate; }
+
+  .bloom { position:absolute; border-radius:50%; filter:blur(140rem); mix-blend-mode:screen;
+    animation: drift 22s linear infinite; }
+  .b1 { width:1100rem;height:1100rem; left:-300rem; top:-200rem;
+    background: radial-gradient(circle, rgba(168,85,247,.4), transparent 60%); }
+  .b2 { width:900rem;height:900rem; right:-200rem; bottom:-100rem;
+    background: radial-gradient(circle, rgba(217,70,239,.35), transparent 60%); animation-direction: reverse; }
+  @keyframes drift { 0%,100%{transform:translate(0,0)} 50%{transform:translate(60rem,80rem) scale(1.1)} }
+
+  .grid { position:absolute; inset:-100rem;
+    background-image:
+      linear-gradient(rgba(168,85,247,.12) 1rem, transparent 1rem),
+      linear-gradient(90deg, rgba(168,85,247,.12) 1rem, transparent 1rem);
+    background-size: 80rem 80rem;
+    mask-image: radial-gradient(circle, black 25%, transparent 78%);
+    -webkit-mask-image: radial-gradient(circle, black 25%, transparent 78%);
+    opacity: .55; }
+
+  .vignette { position:absolute; inset:0; z-index:8; pointer-events:none;
+    background: radial-gradient(120% 90% at 50% 50%, transparent 50%, rgba(0,0,0,.78) 100%); }
+
+  .scene { position:absolute; inset:0; z-index:2; opacity:0;
+    animation-duration:15s; animation-iteration-count:infinite; }
+  .s1 { animation-name: s1; } .s2 { animation-name: s2; } .s3 { animation-name: s3; } .s4 { animation-name: s4; }
+  @keyframes s1 { 0%{opacity:0;transform:scale(.95)} 3%{opacity:1;transform:scale(1)} 18%{opacity:1} 21%{opacity:0;transform:scale(1.08)} 100%{opacity:0} }
+  @keyframes s2 { 0%,20%{opacity:0;transform:translateY(40rem)} 24%{opacity:1;transform:translateY(0)} 44%{opacity:1} 47%{opacity:0;transform:translateY(-30rem)} 100%{opacity:0} }
+  @keyframes s3 { 0%,46%{opacity:0;transform:translateY(40rem)} 50%{opacity:1;transform:translateY(0)} 71%{opacity:1} 74%{opacity:0;transform:translateY(-30rem)} 100%{opacity:0} }
+  @keyframes s4 { 0%,73%{opacity:0;transform:scale(1.05)} 77%{opacity:1;transform:scale(1)} 97%{opacity:1} 100%{opacity:0;transform:scale(1.02)} }
+
+  /* SCENE 1 — single dot lights up */
+  .s1-wrap { position:absolute; inset:0; display:grid; place-items:center; align-content:center; gap: 50rem; padding: 80rem; }
+  .day-one {
+    width: 280rem; height: 280rem; border-radius: 60rem;
+    background: linear-gradient(135deg, #d946ef, #a855f7);
+    box-shadow:
+      0 0 80rem rgba(217,70,239,.7),
+      0 0 160rem rgba(168,85,247,.5),
+      inset 0 0 40rem rgba(255,255,255,.3);
+    display: grid; place-items: center;
+    color: #fff; font-family:'JetBrains Mono',monospace; font-weight: 800; font-size: 130rem;
+    text-shadow: 0 0 30rem rgba(255,255,255,.6);
+    animation: d1 15s infinite cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes d1 {
+    0%   { transform: scale(0) rotate(-180deg); opacity: 0; }
+    8%   { transform: scale(1.2) rotate(0); opacity: 1; }
+    11%  { transform: scale(1); }
+    18%  { transform: scale(1); opacity: 1; }
+    21%  { transform: scale(1.4); opacity: 0; }
+    100% { opacity: 0; }
+  }
+  .s1-title {
+    font-weight: 800; font-size: 70rem; letter-spacing: -2rem; line-height: 1.1; text-align: center;
+    background: linear-gradient(180deg, #fff, #f0abfc);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    animation: t1 15s infinite;
+  }
+  .s1-title b { background: linear-gradient(180deg, #d946ef, #a855f7); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent; }
+  @keyframes t1 { 0%,9%{opacity:0;transform:translateY(20rem)} 12%{opacity:1;transform:translateY(0)} 18%{opacity:1} 21%{opacity:0} 100%{opacity:0} }
+
+  .s1-sub { color: #c7bfe6; font-size: 28rem; letter-spacing: 4rem; font-weight: 700; text-transform: uppercase; text-align:center;
+    animation: t1 15s infinite; animation-delay: .2s; }
+
+  /* SCENE 2 — chain across week */
+  .s2-wrap { position:absolute; inset:0; padding: 110rem 70rem; display:flex; flex-direction:column; gap: 40rem; }
+  .s2-h { font-size: 22rem; font-weight: 800; letter-spacing: 5rem; color: #d946ef; text-transform: uppercase; }
+  .s2-title { font-weight: 800; font-size: 80rem; letter-spacing: -2rem; line-height: 1.05;
+    background: linear-gradient(180deg, #fff, #c084fc);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+  .s2-title b { background: linear-gradient(180deg, #f0abfc, #d946ef); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent; }
+
+  .week-row {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 18rem;
+    padding: 0 0;
+  }
+  .day {
+    aspect-ratio: 1/1; border-radius: 22rem; background: rgba(168,85,247,.06);
+    border: 2rem solid rgba(168,85,247,.2);
+    display: grid; place-items: center;
+    color: #c7bfe6; font-weight: 700; font-size: 26rem;
+    transform: scale(.5); opacity: 0;
+    animation-duration: 15s; animation-iteration-count: infinite;
+  }
+  .day.f {
+    animation-name: day-fill;
+  }
+  @keyframes day-fill {
+    0%   { transform: scale(.5); opacity: 0; background: rgba(168,85,247,.06); border-color: rgba(168,85,247,.2); color: #c7bfe6; box-shadow: none; }
+    23%  { transform: scale(.5); opacity: 0; }
+    /* per-cell delay handles staggering */
+    37%  { transform: scale(1.1); opacity: 1; background: linear-gradient(135deg, #d946ef, #a855f7); border-color: rgba(217,70,239,.7); color: #fff; box-shadow: 0 0 26rem rgba(217,70,239,.6); }
+    40%  { transform: scale(1); }
+    44%  { transform: scale(1); opacity: 1; }
+    47%  { opacity: 0; }
+    100% { opacity: 0; }
+  }
+  .week-label {
+    text-align: center; color: #8b82b8; font-weight: 700; font-size: 18rem; letter-spacing: 2rem; text-transform: uppercase;
+  }
+
+  .s2-counter {
+    position: absolute; right: 70rem; top: 130rem;
+    background: rgba(217,70,239,.14); color: #f0abfc;
+    border: 1rem solid rgba(217,70,239,.4);
+    padding: 8rem 16rem; border-radius: 14rem; font-family:'JetBrains Mono',monospace; font-weight:800; font-size:24rem;
+    animation: pc 15s infinite;
+  }
+  @keyframes pc { 0%,30%{opacity:0} 33%{opacity:1} 44%{opacity:1} 47%{opacity:0} 100%{opacity:0} }
+
+  /* SCENE 3 — full month grid */
+  .s3-wrap { position:absolute; inset:0; padding: 110rem 70rem; display:flex; flex-direction:column; gap: 30rem; }
+  .s3-h { font-size: 22rem; font-weight: 800; letter-spacing: 5rem; color: #d946ef; text-transform: uppercase; }
+  .s3-title { font-weight: 800; font-size: 80rem; letter-spacing: -3rem; line-height: 1;
+    background: linear-gradient(180deg, #fff, #c084fc);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+  .s3-title b { background: linear-gradient(180deg, #fde68a, #d946ef); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent; }
+
+  .glass { background: linear-gradient(180deg, rgba(168,85,247,.10), rgba(168,85,247,.02));
+    border: 1.5rem solid rgba(168,85,247,.22); border-radius: 28rem;
+    backdrop-filter: blur(20rem); -webkit-backdrop-filter: blur(20rem);
+    box-shadow: 0 20rem 60rem rgba(0,0,0,.4); }
+
+  .month-card { padding: 32rem 30rem; }
+  .month-grid { display: grid; grid-template-columns: repeat(15, 1fr); gap: 8rem; }
+  .cell {
+    aspect-ratio: 1/1; border-radius: 10rem;
+    background: rgba(168,85,247,.07);
+    border: 1rem solid rgba(168,85,247,.12);
+    transform: scale(.4); opacity: 0;
+    animation-duration: 15s; animation-iteration-count: infinite; animation-name: cf;
+  }
+  @keyframes cf {
+    0%, 50% { transform: scale(.4); opacity: 0; background: rgba(168,85,247,.07); }
+    62%     { transform: scale(1); opacity: 1; background: linear-gradient(135deg, #d946ef, #a855f7); box-shadow: 0 0 14rem rgba(217,70,239,.6); }
+    71%     { transform: scale(1); opacity: 1; }
+    74%     { opacity: 0; }
+    100%    { opacity: 0; }
+  }
+  .cell.gap { animation-name: cf-gap; }
+  @keyframes cf-gap {
+    0%, 50% { transform: scale(.4); opacity: 0; background: rgba(168,85,247,.07); }
+    62%     { transform: scale(1); opacity: 1; background: rgba(168,85,247,.18); border-color: rgba(217,70,239,.4); }
+    71%     { transform: scale(1); opacity: 1; }
+    74%     { opacity: 0; }
+    100%    { opacity: 0; }
+  }
+
+  .milestones { display: flex; gap: 14rem; justify-content: center; flex-wrap: wrap; }
+  .ms {
+    padding: 16rem 26rem; border-radius: 22rem; font-weight: 800; font-size: 26rem;
+    font-family:'JetBrains Mono',monospace; letter-spacing: 1rem;
+    opacity: 0; transform: translateY(20rem);
+    animation-duration: 15s; animation-iteration-count: infinite; animation-name: ms-in;
+  }
+  .ms.m1 { background: linear-gradient(135deg, rgba(168,85,247,.18), rgba(217,70,239,.18));
+    color: #f0abfc; border: 1.5rem solid rgba(168,85,247,.5); animation-delay: 8.0s; }
+  .ms.m2 { background: linear-gradient(135deg, rgba(217,70,239,.22), rgba(232,121,249,.18));
+    color: #fae8ff; border: 1.5rem solid rgba(217,70,239,.6); animation-delay: 8.3s; }
+  .ms.m3 { background: linear-gradient(135deg, rgba(251,191,36,.20), rgba(249,115,22,.18));
+    color: #fde68a; border: 1.5rem solid rgba(251,191,36,.6); animation-delay: 8.6s; box-shadow: 0 0 22rem rgba(251,191,36,.4); }
+  @keyframes ms-in {
+    0%   { opacity: 0; transform: translateY(20rem) scale(.85); }
+    20%  { opacity: 1; transform: translateY(0) scale(1.1); }
+    24%  { transform: scale(1); }
+    47%  { opacity: 1; transform: scale(1); }
+    50%  { opacity: 0; }
+    100% { opacity: 0; }
+  }
+
+  .longest {
+    text-align: center; color: #f0abfc; font-weight: 700; font-size: 26rem;
+    animation: ms-in 15s infinite; animation-delay: 7.7s;
+  }
+  .longest b { font-family:'JetBrains Mono',monospace; font-size: 36rem;
+    background: linear-gradient(180deg, #fff, #d946ef); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent; }
+
+  /* SCENE 4 — CTA */
+  .s4-wrap { position:absolute; inset:0; display:grid; place-items:center; gap:30rem; align-content:center; padding:0 80rem; }
+  .cta-1 { font-weight: 700; font-size: 72rem; letter-spacing: -2rem; color: #d8d0f0; text-align:center; line-height:1.1;
+    animation: c1 15s infinite; }
+  @keyframes c1 { 0%,73%{opacity:0;transform:translateY(40rem) scale(.97)} 78%{opacity:1;transform:translateY(0) scale(1)} 97%{opacity:1} 100%{opacity:0} }
+  .cta-2 {
+    font-weight: 900; font-size: 130rem; letter-spacing: -6rem; line-height: .95; text-align: center;
+    background: linear-gradient(180deg, #fff 0%, #f0abfc 40%, #d946ef 100%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    filter: drop-shadow(0 0 40rem rgba(217,70,239,.5));
+    animation: c2 15s infinite;
+  }
+  @keyframes c2 { 0%,76%{opacity:0;transform:translateY(50rem) scale(.95)} 81%{opacity:1;transform:translateY(0) scale(1.02)} 84%{transform:scale(1)} 97%{opacity:1} 100%{opacity:0} }
+
+  .lockup { display: flex; align-items: center; gap: 22rem; margin-top: 20rem; animation: lk 15s infinite; }
+  @keyframes lk { 0%,82%{opacity:0;transform:translateY(20rem)} 86%{opacity:1;transform:translateY(0)} 97%{opacity:1} 100%{opacity:0} }
+  .lockup .mini { width:90rem; height:90rem; border-radius:24rem;
+    background: radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,.4), transparent 60%), linear-gradient(135deg, #2a0a55, #0d0220);
+    border: 2.5rem solid rgba(232,121,249,.6); box-shadow: 0 0 40rem rgba(168,85,247,.6);
+    display:grid; place-items:center; transform: rotate(45deg); }
+  .lockup .mini span { transform: rotate(-45deg); font-weight:900; font-size:56rem; letter-spacing:-4rem;
+    background: linear-gradient(180deg, #fff, #c084fc); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent; }
+  .lockup .word { font-weight:800; font-size:60rem; letter-spacing:-2rem;
+    background: linear-gradient(180deg, #fff, #e9d5ff); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent; }
+  .lockup .word b { background: linear-gradient(180deg, #d946ef, #a855f7);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+
+  .timeline { position:absolute; left:0; right:0; bottom:0; height:4rem; background: rgba(168,85,247,.1); z-index:8; }
+  .timeline::after { content:""; position:absolute; left:0; top:0; bottom:0; width:0;
+    background: linear-gradient(90deg, #a855f7, #d946ef); box-shadow: 0 0 14rem rgba(217,70,239,.7);
+    animation: tl 15s infinite linear; }
+  @keyframes tl { 0%{width:0} 100%{width:100%} }
+
+  .grain { position:absolute; inset:0; pointer-events:none; z-index:9; opacity:.06; mix-blend-mode:overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='8'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .7 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 240rem 240rem; animation: gr .6s steps(4) infinite; }
+  @keyframes gr { 0%{transform:translate(0,0)} 50%{transform:translate(20rem,-20rem)} 100%{transform:translate(0,0)} }
+
+  .sweep { position:absolute; inset:-10% -50%; width:200%; height:120%; z-index:5; mix-blend-mode:screen; pointer-events:none;
+    background: linear-gradient(115deg, transparent 38%, rgba(232,121,249,.0) 46%, rgba(232,121,249,.85) 50%, rgba(168,85,247,.55) 53%, transparent 64%);
+    transform: translateX(-110%) skewX(-12deg); }
+  .sw12 { animation: sw19 15s infinite; } .sw23 { animation: sw46 15s infinite; } .sw34 { animation: sw73 15s infinite; }
+  @keyframes sw19 { 0%,17.5%{transform:translateX(-110%) skewX(-12deg);opacity:0} 18.6%{opacity:1} 20.6%{transform:translateX(110%) skewX(-12deg);opacity:0} 100%{opacity:0} }
+  @keyframes sw46 { 0%,44.5%{transform:translateX(-110%) skewX(-12deg);opacity:0} 45.6%{opacity:1} 47.6%{transform:translateX(110%) skewX(-12deg);opacity:0} 100%{opacity:0} }
+  @keyframes sw73 { 0%,71.5%{transform:translateX(-110%) skewX(-12deg);opacity:0} 72.6%{opacity:1} 74.6%{transform:translateX(110%) skewX(-12deg);opacity:0} 100%{opacity:0} }
+</style>
+</head>
+<body>
+  <div class="reel">
+    <div class="bloom b1"></div>
+    <div class="bloom b2"></div>
+    <div class="grid"></div>
+
+    <!-- Scene 1 -->
+    <section class="scene s1">
+      <div class="s1-wrap">
+        <div class="day-one">1</div>
+        <div class="s1-title">It starts<br>with <b>one day.</b></div>
+        <div class="s1-sub">Day · 1 / ∞</div>
+      </div>
+    </section>
+
+    <!-- Scene 2 -->
+    <section class="scene s2">
+      <div class="s2-wrap">
+        <div class="s2-h">▸ Building the chain</div>
+        <div class="s2-title">7 days.<br><b>Lock the streak.</b></div>
+        <div class="week-row" id="week-row"></div>
+        <div class="week-label">Mon  ·  Tue  ·  Wed  ·  Thu  ·  Fri  ·  Sat  ·  Sun</div>
+        <div class="s2-counter">7 / 7 ✓</div>
+      </div>
+    </section>
+
+    <!-- Scene 3 -->
+    <section class="scene s3">
+      <div class="s3-wrap">
+        <div class="s3-h">▸ 30-day chain</div>
+        <div class="s3-title">Show up.<br><b>Every. Single. Day.</b></div>
+
+        <div class="month-card glass">
+          <div class="month-grid" id="month-grid"></div>
+        </div>
+
+        <div class="longest">Longest unbroken streak · <b>28 days</b></div>
+
+        <div class="milestones">
+          <div class="ms m1">7 DAYS</div>
+          <div class="ms m2">30 DAYS</div>
+          <div class="ms m3">100 DAYS ⚡</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scene 4 -->
+    <section class="scene s4">
+      <div class="s4-wrap">
+        <div class="cta-1">Don't break</div>
+        <div class="cta-2">the chain.</div>
+        <div class="lockup">
+          <div class="mini"><span>X</span></div>
+          <div class="word">Discipline<b>X</b></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="sweep sw12"></div>
+    <div class="sweep sw23"></div>
+    <div class="sweep sw34"></div>
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div class="timeline"></div>
+  </div>
+
+  <script>
+    (function(){
+      const week = document.getElementById('week-row');
+      for (let i = 0; i < 7; i++) {
+        const d = document.createElement('div');
+        d.className = 'day f';
+        d.textContent = (i+1);
+        d.style.animationDelay = (4.0 + i * 0.18) + 's';
+        week.appendChild(d);
+      }
+      const month = document.getElementById('month-grid');
+      // 30 cells, 28 filled + 2 gaps in pattern
+      const filled = new Set([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]);
+      // a couple of "missed" days for realism: index 11 and 22
+      const missed = new Set([11, 22]);
+      for (let i = 0; i < 30; i++) {
+        const c = document.createElement('div');
+        c.className = 'cell' + (missed.has(i) ? ' gap' : '');
+        c.style.animationDelay = (i * 50) + 'ms';
+        month.appendChild(c);
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DisciplineX">
+  <defs>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&amp;display=swap');</style>
+  </defs>
+  <g transform="rotate(45 512 512)">
+    <rect x="172" y="172" width="680" height="680" rx="168" ry="168"
+          fill="none" stroke="#0a0220" stroke-width="28"/>
+  </g>
+  <text x="512" y="680"
+        font-family="Inter, system-ui, sans-serif"
+        font-weight="900" font-size="460"
+        fill="#0a0220"
+        text-anchor="middle">X</text>
+</svg>

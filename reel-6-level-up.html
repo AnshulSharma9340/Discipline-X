@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>DisciplineX — Level Up</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet" />
+<style>
+  html { font-size: min(calc(100vw / 1080), calc(100vh / 1920)); background:#000; }
+  body { margin:0; padding:0; min-height:100vh; background:#000; color:#fff;
+    font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased;
+    display:grid; place-items:center; overflow:hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+
+  .reel { position:relative; width:1080rem; height:1920rem; overflow:hidden;
+    background: radial-gradient(120% 80% at 50% 50%, #1a0939 0%, #08021a 60%, #03000c 100%);
+    isolation: isolate; }
+
+  .bloom { position:absolute; border-radius:50%; filter:blur(140rem); mix-blend-mode:screen;
+    animation: drift 20s linear infinite; }
+  .b1 { width:1100rem;height:1100rem; left:-300rem; top:-200rem;
+    background: radial-gradient(circle, rgba(168,85,247,.45), transparent 60%); }
+  .b2 { width:900rem;height:900rem; right:-200rem; bottom:-100rem;
+    background: radial-gradient(circle, rgba(251,191,36,.32), transparent 60%);
+    animation-direction: reverse; }
+  .b3 { width:700rem;height:700rem; left:30%; top:30%;
+    background: radial-gradient(circle, rgba(217,70,239,.30), transparent 60%); }
+  @keyframes drift { 0%,100%{transform:translate(0,0)} 50%{transform:translate(60rem,80rem) scale(1.1)} }
+
+  .grid { position:absolute; inset:-100rem;
+    background-image:
+      linear-gradient(rgba(168,85,247,.12) 1rem, transparent 1rem),
+      linear-gradient(90deg, rgba(168,85,247,.12) 1rem, transparent 1rem);
+    background-size: 80rem 80rem;
+    mask-image: radial-gradient(circle, black 25%, transparent 78%);
+    -webkit-mask-image: radial-gradient(circle, black 25%, transparent 78%);
+    opacity: .55; }
+
+  .vignette { position:absolute; inset:0; z-index:8; pointer-events:none;
+    background: radial-gradient(120% 90% at 50% 50%, transparent 50%, rgba(0,0,0,.78) 100%); }
+
+  .scene { position:absolute; inset:0; z-index:2; opacity:0;
+    animation-duration:15s; animation-iteration-count:infinite; }
+  .s1 { animation-name: s1; } .s2 { animation-name: s2; } .s3 { animation-name: s3; } .s4 { animation-name: s4; }
+  @keyframes s1 { 0%{opacity:0;transform:scale(.95)} 3%{opacity:1;transform:scale(1)} 18%{opacity:1} 21%{opacity:0;transform:scale(1.08)} 100%{opacity:0} }
+  @keyframes s2 { 0%,20%{opacity:0;transform:translateY(40rem)} 24%{opacity:1;transform:translateY(0)} 44%{opacity:1} 47%{opacity:0;transform:translateY(-30rem)} 100%{opacity:0} }
+  @keyframes s3 { 0%,46%{opacity:0;transform:scale(.92)} 50%{opacity:1;transform:scale(1)} 71%{opacity:1} 74%{opacity:0;transform:scale(1.08)} 100%{opacity:0} }
+  @keyframes s4 { 0%,73%{opacity:0;transform:scale(1.05)} 77%{opacity:1;transform:scale(1)} 97%{opacity:1} 100%{opacity:0;transform:scale(1.02)} }
+
+  /* SCENE 1 — player card */
+  .s1-wrap { position:absolute; inset:0; padding: 110rem 70rem; display: flex; flex-direction: column; gap: 30rem; }
+  .s1-h { font-size: 22rem; font-weight: 800; letter-spacing: 5rem; color: #c084fc; text-transform: uppercase; }
+  .s1-title { font-weight: 800; font-size: 80rem; letter-spacing: -2rem; line-height: 1;
+    background: linear-gradient(180deg, #fff, #f0abfc);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+
+  .glass {
+    background: linear-gradient(180deg, rgba(168,85,247,.10), rgba(168,85,247,.02));
+    border: 1.5rem solid rgba(168,85,247,.22); border-radius: 32rem;
+    backdrop-filter: blur(20rem); -webkit-backdrop-filter: blur(20rem);
+    box-shadow: 0 20rem 60rem rgba(0,0,0,.4);
+  }
+
+  .player-card { padding: 36rem; position: relative; overflow: hidden; }
+  .player-card::before {
+    content: ""; position: absolute; right: -100rem; top: -100rem; width: 400rem; height: 400rem;
+    background: radial-gradient(circle, rgba(217,70,239,.4), transparent 60%); border-radius: 50%; pointer-events: none;
+  }
+  .pc-top { display: flex; align-items: center; gap: 24rem; margin-bottom: 26rem; }
+  .pc-av {
+    width: 110rem; height: 110rem; border-radius: 30rem;
+    background: linear-gradient(135deg, #d946ef, #6366f1);
+    box-shadow: 0 0 30rem rgba(217,70,239,.5);
+    display: grid; place-items: center;
+    color: #fff; font-weight: 900; font-size: 50rem; letter-spacing: -2rem;
+    border: 3rem solid rgba(255,255,255,.2);
+  }
+  .pc-name { color: #fff; font-weight: 800; font-size: 38rem; letter-spacing: -1rem; }
+  .pc-handle { color: #8b82b8; font-family:'JetBrains Mono',monospace; font-size: 20rem; font-weight: 600; margin-top: 4rem; }
+
+  .level-row { display: flex; align-items: baseline; gap: 18rem; margin-bottom: 14rem; }
+  .lvl-label { color: #c084fc; font-size: 22rem; font-weight: 800; letter-spacing: 4rem; text-transform: uppercase; }
+  @property --lvl { syntax: '<integer>'; initial-value: 7; inherits: false; }
+  .lvl-num {
+    counter-reset: l var(--lvl);
+    font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 110rem; line-height: 1;
+    background: linear-gradient(180deg, #fff, #c084fc);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    animation: lvl-up 15s infinite;
+  }
+  .lvl-num::after { content: counter(l); }
+  @keyframes lvl-up {
+    0%, 50% { --lvl: 7; }
+    58%     { --lvl: 8; }
+    100%    { --lvl: 8; }
+  }
+  .lvl-cap { color: #8b82b8; font-size: 28rem; font-weight: 700; }
+
+  .xp-bar {
+    height: 28rem; border-radius: 14rem; background: rgba(255,255,255,.04);
+    overflow: hidden; margin-top: 14rem; position: relative;
+    border: 1.5rem solid rgba(255,255,255,.08);
+  }
+  .xp-bar > i {
+    display: block; height: 100%; transform-origin: left;
+    background: linear-gradient(90deg, #d946ef, #fbbf24);
+    box-shadow: 0 0 18rem rgba(217,70,239,.6);
+    animation: xpb 15s infinite linear;
+  }
+  @keyframes xpb {
+    0%, 25% { transform: scaleX(.62); }
+    44%     { transform: scaleX(.85); }
+    50%     { transform: scaleX(.92); }
+    58%     { transform: scaleX(1); }
+    60%     { transform: scaleX(0); background: linear-gradient(90deg, #fbbf24, #34d399); }
+    71%     { transform: scaleX(.18); }
+    100%    { transform: scaleX(.18); }
+  }
+  .xp-meta { display: flex; justify-content: space-between; margin-top: 10rem;
+    color: #c7bfe6; font-family: 'JetBrains Mono', monospace; font-size: 22rem; font-weight: 700; }
+
+  /* SCENE 2 — XP gains */
+  .s2-wrap { position:absolute; inset:0; padding: 110rem 70rem; display: flex; flex-direction: column; gap: 26rem; }
+  .s2-h { font-size: 22rem; font-weight: 800; letter-spacing: 5rem; color: #fbbf24; text-transform: uppercase;
+    text-shadow: 0 0 14rem rgba(251,191,36,.4); }
+  .s2-title { font-weight: 800; font-size: 76rem; letter-spacing: -2rem; line-height: 1.05;
+    background: linear-gradient(180deg, #fff, #c084fc);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+  .s2-title b { background: linear-gradient(180deg, #fde68a, #fbbf24);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+
+  .gain-card {
+    padding: 22rem 30rem; display: grid; grid-template-columns: 70rem 1fr auto; gap: 22rem; align-items: center;
+    opacity: 0; transform: translateX(-80rem);
+    animation-duration: 15s; animation-iteration-count: infinite;
+  }
+  .gc-ic { width: 70rem; height: 70rem; border-radius: 18rem; display: grid; place-items: center;
+    font-size: 30rem; font-weight: 800; }
+  .gc-ic.a { background: rgba(34,197,94,.18); color: #86efac; border: 1.5rem solid rgba(34,197,94,.5); }
+  .gc-ic.b { background: rgba(217,70,239,.18); color: #f0abfc; border: 1.5rem solid rgba(217,70,239,.5); }
+  .gc-ic.c { background: rgba(56,189,248,.18); color: #7dd3fc; border: 1.5rem solid rgba(56,189,248,.5); }
+  .gc-ic.d { background: rgba(251,191,36,.18); color: #fde68a; border: 1.5rem solid rgba(251,191,36,.5); }
+  .gc-name { color: #fff; font-weight: 800; font-size: 26rem; }
+  .gc-meta { color: #8b82b8; font-size: 18rem; letter-spacing: 1rem; font-weight: 700; margin-top: 4rem; }
+  .gc-xp { font-family:'JetBrains Mono',monospace; font-weight: 800; font-size: 36rem;
+    background: linear-gradient(180deg, #fde68a, #fbbf24);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    text-shadow: 0 0 18rem rgba(251,191,36,.4); }
+
+  .gc.g1 { animation-name: gc-in; animation-delay: 3.6s; }
+  .gc.g2 { animation-name: gc-in; animation-delay: 4.0s; }
+  .gc.g3 { animation-name: gc-in; animation-delay: 4.4s; }
+  .gc.g4 { animation-name: gc-in; animation-delay: 4.8s; }
+  @keyframes gc-in {
+    0%   { opacity: 0; transform: translateX(-80rem); }
+    14%  { opacity: 1; transform: translateX(8rem); }
+    18%  { transform: translateX(0); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+
+  .total-xp {
+    margin-top: 12rem; padding: 26rem 32rem; display: flex; justify-content: space-between; align-items: center;
+  }
+  .total-xp .lbl { color: #c084fc; font-weight: 800; font-size: 22rem; letter-spacing: 4rem; text-transform: uppercase; }
+  @property --tot { syntax: '<integer>'; initial-value: 0; inherits: false; }
+  .total-xp .num {
+    counter-reset: t var(--tot);
+    font-family:'JetBrains Mono',monospace; font-weight: 800; font-size: 60rem;
+    background: linear-gradient(180deg, #fff, #fbbf24);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    animation: tot-up 15s infinite linear;
+  }
+  .total-xp .num::after { content: "+" counter(t) " XP"; }
+  @keyframes tot-up { 0%,28%{--tot:0} 32%{--tot:25} 36%{--tot:65} 40%{--tot:115} 44%{--tot:185} 47%{--tot:185} 100%{--tot:185} }
+
+  /* SCENE 3 — LEVEL UP */
+  .s3-wrap { position:absolute; inset:0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30rem; padding: 80rem; }
+  .lvl-burst {
+    position: absolute; left: 50%; top: 50%; width: 1400rem; height: 1400rem;
+    transform: translate(-50%,-50%);
+    background: radial-gradient(circle, rgba(255,255,255,.0) 0%, rgba(251,191,36,.35) 12%, rgba(217,70,239,.25) 28%, transparent 50%);
+    mix-blend-mode: screen; opacity: 0; pointer-events: none;
+    animation: burst 15s infinite;
+  }
+  @keyframes burst {
+    0%, 50% { opacity: 0; transform: translate(-50%,-50%) scale(.4); }
+    52%     { opacity: 1; transform: translate(-50%,-50%) scale(1.2); }
+    58%     { opacity: .8; transform: translate(-50%,-50%) scale(1.5); }
+    71%     { opacity: .4; transform: translate(-50%,-50%) scale(1.6); }
+    74%     { opacity: 0; transform: translate(-50%,-50%) scale(1.8); }
+    100%    { opacity: 0; }
+  }
+
+  .lvlup-text {
+    font-weight: 900; font-size: 32rem; letter-spacing: 12rem; text-transform: uppercase;
+    color: #fde68a; text-align: center;
+    text-shadow: 0 0 24rem rgba(251,191,36,.6);
+    animation: lu-text 15s infinite;
+  }
+  @keyframes lu-text {
+    0%, 51% { opacity: 0; transform: translateY(20rem); }
+    54%     { opacity: 1; transform: translateY(0); }
+    71%     { opacity: 1; }
+    74%     { opacity: 0; }
+    100%    { opacity: 0; }
+  }
+
+  .lvl-mega {
+    font-family:'JetBrains Mono',monospace; font-weight: 800; font-size: 360rem;
+    line-height: 1; letter-spacing: -16rem;
+    background: linear-gradient(180deg, #fff 0%, #fde68a 40%, #f97316 80%, #d946ef 100%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    filter: drop-shadow(0 0 50rem rgba(251,191,36,.6));
+    animation: mega 15s infinite cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes mega {
+    0%, 51% { opacity: 0; transform: scale(0) rotate(-15deg); }
+    55%     { opacity: 1; transform: scale(1.1) rotate(0); }
+    58%     { transform: scale(1); }
+    71%     { opacity: 1; transform: scale(1); }
+    74%     { opacity: 0; transform: scale(1.15); }
+    100%    { opacity: 0; }
+  }
+
+  .badges-row { display: flex; gap: 18rem; }
+  .bd {
+    width: 130rem; height: 130rem; border-radius: 50%; display: grid; place-items: center;
+    font-weight: 900; font-size: 18rem; color: #2a0a55; text-align: center; line-height: 1.1;
+    box-shadow: 0 0 30rem rgba(255,255,255,.4);
+    border: 4rem solid rgba(255,255,255,.3);
+    transform: scale(0); opacity: 0;
+    animation-duration: 15s; animation-iteration-count: infinite; animation-name: bd-pop;
+    animation-timing-function: cubic-bezier(.34,1.56,.64,1);
+  }
+  .bd.bd1 { background: radial-gradient(circle at 35% 30%, #fff, #fde68a 30%, #f97316 70%); animation-delay: 9.2s; }
+  .bd.bd2 { background: radial-gradient(circle at 35% 30%, #fff, #f0abfc 30%, #d946ef 70%); animation-delay: 9.4s; }
+  .bd.bd3 { background: radial-gradient(circle at 35% 30%, #fff, #7dd3fc 30%, #6366f1 70%); animation-delay: 9.6s; }
+  @keyframes bd-pop {
+    0%   { transform: scale(0) rotate(-180deg); opacity: 0; }
+    14%  { transform: scale(1.2) rotate(0); opacity: 1; }
+    18%  { transform: scale(1); }
+    47%  { transform: scale(1); opacity: 1; }
+    50%  { transform: scale(.95); opacity: 0; }
+    100% { opacity: 0; }
+  }
+
+  /* radial rays from center */
+  .rays { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; opacity: 0;
+    background: conic-gradient(from 0deg, transparent 0deg, rgba(251,191,36,.12) 6deg, transparent 12deg,
+      transparent 30deg, rgba(217,70,239,.12) 36deg, transparent 42deg,
+      transparent 60deg, rgba(251,191,36,.12) 66deg, transparent 72deg,
+      transparent 90deg, rgba(217,70,239,.12) 96deg, transparent 102deg,
+      transparent 120deg, rgba(251,191,36,.12) 126deg, transparent 132deg,
+      transparent 150deg, rgba(217,70,239,.12) 156deg, transparent 162deg,
+      transparent 180deg, rgba(251,191,36,.12) 186deg, transparent 192deg,
+      transparent 210deg, rgba(217,70,239,.12) 216deg, transparent 222deg,
+      transparent 240deg, rgba(251,191,36,.12) 246deg, transparent 252deg,
+      transparent 270deg, rgba(217,70,239,.12) 276deg, transparent 282deg,
+      transparent 300deg, rgba(251,191,36,.12) 306deg, transparent 312deg,
+      transparent 330deg, rgba(217,70,239,.12) 336deg, transparent 342deg);
+    animation: rays-anim 15s infinite, rspin 8s linear infinite;
+  }
+  @keyframes rspin { to { transform: rotate(360deg); } }
+  @keyframes rays-anim {
+    0%, 50% { opacity: 0; }
+    52%     { opacity: 1; }
+    71%     { opacity: 1; }
+    74%     { opacity: 0; }
+    100%    { opacity: 0; }
+  }
+
+  /* SCENE 4 — CTA */
+  .s4-wrap { position:absolute; inset:0; display:grid; place-items:center; gap:30rem; align-content:center; padding:0 80rem; }
+  .cta-1 { font-weight: 700; font-size: 80rem; letter-spacing: -2rem; color: #d8d0f0; text-align:center; line-height:1.1;
+    animation: c1 15s infinite; }
+  @keyframes c1 { 0%,73%{opacity:0;transform:translateY(40rem) scale(.97)} 78%{opacity:1;transform:translateY(0) scale(1)} 97%{opacity:1} 100%{opacity:0} }
+  .cta-2 {
+    font-weight: 900; font-size: 116rem; letter-spacing: -5rem; line-height: .95; text-align: center;
+    background: linear-gradient(180deg, #fff 0%, #fde68a 35%, #d946ef 100%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    filter: drop-shadow(0 0 40rem rgba(251,191,36,.4));
+    animation: c2 15s infinite;
+  }
+  @keyframes c2 { 0%,76%{opacity:0;transform:translateY(50rem) scale(.95)} 81%{opacity:1;transform:translateY(0) scale(1.02)} 84%{transform:scale(1)} 97%{opacity:1} 100%{opacity:0} }
+
+  .lockup { display: flex; align-items: center; gap: 22rem; margin-top: 20rem; animation: lk 15s infinite; }
+  @keyframes lk { 0%,82%{opacity:0;transform:translateY(20rem)} 86%{opacity:1;transform:translateY(0)} 97%{opacity:1} 100%{opacity:0} }
+  .lockup .mini { width:90rem; height:90rem; border-radius:24rem;
+    background: radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,.4), transparent 60%), linear-gradient(135deg, #2a0a55, #0d0220);
+    border: 2.5rem solid rgba(232,121,249,.6); box-shadow: 0 0 40rem rgba(168,85,247,.6);
+    display:grid; place-items:center; transform: rotate(45deg); }
+  .lockup .mini span { transform: rotate(-45deg); font-weight:900; font-size:56rem; letter-spacing:-4rem;
+    background: linear-gradient(180deg, #fff, #c084fc); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent; }
+  .lockup .word { font-weight:800; font-size:60rem; letter-spacing:-2rem;
+    background: linear-gradient(180deg, #fff, #e9d5ff); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent; }
+  .lockup .word b { background: linear-gradient(180deg, #d946ef, #a855f7);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+
+  .timeline { position:absolute; left:0; right:0; bottom:0; height:4rem; background: rgba(168,85,247,.1); z-index:8; }
+  .timeline::after { content:""; position:absolute; left:0; top:0; bottom:0; width:0;
+    background: linear-gradient(90deg, #fbbf24, #d946ef); box-shadow: 0 0 14rem rgba(217,70,239,.7);
+    animation: tl 15s infinite linear; }
+  @keyframes tl { 0%{width:0} 100%{width:100%} }
+
+  .grain { position:absolute; inset:0; pointer-events:none; z-index:9; opacity:.06; mix-blend-mode:overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='6'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .7 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 240rem 240rem; animation: gr .6s steps(4) infinite; }
+  @keyframes gr { 0%{transform:translate(0,0)} 50%{transform:translate(20rem,-20rem)} 100%{transform:translate(0,0)} }
+
+  .sweep { position:absolute; inset:-10% -50%; width:200%; height:120%; z-index:5; mix-blend-mode:screen; pointer-events:none;
+    background: linear-gradient(115deg, transparent 38%, rgba(251,191,36,.0) 46%, rgba(251,191,36,.85) 50%, rgba(217,70,239,.55) 53%, transparent 64%);
+    transform: translateX(-110%) skewX(-12deg); }
+  .sw12 { animation: sw19 15s infinite; } .sw23 { animation: sw46 15s infinite; } .sw34 { animation: sw73 15s infinite; }
+  @keyframes sw19 { 0%,17.5%{transform:translateX(-110%) skewX(-12deg);opacity:0} 18.6%{opacity:1} 20.6%{transform:translateX(110%) skewX(-12deg);opacity:0} 100%{opacity:0} }
+  @keyframes sw46 { 0%,44.5%{transform:translateX(-110%) skewX(-12deg);opacity:0} 45.6%{opacity:1} 47.6%{transform:translateX(110%) skewX(-12deg);opacity:0} 100%{opacity:0} }
+  @keyframes sw73 { 0%,71.5%{transform:translateX(-110%) skewX(-12deg);opacity:0} 72.6%{opacity:1} 74.6%{transform:translateX(110%) skewX(-12deg);opacity:0} 100%{opacity:0} }
+</style>
+</head>
+<body>
+  <div class="reel">
+    <div class="bloom b1"></div>
+    <div class="bloom b2"></div>
+    <div class="bloom b3"></div>
+    <div class="grid"></div>
+
+    <!-- Scene 1: player card -->
+    <section class="scene s1">
+      <div class="s1-wrap">
+        <div class="s1-h">▸ Discipline Profile</div>
+        <div class="s1-title">Your grind,<br>quantified.</div>
+
+        <div class="player-card glass">
+          <div class="pc-top">
+            <div class="pc-av">A</div>
+            <div>
+              <div class="pc-name">Anshul</div>
+              <div class="pc-handle">@discipline-x</div>
+            </div>
+          </div>
+          <div class="level-row">
+            <div class="lvl-label">Level</div>
+            <div class="lvl-num"></div>
+            <div class="lvl-cap">/ 50</div>
+          </div>
+          <div class="xp-bar"><i></i></div>
+          <div class="xp-meta"><span>1,240 / 1,500 XP</span><span>+260 to next</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scene 2: XP gains -->
+    <section class="scene s2">
+      <div class="s2-wrap">
+        <div class="s2-h">▸ Earning XP · today</div>
+        <div class="s2-title">Every win<br><b>levels you up.</b></div>
+
+        <div class="gain-card g1 glass"><div class="gc-ic a">✓</div><div><div class="gc-name">Pomodoro complete</div><div class="gc-meta">25 min · system design</div></div><div class="gc-xp">+25</div></div>
+        <div class="gain-card g2 glass"><div class="gc-ic b">⚡</div><div><div class="gc-name">Daily streak +1</div><div class="gc-meta">28 days · personal best</div></div><div class="gc-xp">+40</div></div>
+        <div class="gain-card g3 glass"><div class="gc-ic c">📚</div><div><div class="gc-name">Reading session</div><div class="gc-meta">20 pages · finished chapter</div></div><div class="gc-xp">+50</div></div>
+        <div class="gain-card g4 glass"><div class="gc-ic d">🏆</div><div><div class="gc-name">Goal achieved</div><div class="gc-meta">Weekly cardio target hit</div></div><div class="gc-xp">+70</div></div>
+
+        <div class="total-xp glass"><div class="lbl">Today total</div><div class="num"></div></div>
+      </div>
+    </section>
+
+    <!-- Scene 3: LEVEL UP -->
+    <section class="scene s3">
+      <div class="rays"></div>
+      <div class="lvl-burst"></div>
+      <div class="s3-wrap">
+        <div class="lvlup-text">L E V E L &nbsp; U P</div>
+        <div class="lvl-mega">8</div>
+        <div class="badges-row">
+          <div class="bd bd1">FOCUS<br>MASTER</div>
+          <div class="bd bd2">30-DAY<br>GRIND</div>
+          <div class="bd bd3">TOP<br>10%</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scene 4: CTA -->
+    <section class="scene s4">
+      <div class="s4-wrap">
+        <div class="cta-1">Every habit.<br>Every win.</div>
+        <div class="cta-2">Every level.</div>
+        <div class="lockup">
+          <div class="mini"><span>X</span></div>
+          <div class="word">Discipline<b>X</b></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="sweep sw12"></div>
+    <div class="sweep sw23"></div>
+    <div class="sweep sw34"></div>
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div class="timeline"></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>DisciplineX — Morning Ritual</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet" />
+<style>
+  html { font-size: min(calc(100vw / 1080), calc(100vh / 1920)); background: #000; }
+  body { margin:0; padding:0; min-height:100vh; background:#000; color:#fff;
+    font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased;
+    display:grid; place-items:center; overflow:hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+
+  .reel {
+    position: relative; width: 1080rem; height: 1920rem; overflow: hidden;
+    background: radial-gradient(120% 80% at 50% 25%, #2a1456 0%, #150627 50%, #06010f 100%);
+    isolation: isolate;
+  }
+
+  /* ambient */
+  .bloom { position:absolute; border-radius:50%; filter:blur(140rem); mix-blend-mode:screen;
+    animation: drift 20s linear infinite; }
+  .b1 { width:1100rem; height:1100rem; left:-280rem; top:-200rem;
+    background: radial-gradient(circle, rgba(251,146,60,.30), transparent 60%); }
+  .b2 { width:900rem; height:900rem; right:-200rem; bottom:-140rem;
+    background: radial-gradient(circle, rgba(168,85,247,.45), transparent 60%); animation-direction:reverse; }
+  .b3 { width:700rem; height:700rem; left:30%; top:30%;
+    background: radial-gradient(circle, rgba(217,70,239,.30), transparent 60%); animation-duration:26s; }
+  @keyframes drift {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50%     { transform: translate(50rem,80rem) scale(1.1); }
+  }
+
+  .grid { position:absolute; inset:-100rem;
+    background-image:
+      linear-gradient(rgba(168,85,247,.15) 1rem, transparent 1rem),
+      linear-gradient(90deg, rgba(168,85,247,.15) 1rem, transparent 1rem);
+    background-size: 80rem 80rem;
+    mask-image: radial-gradient(circle, black 25%, transparent 78%);
+    -webkit-mask-image: radial-gradient(circle, black 25%, transparent 78%);
+    opacity: .55; animation: gshift 16s linear infinite; }
+  @keyframes gshift { to { background-position: 80rem 80rem, 80rem 80rem; } }
+
+  .vignette { position:absolute; inset:0; z-index:8; pointer-events:none;
+    background: radial-gradient(120% 90% at 50% 50%, transparent 50%, rgba(0,0,0,.78) 100%); }
+
+  /* scenes */
+  .scene { position:absolute; inset:0; z-index:2; opacity:0;
+    animation-duration:15s; animation-iteration-count:infinite; }
+  .s1 { animation-name: s1-show; } .s2 { animation-name: s2-show; }
+  .s3 { animation-name: s3-show; } .s4 { animation-name: s4-show; }
+  @keyframes s1-show { 0%{opacity:0;transform:scale(.96)} 3%{opacity:1;transform:scale(1)} 18%{opacity:1;transform:scale(1.04)} 21%{opacity:0;transform:scale(1.1)} 100%{opacity:0} }
+  @keyframes s2-show { 0%,20%{opacity:0;transform:translateY(40rem) scale(.96)} 24%{opacity:1;transform:translateY(0) scale(1)} 44%{opacity:1} 47%{opacity:0;transform:translateY(-30rem) scale(1.04)} 100%{opacity:0} }
+  @keyframes s3-show { 0%,46%{opacity:0;transform:translateY(40rem) scale(.96)} 50%{opacity:1;transform:translateY(0) scale(1)} 71%{opacity:1} 74%{opacity:0;transform:translateY(-30rem) scale(1.04)} 100%{opacity:0} }
+  @keyframes s4-show { 0%,73%{opacity:0;transform:scale(1.05)} 77%{opacity:1;transform:scale(1)} 97%{opacity:1} 100%{opacity:0;transform:scale(1.02)} }
+
+  /* sweeps */
+  .sweep { position:absolute; inset:-10% -50%; width:200%; height:120%; z-index:5; mix-blend-mode:screen; pointer-events:none;
+    background: linear-gradient(115deg, transparent 38%, rgba(251,146,60,.0) 46%, rgba(251,146,60,.7) 50%, rgba(217,70,239,.5) 53%, transparent 64%);
+    transform: translateX(-110%) skewX(-12deg); }
+  .sw12 { animation: sw19 15s infinite; } .sw23 { animation: sw46 15s infinite; } .sw34 { animation: sw73 15s infinite; }
+  @keyframes sw19 { 0%,17.5%{transform:translateX(-110%) skewX(-12deg);opacity:0} 18.6%{opacity:1} 20.6%{transform:translateX(110%) skewX(-12deg);opacity:0} 100%{opacity:0} }
+  @keyframes sw46 { 0%,44.5%{transform:translateX(-110%) skewX(-12deg);opacity:0} 45.6%{opacity:1} 47.6%{transform:translateX(110%) skewX(-12deg);opacity:0} 100%{opacity:0} }
+  @keyframes sw73 { 0%,71.5%{transform:translateX(-110%) skewX(-12deg);opacity:0} 72.6%{opacity:1} 74.6%{transform:translateX(110%) skewX(-12deg);opacity:0} 100%{opacity:0} }
+
+  /* SCENE 1 — Alarm */
+  .s1-wrap { position:absolute; inset:0; display:grid; place-items:center; align-content:center; gap:30rem; padding:80rem; }
+  .sun {
+    width: 320rem; height: 320rem; border-radius: 50%; position: relative;
+    background: radial-gradient(circle at 50% 55%, #fde68a, #fb923c 50%, #d946ef 90%);
+    box-shadow: 0 0 80rem rgba(251,146,60,.6), 0 0 140rem rgba(217,70,239,.5);
+    animation: sun-rise 15s infinite ease-out;
+  }
+  @keyframes sun-rise {
+    0%   { transform: translateY(200rem) scale(.6); opacity: 0; }
+    8%   { transform: translateY(0) scale(1); opacity: 1; }
+    18%  { opacity: 1; }
+    21%  { opacity: 0; transform: translateY(-40rem) scale(1.1); }
+    100% { opacity: 0; }
+  }
+  .sun::before { content:""; position:absolute; inset:-40rem; border-radius:50%;
+    background: radial-gradient(circle, rgba(251,146,60,.4), transparent 55%);
+    animation: sun-aura 2.4s infinite ease-in-out; }
+  @keyframes sun-aura { 0%,100%{transform:scale(1);opacity:.6} 50%{transform:scale(1.2);opacity:1} }
+
+  .clock-time {
+    font-family:'JetBrains Mono', monospace; font-weight: 800; font-size: 180rem;
+    letter-spacing: -8rem; line-height: 1;
+    background: linear-gradient(180deg, #fff, #fbcfe8 50%, #fb923c 100%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    filter: drop-shadow(0 0 24rem rgba(251,146,60,.4));
+    animation: ct-in 15s infinite;
+  }
+  @keyframes ct-in {
+    0%,5%  { opacity: 0; transform: translateY(40rem); }
+    10%    { opacity: 1; transform: translateY(0); }
+    18%    { opacity: 1; }
+    21%    { opacity: 0; }
+    100%   { opacity: 0; }
+  }
+
+  .greeting {
+    font-weight: 700; font-size: 56rem; letter-spacing: -1.5rem;
+    color: #f5e9ff; text-align: center;
+    animation: gr-in 15s infinite;
+  }
+  .greeting b {
+    background: linear-gradient(180deg, #fde68a, #fb923c);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+  }
+  @keyframes gr-in {
+    0%,9%  { opacity: 0; transform: translateY(20rem); }
+    13%    { opacity: 1; transform: translateY(0); }
+    18%    { opacity: 1; }
+    21%    { opacity: 0; }
+    100%   { opacity: 0; }
+  }
+
+  /* SCENE 2 — Today's plan */
+  .s2-wrap { position:absolute; inset:0; padding: 110rem 70rem; display:flex; flex-direction:column; gap: 24rem; }
+  .s2-h {
+    font-size: 22rem; font-weight: 800; letter-spacing: 5rem; color: #fb923c;
+    text-transform: uppercase; text-shadow: 0 0 14rem rgba(251,146,60,.4); }
+  .s2-title {
+    font-weight: 800; font-size: 80rem; letter-spacing: -2rem; line-height: 1;
+    background: linear-gradient(180deg, #fff, #f0abfc);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    margin-bottom: 14rem;
+  }
+  .glass {
+    background: linear-gradient(180deg, rgba(168,85,247,.10), rgba(168,85,247,.02));
+    border: 1.5rem solid rgba(168,85,247,.22);
+    border-radius: 28rem;
+    backdrop-filter: blur(20rem); -webkit-backdrop-filter: blur(20rem);
+    box-shadow: 0 20rem 60rem rgba(0,0,0,.4);
+  }
+  .task {
+    display: flex; align-items: center; gap: 22rem; padding: 26rem 30rem;
+    color: #e9d5ff; font-size: 30rem; font-weight: 600;
+    opacity: 0; transform: translateX(-80rem);
+    animation-duration: 15s; animation-iteration-count: infinite;
+  }
+  .task .num {
+    flex: 0 0 auto; width: 50rem; height: 50rem; border-radius: 14rem;
+    background: rgba(251,146,60,.14); color: #fb923c; border: 1rem solid rgba(251,146,60,.4);
+    font-family:'JetBrains Mono',monospace; font-weight: 800; font-size: 24rem;
+    display: grid; place-items: center;
+  }
+  .task .check {
+    margin-left: auto; width: 40rem; height: 40rem; border-radius: 50%;
+    border: 2rem solid rgba(192,132,252,.5); position: relative;
+    transition: none;
+  }
+  .task .check::after {
+    content:""; position:absolute; inset:8rem; border-radius:50%;
+    background: linear-gradient(135deg, #fb923c, #d946ef);
+    transform: scale(0); opacity: 0;
+  }
+  /* per-task entry timing within scene 2 (24%–46%) */
+  .task.t1 { animation-name: t-in; animation-delay: 3.6s; }
+  .task.t2 { animation-name: t-in; animation-delay: 3.9s; }
+  .task.t3 { animation-name: t-in; animation-delay: 4.2s; }
+  .task.t4 { animation-name: t-in; animation-delay: 4.5s; }
+  .task.t5 { animation-name: t-in; animation-delay: 4.8s; }
+  @keyframes t-in {
+    0%   { opacity: 0; transform: translateX(-80rem); }
+    18%  { opacity: 1; transform: translateX(0); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+  .task .check.tick::after { transform: scale(1); opacity: 1; transition: transform .4s, opacity .4s; }
+
+  .plan-counter {
+    position: absolute; right: 70rem; top: 130rem;
+    font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 24rem;
+    color: #fb923c; padding: 8rem 16rem; border-radius: 14rem;
+    background: rgba(251,146,60,.12); border: 1rem solid rgba(251,146,60,.4);
+    animation: pc-in 15s infinite;
+  }
+  @keyframes pc-in { 0%,30%{opacity:0} 33%{opacity:1} 44%{opacity:1} 47%{opacity:0} 100%{opacity:0} }
+
+  /* SCENE 3 — Focus session */
+  .s3-wrap { position:absolute; inset:0; padding: 110rem 70rem; display:flex; flex-direction:column; gap: 28rem; }
+  .s3-h { font-size: 22rem; font-weight: 800; letter-spacing: 5rem; color: #fb923c; text-transform: uppercase; }
+  .s3-title {
+    font-weight: 800; font-size: 70rem; letter-spacing: -2rem; line-height: 1.05;
+    background: linear-gradient(180deg, #fff, #f0abfc);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+  }
+  .focus-big { padding: 50rem 40rem; display: flex; flex-direction: column; align-items: center; gap: 20rem; }
+  @property --p { syntax: '<percentage>'; initial-value: 0%; inherits: false; }
+  .ring-wrap { position: relative; width: 360rem; height: 360rem; }
+  .ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: conic-gradient(from -90deg, #fb923c, #d946ef var(--p), rgba(168,85,247,.10) 0);
+    box-shadow: 0 0 70rem rgba(217,70,239,.35);
+    animation: rfill 15s infinite ease-out;
+  }
+  @keyframes rfill { 0%,52%{--p:0%} 65%{--p:78%} 71%{--p:78%} 100%{--p:78%} }
+  .ring::before { content:""; position:absolute; inset:24rem; border-radius:50%;
+    background: radial-gradient(circle at 30% 25%, #1a0939, #07021a);
+    box-shadow: inset 0 0 36rem rgba(168,85,247,.35); }
+  .ring-content { position: absolute; inset: 0; display: grid; place-items: center; gap: 8rem;
+    text-align: center; }
+  .timer-big {
+    font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 96rem;
+    color: #fff; line-height: 1; font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 24rem rgba(255,255,255,.3);
+    position: relative;
+  }
+  .timer-big .t { position: absolute; inset: 0; opacity: 0; }
+  .timer-big .t1 { animation: tb1 15s infinite; }
+  .timer-big .t2 { animation: tb2 15s infinite; }
+  .timer-big .t3 { animation: tb3 15s infinite; }
+  @keyframes tb1 { 0%,52%{opacity:0} 53%{opacity:1} 60%{opacity:1} 61%{opacity:0} 100%{opacity:0} }
+  @keyframes tb2 { 0%,60%{opacity:0} 61%{opacity:1} 67%{opacity:1} 68%{opacity:0} 100%{opacity:0} }
+  @keyframes tb3 { 0%,67%{opacity:0} 68%{opacity:1} 73%{opacity:1} 74%{opacity:0} 100%{opacity:0} }
+  .ring-lbl { color: #c7bfe6; letter-spacing: 6rem; font-weight: 700; font-size: 18rem; }
+
+  .now-task {
+    text-align: center;
+    color: #f0abfc; font-size: 32rem; font-weight: 600; margin-top: 10rem;
+  }
+  .now-task b { color: #fff; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 14rem; }
+  .stat { padding: 18rem 14rem; text-align: center; }
+  .stat .v { font-family:'JetBrains Mono',monospace; font-weight: 800; font-size: 38rem;
+    background: linear-gradient(180deg, #fff, #fb923c); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent; }
+  .stat .l { color: #8b82b8; font-size: 16rem; letter-spacing: 2rem; text-transform: uppercase; font-weight: 700; margin-top: 4rem; }
+
+  /* SCENE 4 — CTA */
+  .s4-wrap { position:absolute; inset:0; display:grid; place-items:center; gap:30rem; align-content:center; padding:0 80rem; }
+  .cta-1 { font-weight: 700; font-size: 84rem; letter-spacing: -2rem; color: #d8d0f0; text-align:center; line-height: 1;
+    animation: c1 15s infinite; }
+  @keyframes c1 { 0%,73%{opacity:0;transform:translateY(40rem) scale(.97)} 78%{opacity:1;transform:translateY(0) scale(1)} 97%{opacity:1} 100%{opacity:0} }
+  .cta-2 {
+    font-weight: 900; font-size: 116rem; letter-spacing: -5rem; line-height: .95; text-align: center;
+    background: linear-gradient(180deg, #fff 0%, #fb923c 50%, #d946ef 100%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    filter: drop-shadow(0 0 40rem rgba(217,70,239,.5));
+    animation: c2 15s infinite;
+  }
+  @keyframes c2 { 0%,76%{opacity:0;transform:translateY(50rem) scale(.95)} 81%{opacity:1;transform:translateY(0) scale(1.02)} 84%{transform:scale(1)} 97%{opacity:1} 100%{opacity:0} }
+
+  .lockup { display: flex; align-items: center; gap: 22rem; margin-top: 30rem; animation: lk 15s infinite; }
+  @keyframes lk { 0%,82%{opacity:0;transform:translateY(20rem)} 86%{opacity:1;transform:translateY(0)} 97%{opacity:1} 100%{opacity:0} }
+  .lockup .mini { width:90rem; height:90rem; border-radius:24rem;
+    background: radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,.4), transparent 60%), linear-gradient(135deg, #2a0a55, #0d0220);
+    border: 2.5rem solid rgba(232,121,249,.6); box-shadow: 0 0 40rem rgba(168,85,247,.6);
+    display:grid; place-items:center; transform: rotate(45deg); }
+  .lockup .mini span {
+    transform: rotate(-45deg); font-weight:900; font-size:56rem; letter-spacing:-4rem;
+    background: linear-gradient(180deg, #fff, #c084fc); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent;
+  }
+  .lockup .word { font-weight: 800; font-size: 60rem; letter-spacing: -2rem;
+    background: linear-gradient(180deg, #fff, #e9d5ff); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent; }
+  .lockup .word b { background: linear-gradient(180deg, #d946ef, #a855f7);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+
+  /* timeline + grain */
+  .timeline { position:absolute; left:0; right:0; bottom:0; height:4rem;
+    background: rgba(168,85,247,.1); z-index:8; }
+  .timeline::after { content:""; position:absolute; left:0; top:0; bottom:0; width:0;
+    background: linear-gradient(90deg, #fb923c, #d946ef);
+    box-shadow: 0 0 14rem rgba(217,70,239,.7);
+    animation: tl 15s infinite linear; }
+  @keyframes tl { 0%{width:0} 100%{width:100%} }
+
+  .grain { position:absolute; inset:0; pointer-events:none; z-index:9; opacity:.06; mix-blend-mode:overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .7 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 240rem 240rem; animation: gr .6s steps(4) infinite; }
+  @keyframes gr { 0%{transform:translate(0,0)} 50%{transform:translate(20rem,-20rem)} 100%{transform:translate(0,0)} }
+
+  /* particles */
+  .p { position:absolute; border-radius:50%; background:#fde68a; box-shadow:0 0 14rem #fb923c, 0 0 28rem #d946ef;
+    animation: pf 12s ease-in-out infinite; }
+  @keyframes pf { 0%{opacity:0;transform:translateY(0)} 10%{opacity:1} 90%{opacity:.7} 100%{opacity:0;transform:translateY(-400rem)} }
+</style>
+</head>
+<body>
+  <div class="reel">
+    <div class="bloom b1"></div>
+    <div class="bloom b2"></div>
+    <div class="bloom b3"></div>
+    <div class="grid"></div>
+
+    <!-- particles -->
+    <div id="particles"></div>
+
+    <!-- Scene 1: Alarm / morning -->
+    <section class="scene s1">
+      <div class="s1-wrap">
+        <div class="sun"></div>
+        <div class="clock-time">06:00</div>
+        <div class="greeting">Good morning,<br><b>let's win today.</b></div>
+      </div>
+    </section>
+
+    <!-- Scene 2: Today's plan -->
+    <section class="scene s2">
+      <div class="s2-wrap">
+        <div class="s2-h">▸ Today · 09 May</div>
+        <div class="s2-title">Your daily<br>blueprint.</div>
+        <div class="task glass t1"><div class="num">01</div><div>Deep work — System design</div><div class="check"></div></div>
+        <div class="task glass t2"><div class="num">02</div><div>30 min cardio</div><div class="check"></div></div>
+        <div class="task glass t3"><div class="num">03</div><div>Read · 20 pages</div><div class="check"></div></div>
+        <div class="task glass t4"><div class="num">04</div><div>DSA — 2 problems</div><div class="check"></div></div>
+        <div class="task glass t5"><div class="num">05</div><div>Journal · evening review</div><div class="check"></div></div>
+        <div class="plan-counter">5 / 5 planned</div>
+      </div>
+    </section>
+
+    <!-- Scene 3: Focus session -->
+    <section class="scene s3">
+      <div class="s3-wrap">
+        <div class="s3-h">▸ Focus session · live</div>
+        <div class="s3-title">Locked in on<br>System Design.</div>
+        <div class="focus-big glass">
+          <div class="ring-wrap">
+            <div class="ring"></div>
+            <div class="ring-content">
+              <div class="timer-big">
+                <span class="t t1">25:00</span>
+                <span class="t t2">19:42</span>
+                <span class="t t3">12:18</span>
+              </div>
+              <div class="ring-lbl">DEEP WORK</div>
+            </div>
+          </div>
+          <div class="now-task"><b>Pomodoro 1 of 4</b> · stay sharp</div>
+        </div>
+        <div class="stats-row">
+          <div class="stat glass"><div class="v">128</div><div class="l">Min focused</div></div>
+          <div class="stat glass"><div class="v">+62</div><div class="l">XP today</div></div>
+          <div class="stat glass"><div class="v">28</div><div class="l">Day streak</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scene 4: CTA -->
+    <section class="scene s4">
+      <div class="s4-wrap">
+        <div class="cta-1">Win the morning.</div>
+        <div class="cta-2">Win the day.</div>
+        <div class="lockup">
+          <div class="mini"><span>X</span></div>
+          <div class="word">Discipline<b>X</b></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="sweep sw12"></div>
+    <div class="sweep sw23"></div>
+    <div class="sweep sw34"></div>
+
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div class="timeline"></div>
+  </div>
+
+  <script>
+    (function(){
+      const root = document.getElementById('particles');
+      for (let i = 0; i < 22; i++) {
+        const p = document.createElement('i');
+        p.className = 'p';
+        const sz = 2 + Math.random() * 5;
+        p.style.cssText =
+          'width:'+sz+'rem;height:'+sz+'rem;left:'+(Math.random()*100)+'%;top:'+(50+Math.random()*60)+'%;'+
+          'animation-delay:'+(-Math.random()*12)+'s;animation-duration:'+(8+Math.random()*8)+'s;'+
+          'opacity:'+(0.5 + Math.random()*0.5);
+        root.appendChild(p);
+      }
+      // tick checks progressively (just visual, ties to scene 2 fade window)
+      const ticks = document.querySelectorAll('.task .check');
+      function loop() {
+        ticks.forEach(t => t.classList.remove('tick'));
+        // ticks land at 5.0, 5.4, 5.8, 6.2, 6.6 sec into 15s loop
+        const baseMs = (performance.now() % 15000);
+        const start = 5000;
+        ticks.forEach((t, i) => {
+          const at = start + i * 380;
+          if (baseMs > at && baseMs < 7000) t.classList.add('tick');
+        });
+        requestAnimationFrame(loop);
+      }
+      loop();
+    })();
+  </script>
+</body>
+</html>

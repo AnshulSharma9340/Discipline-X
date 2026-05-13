@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DisciplineX — Logo System</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after { box-sizing: border-box; }
+  body { margin:0; padding:60px 40px 120px; min-height:100vh;
+    background:
+      radial-gradient(120% 80% at 50% 20%, #1a0939 0%, #0a0220 50%, #050010 100%);
+    color:#f5f3ff;
+    font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+
+  .wrap { max-width: 1200px; margin: 0 auto; }
+  h1 { font-size: 56px; font-weight: 800; letter-spacing: -2px; margin: 0 0 8px;
+    background: linear-gradient(180deg, #fff, #c084fc);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  h2 { font-size: 22px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: #c084fc; margin: 60px 0 18px; }
+  p { color:#c7bfe6; line-height:1.6; max-width: 700px; }
+  .grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .card {
+    border-radius: 24px; padding: 28px;
+    background: linear-gradient(180deg, rgba(168,85,247,.08), rgba(168,85,247,.02));
+    border: 1px solid rgba(168,85,247,.2);
+    backdrop-filter: blur(20px);
+  }
+  .card.light { background: #fff; border-color: rgba(0,0,0,.08); }
+  .card.dim   { background: #0a0220; border-color: rgba(255,255,255,.08); }
+  .card .stage { display:grid; place-items:center; min-height: 220px; padding: 16px 0; }
+  .card .stage img { max-width: 100%; max-height: 220px; }
+  .card .lbl { display:flex; justify-content:space-between; align-items:center;
+    margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(168,85,247,.15);
+    color:#a8a3c8; font-size: 13px; font-family: 'JetBrains Mono', monospace; }
+  .card.light .lbl { color: #6b6580; border-color: rgba(0,0,0,.08); }
+  .card .lbl b { color: #f5f3ff; font-weight: 700; }
+  .card.light .lbl b { color: #2a0a55; }
+  .dl {
+    text-decoration:none; padding: 6px 12px; border-radius: 10px;
+    background: rgba(168,85,247,.18); color:#f0abfc;
+    border:1px solid rgba(168,85,247,.4); font-weight:700; font-size:12px;
+  }
+  .card.light .dl { background: rgba(168,85,247,.1); color:#7c3aed; border-color: rgba(168,85,247,.3); }
+  .dl:hover { background: rgba(168,85,247,.3); }
+
+  /* Size demo row */
+  .sizes { display:flex; align-items:flex-end; gap: 28px; flex-wrap: wrap;
+    padding: 24px; border-radius: 20px; background: rgba(0,0,0,.35);
+    border:1px solid rgba(168,85,247,.18); }
+  .sizes .item { display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .sizes .item span { font-family:'JetBrains Mono',monospace; color:#8b82b8; font-size:12px; }
+  .sizes img { display:block; }
+
+  .footer { margin-top: 60px; color:#8b82b8; font-size: 14px; line-height:1.7; }
+  .footer code { background: rgba(168,85,247,.12); padding: 2px 8px; border-radius: 6px;
+    color:#f0abfc; font-family:'JetBrains Mono',monospace; font-size: 13px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>DisciplineX — Logo System</h1>
+    <p>Scalable SVG logo set. Drop them straight into your site, app icons, social profiles, or import into Figma / Illustrator to export raster sizes (PNG, ICO, etc).</p>
+
+    <h2>Primary Icon</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="stage"><img src="icon.svg" alt="Primary icon" style="width:240px;height:240px"/></div>
+        <div class="lbl"><b>icon.svg</b><a class="dl" href="icon.svg" download>download</a></div>
+      </div>
+      <div class="card light">
+        <div class="stage"><img src="icon.svg" alt="Icon on light" style="width:240px;height:240px"/></div>
+        <div class="lbl"><b>on light bg</b><a class="dl" href="icon.svg" download>download</a></div>
+      </div>
+      <div class="card dim">
+        <div class="stage"><img src="icon.svg" alt="Icon on dark" style="width:240px;height:240px"/></div>
+        <div class="lbl"><b>on dark bg</b><a class="dl" href="icon.svg" download>download</a></div>
+      </div>
+    </div>
+
+    <h2>Size Test</h2>
+    <p>The mark stays readable from favicon to billboard.</p>
+    <div class="sizes">
+      <div class="item"><img src="icon.svg" width="16" height="16" alt=""><span>16px</span></div>
+      <div class="item"><img src="icon.svg" width="32" height="32" alt=""><span>32px</span></div>
+      <div class="item"><img src="icon.svg" width="48" height="48" alt=""><span>48px</span></div>
+      <div class="item"><img src="icon.svg" width="64" height="64" alt=""><span>64px</span></div>
+      <div class="item"><img src="icon.svg" width="96" height="96" alt=""><span>96px</span></div>
+      <div class="item"><img src="icon.svg" width="128" height="128" alt=""><span>128px</span></div>
+      <div class="item"><img src="icon.svg" width="192" height="192" alt=""><span>192px</span></div>
+      <div class="item"><img src="icon.svg" width="256" height="256" alt=""><span>256px</span></div>
+    </div>
+
+    <h2>Monochrome Variants</h2>
+    <p>For badges, watermarks, single-color print, or contexts where color is restricted.</p>
+    <div class="grid">
+      <div class="card dim">
+        <div class="stage"><img src="icon-mono-light.svg" alt="White on dark" style="width:200px;height:200px"/></div>
+        <div class="lbl"><b>icon-mono-light.svg</b><a class="dl" href="icon-mono-light.svg" download>download</a></div>
+      </div>
+      <div class="card light">
+        <div class="stage"><img src="icon-mono-dark.svg" alt="Dark on light" style="width:200px;height:200px"/></div>
+        <div class="lbl"><b>icon-mono-dark.svg</b><a class="dl" href="icon-mono-dark.svg" download>download</a></div>
+      </div>
+    </div>
+
+    <h2>Wordmark</h2>
+    <div class="grid" style="grid-template-columns: 1fr;">
+      <div class="card">
+        <div class="stage"><img src="wordmark.svg" alt="Wordmark" style="max-width:560px"/></div>
+        <div class="lbl"><b>wordmark.svg</b><a class="dl" href="wordmark.svg" download>download</a></div>
+      </div>
+    </div>
+
+    <h2>Lockups</h2>
+    <div class="grid" style="grid-template-columns: 1fr;">
+      <div class="card">
+        <div class="stage"><img src="lockup-horizontal.svg" alt="Horizontal lockup" style="max-width:720px"/></div>
+        <div class="lbl"><b>lockup-horizontal.svg</b><a class="dl" href="lockup-horizontal.svg" download>download</a></div>
+      </div>
+      <div class="card">
+        <div class="stage"><img src="lockup-stacked.svg" alt="Stacked lockup" style="max-width:380px"/></div>
+        <div class="lbl"><b>lockup-stacked.svg</b><a class="dl" href="lockup-stacked.svg" download>download</a></div>
+      </div>
+    </div>
+
+    <h2>Favicon</h2>
+    <p>Simplified for tiny rendering — the full icon's gradients and glow get muddy below ~24 px, so the favicon uses a flat 2-stop gradient and bigger strokes.</p>
+    <div class="sizes">
+      <div class="item"><img src="favicon.svg" width="16" height="16" alt=""><span>16px</span></div>
+      <div class="item"><img src="favicon.svg" width="24" height="24" alt=""><span>24px</span></div>
+      <div class="item"><img src="favicon.svg" width="32" height="32" alt=""><span>32px</span></div>
+      <div class="item"><img src="favicon.svg" width="48" height="48" alt=""><span>48px</span></div>
+      <a class="dl" href="favicon.svg" download style="margin-left:auto">download favicon.svg</a>
+    </div>
+
+    <div class="footer">
+      <h2 style="margin-top:50px">How to use</h2>
+      <p><b>On your website:</b> drop <code>icon.svg</code> in your assets and reference it directly. For the favicon, add <code>&lt;link rel="icon" type="image/svg+xml" href="favicon.svg"&gt;</code> to your <code>&lt;head&gt;</code>.</p>
+      <p><b>For app stores / Instagram profile:</b> open <code>icon.svg</code> in any browser, then use a free converter like <a href="https://cloudconvert.com/svg-to-png" style="color:#f0abfc">cloudconvert.com</a> to export a 1024×1024 PNG. Or open in Figma / Illustrator → export at any size.</p>
+      <p><b>Brand colors:</b> deep purple <code>#2a0a55</code> · violet <code>#a855f7</code> · electric <code>#c084fc</code> · magenta <code>#d946ef</code> · ink <code>#0a0220</code></p>
+    </div>
+  </div>
+</body>
+</html>

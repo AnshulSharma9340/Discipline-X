@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>DisciplineX — Locked In</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet" />
+<style>
+  html { font-size: min(calc(100vw / 1080), calc(100vh / 1920)); background:#000; }
+  body { margin:0; padding:0; min-height:100vh; background:#000; color:#fff;
+    font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased;
+    display:grid; place-items:center; overflow:hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+
+  .reel { position:relative; width:1080rem; height:1920rem; overflow:hidden;
+    background: radial-gradient(120% 80% at 50% 50%, #1a0939 0%, #08021a 60%, #03000c 100%);
+    isolation: isolate; }
+
+  .bloom { position:absolute; border-radius:50%; filter:blur(140rem); mix-blend-mode:screen; }
+  .b1 { width:1100rem;height:1100rem; left:-300rem; top:-200rem;
+    background: radial-gradient(circle, rgba(239,68,68,.30), transparent 60%);
+    animation: drift 20s linear infinite; }
+  .b2 { width:900rem;height:900rem; right:-200rem; bottom:-100rem;
+    background: radial-gradient(circle, rgba(217,70,239,.40), transparent 60%);
+    animation: drift 22s linear infinite reverse; }
+  @keyframes drift { 0%,100%{transform:translate(0,0)} 50%{transform:translate(60rem,80rem) scale(1.1)} }
+
+  .grid { position:absolute; inset:-100rem;
+    background-image:
+      linear-gradient(rgba(217,70,239,.12) 1rem, transparent 1rem),
+      linear-gradient(90deg, rgba(217,70,239,.12) 1rem, transparent 1rem);
+    background-size: 80rem 80rem;
+    mask-image: radial-gradient(circle, black 25%, transparent 78%);
+    -webkit-mask-image: radial-gradient(circle, black 25%, transparent 78%);
+    opacity: .55; }
+
+  .vignette { position:absolute; inset:0; z-index:8; pointer-events:none;
+    background: radial-gradient(120% 90% at 50% 50%, transparent 50%, rgba(0,0,0,.78) 100%); }
+
+  .scene { position:absolute; inset:0; z-index:2; opacity:0;
+    animation-duration:15s; animation-iteration-count:infinite; }
+  .s1 { animation-name: s1; } .s2 { animation-name: s2; } .s3 { animation-name: s3; } .s4 { animation-name: s4; }
+  @keyframes s1 { 0%{opacity:0;transform:scale(.96)} 3%{opacity:1;transform:scale(1)} 18%{opacity:1} 21%{opacity:0;transform:scale(1.08)} 100%{opacity:0} }
+  @keyframes s2 { 0%,20%{opacity:0;transform:translateY(40rem)} 24%{opacity:1;transform:translateY(0)} 44%{opacity:1} 47%{opacity:0;transform:translateY(-30rem)} 100%{opacity:0} }
+  @keyframes s3 { 0%,46%{opacity:0;transform:translateY(40rem) scale(.96)} 50%{opacity:1;transform:translateY(0) scale(1)} 71%{opacity:1} 74%{opacity:0;transform:translateY(-30rem) scale(1.04)} 100%{opacity:0} }
+  @keyframes s4 { 0%,73%{opacity:0;transform:scale(1.05)} 77%{opacity:1;transform:scale(1)} 97%{opacity:1} 100%{opacity:0;transform:scale(1.02)} }
+
+  /* SCENE 1 — distractions chaos */
+  .s1-wrap { position:absolute; inset:0; padding: 110rem 70rem; display: flex; flex-direction: column; gap: 22rem; }
+  .s1-h { font-size: 22rem; font-weight: 800; letter-spacing: 5rem; color: #ef4444; text-transform: uppercase; text-shadow: 0 0 14rem rgba(239,68,68,.4); }
+  .s1-title { font-weight: 800; font-size: 76rem; letter-spacing: -2rem; line-height: 1.05;
+    background: linear-gradient(180deg, #fff, #fecaca);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+  .s1-title b { background: linear-gradient(180deg, #ef4444, #f97316);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+
+  .notif {
+    display: flex; align-items: center; gap: 18rem; padding: 22rem 26rem;
+    border-radius: 22rem; background: rgba(239,68,68,.08); border: 1.5rem solid rgba(239,68,68,.3);
+    color: #fecaca; font-size: 24rem; font-weight: 600;
+    backdrop-filter: blur(16rem); -webkit-backdrop-filter: blur(16rem);
+    opacity: 0; transform: translateX(80rem);
+    animation-duration: 15s; animation-iteration-count: infinite;
+  }
+  .notif .ic { width: 50rem; height: 50rem; border-radius: 12rem; display: grid; place-items: center;
+    font-weight: 800; font-size: 22rem; color: #fff; flex: 0 0 auto; }
+  .notif .ic.ig { background: linear-gradient(135deg, #f0abfc, #f97316); }
+  .notif .ic.tt { background: #000; color: #fff; border: 1.5rem solid #ef4444; }
+  .notif .ic.yt { background: #ef4444; }
+  .notif .ic.tw { background: #38bdf8; }
+  .notif .ic.dc { background: #6366f1; }
+  .notif .ic.wa { background: #22c55e; }
+  .notif .body { line-height: 1.2; }
+  .notif .body b { color: #fff; display: block; font-weight: 800; font-size: 24rem; margin-bottom: 2rem; }
+  .notif .time { margin-left: auto; font-family:'JetBrains Mono',monospace; color: #fca5a5; font-size: 18rem; font-weight: 700; }
+  .notif.n1 { animation-name: nfly; animation-delay: 0.4s; }
+  .notif.n2 { animation-name: nfly; animation-delay: 0.7s; }
+  .notif.n3 { animation-name: nfly; animation-delay: 1.0s; }
+  .notif.n4 { animation-name: nfly; animation-delay: 1.3s; }
+  .notif.n5 { animation-name: nfly; animation-delay: 1.6s; }
+  @keyframes nfly {
+    0%   { opacity: 0; transform: translateX(80rem); }
+    7%   { opacity: 1; transform: translateX(0); }
+    18%  { opacity: 1; transform: translateX(0); }
+    21%  { opacity: 0; transform: translateX(-40rem); }
+    100% { opacity: 0; }
+  }
+
+  /* SCENE 2 — focus mode lockdown */
+  .s2-wrap { position:absolute; inset:0; padding: 110rem 70rem; display: flex; flex-direction: column; gap: 30rem; align-items: center; justify-content: center; }
+  .lock-shield {
+    width: 280rem; height: 280rem; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff, #f0abfc 30%, #d946ef 70%, #6366f1 100%);
+    display: grid; place-items: center; position: relative;
+    box-shadow: 0 0 80rem rgba(217,70,239,.7), 0 0 160rem rgba(168,85,247,.5);
+    animation: shield 15s infinite;
+  }
+  @keyframes shield {
+    0%, 22% { transform: scale(.5) rotate(-30deg); opacity: 0; }
+    27%     { transform: scale(1.15) rotate(0deg); opacity: 1; }
+    30%     { transform: scale(1); }
+    44%     { transform: scale(1); opacity: 1; }
+    47%     { transform: scale(1.1); opacity: 0; }
+    100%    { opacity: 0; }
+  }
+  .lock-shield::before {
+    content: ""; position: absolute; inset: -30rem; border-radius: 50%;
+    border: 3rem dashed rgba(217,70,239,.5);
+    animation: spin 8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .lock-shield .icon { font-size: 130rem; color: #fff; text-shadow: 0 0 30rem rgba(255,255,255,.6); }
+
+  .s2-status {
+    font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 30rem;
+    letter-spacing: 6rem; text-transform: uppercase;
+    background: linear-gradient(180deg, #f0abfc, #d946ef);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    text-align: center;
+    animation: st-in 15s infinite;
+  }
+  @keyframes st-in { 0%,25%{opacity:0} 30%{opacity:1} 44%{opacity:1} 47%{opacity:0} 100%{opacity:0} }
+
+  .s2-title-big {
+    font-weight: 900; font-size: 90rem; letter-spacing: -3rem; line-height: 1; text-align: center;
+    background: linear-gradient(180deg, #fff, #c084fc);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    animation: tt-in 15s infinite;
+  }
+  @keyframes tt-in { 0%,28%{opacity:0;transform:translateY(20rem)} 32%{opacity:1;transform:translateY(0)} 44%{opacity:1} 47%{opacity:0} 100%{opacity:0} }
+
+  .blocked-list {
+    display: flex; gap: 14rem; flex-wrap: wrap; justify-content: center; max-width: 800rem; margin-top: 10rem;
+  }
+  .bp {
+    padding: 12rem 22rem; border-radius: 14rem;
+    background: rgba(255,255,255,.04); border: 1rem solid rgba(255,255,255,.08);
+    color: #8b82b8; font-weight: 700; font-size: 22rem;
+    position: relative; overflow: hidden;
+    text-decoration: line-through; text-decoration-color: rgba(239,68,68,.7); text-decoration-thickness: 3rem;
+    opacity: 0;
+    animation-duration: 15s; animation-iteration-count: infinite;
+  }
+  .bp.b1 { animation-name: bp-in; animation-delay: 5.0s; }
+  .bp.b2 { animation-name: bp-in; animation-delay: 5.15s; }
+  .bp.b3 { animation-name: bp-in; animation-delay: 5.30s; }
+  .bp.b4 { animation-name: bp-in; animation-delay: 5.45s; }
+  .bp.b5 { animation-name: bp-in; animation-delay: 5.60s; }
+  .bp.b6 { animation-name: bp-in; animation-delay: 5.75s; }
+  @keyframes bp-in {
+    0%   { opacity: 0; transform: scale(.5); }
+    14%  { opacity: 1; transform: scale(1.05); }
+    18%  { transform: scale(1); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  /* SCENE 3 — single-task tunnel vision */
+  .s3-wrap { position:absolute; inset:0; padding: 110rem 70rem; display:flex; flex-direction: column; align-items: center; justify-content: center; gap: 26rem; }
+  .s3-bg-mute { position:absolute; inset:0; background: rgba(0,0,0,.4); z-index: -1; }
+  .s3-h { font-size: 22rem; font-weight: 800; letter-spacing: 5rem; color: #d946ef; text-transform: uppercase; text-shadow: 0 0 14rem rgba(217,70,239,.4); }
+  .focus-only {
+    width: 100%; max-width: 900rem; padding: 50rem 50rem; border-radius: 36rem;
+    background: linear-gradient(180deg, rgba(217,70,239,.10), rgba(168,85,247,.04));
+    border: 2rem solid rgba(217,70,239,.4);
+    box-shadow: 0 0 80rem rgba(217,70,239,.3), inset 0 0 40rem rgba(217,70,239,.1);
+    backdrop-filter: blur(24rem); -webkit-backdrop-filter: blur(24rem);
+    text-align: center;
+  }
+  .fo-task {
+    font-weight: 800; font-size: 56rem; letter-spacing: -1.5rem; line-height: 1.1;
+    color: #fff; margin-bottom: 30rem;
+  }
+  .fo-task b { background: linear-gradient(180deg, #f0abfc, #d946ef);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+  .timer-huge {
+    font-family:'JetBrains Mono', monospace; font-weight: 800; font-size: 160rem;
+    letter-spacing: -4rem; line-height: 1; font-variant-numeric: tabular-nums;
+    background: linear-gradient(180deg, #fff, #c084fc);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    position: relative; height: 160rem;
+  }
+  .timer-huge .t { position: absolute; left: 0; right: 0; opacity: 0; }
+  .timer-huge .t1 { animation: t1 15s infinite; }
+  .timer-huge .t2 { animation: t2 15s infinite; }
+  .timer-huge .t3 { animation: t3 15s infinite; }
+  .timer-huge .t4 { animation: t4 15s infinite; }
+  @keyframes t1 { 0%,52%{opacity:0} 53%{opacity:1} 58%{opacity:1} 59%{opacity:0} 100%{opacity:0} }
+  @keyframes t2 { 0%,58%{opacity:0} 59%{opacity:1} 64%{opacity:1} 65%{opacity:0} 100%{opacity:0} }
+  @keyframes t3 { 0%,64%{opacity:0} 65%{opacity:1} 69%{opacity:1} 70%{opacity:0} 100%{opacity:0} }
+  @keyframes t4 { 0%,69%{opacity:0} 70%{opacity:1} 73%{opacity:1} 74%{opacity:0} 100%{opacity:0} }
+
+  .fo-progress {
+    height: 16rem; margin-top: 26rem; border-radius: 8rem; background: rgba(255,255,255,.06);
+    overflow: hidden; border: 1rem solid rgba(255,255,255,.1);
+  }
+  .fo-progress > i { display: block; height: 100%; transform-origin: left; transform: scaleX(0);
+    background: linear-gradient(90deg, #d946ef, #a855f7); box-shadow: 0 0 14rem rgba(217,70,239,.6);
+    animation: fp 15s infinite linear; }
+  @keyframes fp { 0%,52%{transform:scaleX(0)} 73%{transform:scaleX(.7)} 100%{transform:scaleX(.7)} }
+
+  .fo-meta { display: flex; justify-content: space-between; margin-top: 16rem; color: #8b82b8; font-size: 20rem; font-weight: 600; letter-spacing: 2rem; }
+
+  .pulse-rings { position: absolute; inset: 0; pointer-events: none; }
+  .pulse-rings i {
+    position: absolute; left: 50%; top: 50%; width: 600rem; height: 600rem; border-radius: 50%;
+    border: 2rem solid rgba(217,70,239,.4);
+    transform: translate(-50%,-50%) scale(.4); opacity: 0;
+    animation: pr 3s infinite ease-out;
+  }
+  .pulse-rings i:nth-child(2) { animation-delay: 1s; }
+  .pulse-rings i:nth-child(3) { animation-delay: 2s; }
+  @keyframes pr { 0%{transform:translate(-50%,-50%) scale(.4);opacity:.7} 100%{transform:translate(-50%,-50%) scale(1.3);opacity:0} }
+
+  /* SCENE 4 — CTA */
+  .s4-wrap { position:absolute; inset:0; display:grid; place-items:center; gap:30rem; align-content:center; padding:0 80rem; }
+  .cta-1 { font-weight: 700; font-size: 80rem; letter-spacing: -2rem; color: #d8d0f0; text-align:center; line-height:1.1;
+    animation: c1 15s infinite; }
+  @keyframes c1 { 0%,73%{opacity:0;transform:translateY(40rem) scale(.97)} 78%{opacity:1;transform:translateY(0) scale(1)} 97%{opacity:1} 100%{opacity:0} }
+  .cta-2 {
+    font-weight: 900; font-size: 116rem; letter-spacing: -5rem; line-height: .95; text-align: center;
+    background: linear-gradient(180deg, #fff 0%, #f0abfc 40%, #d946ef 100%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+    filter: drop-shadow(0 0 40rem rgba(217,70,239,.5));
+    animation: c2 15s infinite;
+  }
+  @keyframes c2 { 0%,76%{opacity:0;transform:translateY(50rem) scale(.95)} 81%{opacity:1;transform:translateY(0) scale(1.02)} 84%{transform:scale(1)} 97%{opacity:1} 100%{opacity:0} }
+
+  .lockup { display: flex; align-items: center; gap: 22rem; margin-top: 20rem; animation: lk 15s infinite; }
+  @keyframes lk { 0%,82%{opacity:0;transform:translateY(20rem)} 86%{opacity:1;transform:translateY(0)} 97%{opacity:1} 100%{opacity:0} }
+  .lockup .mini { width:90rem; height:90rem; border-radius:24rem;
+    background: radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,.4), transparent 60%), linear-gradient(135deg, #2a0a55, #0d0220);
+    border: 2.5rem solid rgba(232,121,249,.6); box-shadow: 0 0 40rem rgba(168,85,247,.6);
+    display:grid; place-items:center; transform: rotate(45deg); }
+  .lockup .mini span { transform: rotate(-45deg); font-weight:900; font-size:56rem; letter-spacing:-4rem;
+    background: linear-gradient(180deg, #fff, #c084fc); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent; }
+  .lockup .word { font-weight:800; font-size:60rem; letter-spacing:-2rem;
+    background: linear-gradient(180deg, #fff, #e9d5ff); -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent; }
+  .lockup .word b { background: linear-gradient(180deg, #d946ef, #a855f7);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
+
+  /* timeline + grain */
+  .timeline { position:absolute; left:0; right:0; bottom:0; height:4rem; background: rgba(168,85,247,.1); z-index:8; }
+  .timeline::after { content:""; position:absolute; left:0; top:0; bottom:0; width:0;
+    background: linear-gradient(90deg, #a855f7, #d946ef); box-shadow: 0 0 14rem rgba(217,70,239,.7);
+    animation: tl 15s infinite linear; }
+  @keyframes tl { 0%{width:0} 100%{width:100%} }
+
+  .grain { position:absolute; inset:0; pointer-events:none; z-index:9; opacity:.07; mix-blend-mode:overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='1'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .7 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 240rem 240rem; animation: gr .6s steps(4) infinite; }
+  @keyframes gr { 0%{transform:translate(0,0)} 50%{transform:translate(20rem,-20rem)} 100%{transform:translate(0,0)} }
+
+  /* sweep transitions */
+  .sweep { position:absolute; inset:-10% -50%; width:200%; height:120%; z-index:5; mix-blend-mode:screen; pointer-events:none;
+    background: linear-gradient(115deg, transparent 38%, rgba(217,70,239,.0) 46%, rgba(217,70,239,.85) 50%, rgba(168,85,247,.55) 53%, transparent 64%);
+    transform: translateX(-110%) skewX(-12deg); }
+  .sw12 { animation: sw19 15s infinite; } .sw23 { animation: sw46 15s infinite; } .sw34 { animation: sw73 15s infinite; }
+  @keyframes sw19 { 0%,17.5%{transform:translateX(-110%) skewX(-12deg);opacity:0} 18.6%{opacity:1} 20.6%{transform:translateX(110%) skewX(-12deg);opacity:0} 100%{opacity:0} }
+  @keyframes sw46 { 0%,44.5%{transform:translateX(-110%) skewX(-12deg);opacity:0} 45.6%{opacity:1} 47.6%{transform:translateX(110%) skewX(-12deg);opacity:0} 100%{opacity:0} }
+  @keyframes sw73 { 0%,71.5%{transform:translateX(-110%) skewX(-12deg);opacity:0} 72.6%{opacity:1} 74.6%{transform:translateX(110%) skewX(-12deg);opacity:0} 100%{opacity:0} }
+</style>
+</head>
+<body>
+  <div class="reel">
+    <div class="bloom b1"></div>
+    <div class="bloom b2"></div>
+    <div class="grid"></div>
+
+    <!-- Scene 1: distractions -->
+    <section class="scene s1">
+      <div class="s1-wrap">
+        <div class="s1-h">▸ Distraction overload</div>
+        <div class="s1-title">Every notification is<br><b>stealing your time.</b></div>
+
+        <div class="notif n1"><div class="ic ig">IG</div><div class="body"><b>Instagram</b>Maya tagged you in a reel</div><div class="time">just now</div></div>
+        <div class="notif n2"><div class="ic tt">TT</div><div class="body"><b>TikTok</b>3 new videos for you</div><div class="time">2m</div></div>
+        <div class="notif n3"><div class="ic yt">YT</div><div class="body"><b>YouTube</b>MrBeast just uploaded</div><div class="time">5m</div></div>
+        <div class="notif n4"><div class="ic dc">DC</div><div class="body"><b>Discord</b>14 unread messages</div><div class="time">8m</div></div>
+        <div class="notif n5"><div class="ic wa">WA</div><div class="body"><b>WhatsApp</b>Group chat blowing up 🔥</div><div class="time">12m</div></div>
+      </div>
+    </section>
+
+    <!-- Scene 2: focus mode shield -->
+    <section class="scene s2">
+      <div class="s2-wrap">
+        <div class="lock-shield"><div class="icon">⏻</div></div>
+        <div class="s2-status">FOCUS MODE · ACTIVATED</div>
+        <div class="s2-title-big">The world goes<br>quiet now.</div>
+        <div class="blocked-list">
+          <div class="bp b1">Instagram</div>
+          <div class="bp b2">TikTok</div>
+          <div class="bp b3">YouTube</div>
+          <div class="bp b4">Discord</div>
+          <div class="bp b5">WhatsApp</div>
+          <div class="bp b6">Twitter</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scene 3: single task tunnel vision -->
+    <section class="scene s3">
+      <div class="s3-bg-mute"></div>
+      <div class="pulse-rings"><i></i><i></i><i></i></div>
+      <div class="s3-wrap">
+        <div class="s3-h">▸ One task. Nothing else.</div>
+        <div class="focus-only">
+          <div class="fo-task">Deep Work —<br><b>System Design</b></div>
+          <div class="timer-huge">
+            <span class="t t1">25:00</span>
+            <span class="t t2">19:42</span>
+            <span class="t t3">12:08</span>
+            <span class="t t4">06:24</span>
+          </div>
+          <div class="fo-progress"><i></i></div>
+          <div class="fo-meta"><span>POMODORO 1 / 4</span><span>+25 XP</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scene 4: CTA -->
+    <section class="scene s4">
+      <div class="s4-wrap">
+        <div class="cta-1">Block the noise.</div>
+        <div class="cta-2">Build the work.</div>
+        <div class="lockup">
+          <div class="mini"><span>X</span></div>
+          <div class="word">Discipline<b>X</b></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="sweep sw12"></div>
+    <div class="sweep sw23"></div>
+    <div class="sweep sw34"></div>
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div class="timeline"></div>
+  </div>
+</body>
+</html>
