@@ -73,3 +73,5 @@ Thumbs.db
 
 # Local Alembic version files in case the user generates more (keep migrations though)
 # (intentionally keep alembic/versions/ in git — those are real schema migrations)
+
+hf-space-clone/
