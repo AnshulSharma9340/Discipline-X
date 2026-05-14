@@ -17,12 +17,14 @@ const LAST_LOGIN_KEY = 'dx-last-login';
 
 const listeners = new Set<() => void>();
 let bannerOpenFor: 'first-visit' | 'edit' | null = null;
+let cachedConsent: ConsentRecord | null = null;
+let consentLoaded = false;
 
 function emit() {
   for (const l of listeners) l();
 }
 
-function readConsent(): ConsentRecord | null {
+function loadFromStorage(): ConsentRecord | null {
   if (typeof window === 'undefined') return null;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -30,7 +32,6 @@ function readConsent(): ConsentRecord | null {
       const parsed = JSON.parse(raw) as ConsentRecord;
       if (parsed && parsed.version === 2) return parsed;
     }
-    // Migrate the old single-bit banner ('accepted' | 'declined').
     const legacy = window.localStorage.getItem(LEGACY_KEY);
     if (legacy === 'accepted' || legacy === 'declined') {
       const migrated: ConsentRecord = {
@@ -39,8 +40,12 @@ function readConsent(): ConsentRecord | null {
         decidedAt: new Date().toISOString(),
         version: 2,
       };
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
-      window.localStorage.removeItem(LEGACY_KEY);
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+        window.localStorage.removeItem(LEGACY_KEY);
+      } catch {
+        /* ignore */
+      }
       return migrated;
     }
   } catch {
@@ -49,23 +54,37 @@ function readConsent(): ConsentRecord | null {
   return null;
 }
 
-function writeConsent(next: ConsentRecord) {
+// useSyncExternalStore requires getSnapshot to be referentially stable. We
+// cache the parsed record and only mutate it through setConsent — reads are
+// pure and return the same reference between updates.
+function ensureLoaded() {
+  if (!consentLoaded) {
+    cachedConsent = loadFromStorage();
+    consentLoaded = true;
+  }
+}
+
+function readConsent(): ConsentRecord | null {
+  ensureLoaded();
+  return cachedConsent;
+}
+
+export function setConsent(functional: boolean) {
+  const next: ConsentRecord = {
+    essential: true,
+    functional,
+    decidedAt: new Date().toISOString(),
+    version: 2,
+  };
+  cachedConsent = next;
+  consentLoaded = true;
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   } catch {
     /* ignore */
   }
-  if (!next.functional) forgetLogin();
+  if (!functional) forgetLogin();
   emit();
-}
-
-export function setConsent(functional: boolean) {
-  writeConsent({
-    essential: true,
-    functional,
-    decidedAt: new Date().toISOString(),
-    version: 2,
-  });
 }
 
 export function getConsent(): ConsentRecord | null {
@@ -82,14 +101,16 @@ export function closeCookiePreferences() {
   emit();
 }
 
-export function getBannerState(): 'first-visit' | 'edit' | null {
+function getBannerState(): 'first-visit' | 'edit' | null {
   if (bannerOpenFor) return bannerOpenFor;
   return readConsent() ? null : 'first-visit';
 }
 
 function subscribe(cb: () => void) {
   listeners.add(cb);
-  return () => listeners.delete(cb);
+  return () => {
+    listeners.delete(cb);
+  };
 }
 
 export function useCookieConsent() {
