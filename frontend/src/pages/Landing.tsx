@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Brain, Github, Lock, Smartphone, Target, Timer, Trophy } from 'lucide-react';
+import { ArrowRight, Brain, Github, Loader2, Lock, Smartphone, Target, Timer, Trophy } from 'lucide-react';
 import { useAuth } from '@/store/auth';
 import { ShaderAnimation } from '@/components/ui/ShaderAnimation';
 import { InstallAppModal, shouldAutoShowInstall } from '@/components/InstallAppModal';
@@ -23,7 +23,26 @@ export default function Landing() {
     return () => clearTimeout(t);
   }, []);
 
-  if (initialized && session) return <Navigate to="/dashboard" replace />;
+  // Supabase sometimes redirects OAuth returns back to "/" with the access
+  // token in the URL hash (its Site URL fallback) instead of "/dashboard".
+  // Whether that happens or not, a known session means the user belongs on
+  // the dashboard — don't gate on `initialized`, the session itself is proof.
+  if (session) return <Navigate to="/dashboard" replace />;
+
+  // If we just came back from OAuth but supabase-js hasn't parsed the hash
+  // into a session yet, show a loader so the marketing page doesn't flash.
+  const hasAuthHash =
+    typeof window !== 'undefined' &&
+    /access_token=|refresh_token=|type=(magiclink|recovery|signup)/.test(
+      window.location.hash,
+    );
+  if (hasAuthHash && !initialized) {
+    return (
+      <div className="min-h-screen grid place-items-center bg-black">
+        <Loader2 className="w-8 h-8 animate-spin text-white/60" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
