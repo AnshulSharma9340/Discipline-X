@@ -4,7 +4,13 @@ import { Loader2 } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
 
-export function GoogleButton({ label = 'Continue with Google' }: { label?: string }) {
+export function GoogleButton({
+  label = 'Continue with Google',
+  loginHint,
+}: {
+  label?: string;
+  loginHint?: string;
+}) {
   const [loading, setLoading] = useState(false);
 
   function onClick() {
@@ -12,7 +18,8 @@ export function GoogleButton({ label = 'Continue with Google' }: { label?: strin
     try {
       // Backend handles the full OAuth dance: Google → backend callback →
       // Supabase magic link → frontend dashboard.
-      window.location.href = `${API_BASE}/auth/google/login`;
+      const qs = loginHint ? `?hint=${encodeURIComponent(loginHint)}` : '';
+      window.location.href = `${API_BASE}/auth/google/login${qs}`;
     } catch (err) {
       setLoading(false);
       toast.error(err instanceof Error ? err.message : 'Google sign-in failed');

@@ -2,7 +2,16 @@ import { create } from 'zustand';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { api } from '@/lib/api';
+import { rememberLogin } from '@/lib/consent';
 import type { AppUser } from '@/types';
+
+function rememberFromSession(session: Session | null) {
+  const email = session?.user?.email;
+  if (!email) return;
+  const provider = session.user.app_metadata?.provider;
+  const method = provider === 'google' ? 'google' : 'password';
+  rememberLogin(email, method);
+}
 
 interface AuthState {
   session: Session | null;
@@ -47,10 +56,12 @@ export const useAuth = create<AuthState>((set, get) => ({
 
     const { data } = await supabase.auth.getSession();
     set({ session: data.session });
+    rememberFromSession(data.session);
 
     supabase.auth.onAuthStateChange((_event, session) => {
       set({ session });
       if (session) {
+        rememberFromSession(session);
         get().fetchProfile();
       } else {
         set({ user: null });

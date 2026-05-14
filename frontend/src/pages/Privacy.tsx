@@ -2,7 +2,7 @@ import { LegalPage, H2, H3, P, UL } from '@/components/LegalPage';
 
 export default function Privacy() {
   return (
-    <LegalPage title="Privacy Policy" updated="May 7, 2026">
+    <LegalPage title="Privacy Policy" updated="May 15, 2026">
       <P>
         DisciplineX ("we", "our", "us") helps you build a daily discipline practice with verified task
         proof, streaks, AI coaching, and team accountability. This policy explains what data we collect,
@@ -55,15 +55,38 @@ export default function Privacy() {
       </P>
 
       <H2>4. Cookies & local storage</H2>
-      <P>We keep cookies and local storage to a minimum. We use:</P>
-      <UL>
-        <li><strong>Auth tokens (essential)</strong> — set by Supabase to keep you signed in. Without these, the app cannot function.</li>
-        <li><strong>Preferences (functional)</strong> — your theme choice, sidebar state, and the cookie-consent record itself.</li>
-      </UL>
       <P>
-        We do not use third-party tracking, advertising, or analytics cookies. The first time you visit,
-        you'll see a cookie banner where you can accept or decline. Declining still lets you use the app —
-        only the essentials are kept.
+        We keep browser-stored data to a minimum and split it into two categories. The first time
+        you visit, you'll see a banner where you can accept the optional category, reject it, or
+        customize. Rejecting still lets you use every feature — you'll just be asked to pick your
+        sign-in method each time.
+      </P>
+
+      <H3>Essential (always on)</H3>
+      <P>
+        These are strictly necessary for the app to function. They are set without consent because
+        the service cannot work without them.
+      </P>
+      <UL>
+        <li><strong>Supabase auth tokens</strong> — keep you signed in across page reloads. Cleared on sign-out.</li>
+        <li><strong>Theme</strong> — the colour theme you chose for the dashboard.</li>
+        <li><strong>Cookie-consent record</strong> — remembers your choice so we don't show the banner on every visit.</li>
+      </UL>
+
+      <H3>Functional (opt-in, off by default)</H3>
+      <P>
+        Stored only after you accept. Lets us streamline re-login so you don't pick your account
+        every time. You can switch this off any time in <strong>Settings → Privacy & cookies</strong>,
+        and the data below is deleted from your browser immediately.
+      </P>
+      <UL>
+        <li><strong>Last-used sign-in</strong> — the email address and method (Google, password, or one-time code) you signed in with last time. We use this only to pre-fill the login screen and to pass <code>login_hint</code> to Google so it skips the account picker.</li>
+      </UL>
+
+      <P>
+        We do <strong>not</strong> use analytics, advertising, or third-party tracking cookies of
+        any kind. There are no cross-site cookies. No data leaves your browser unless you take an
+        action that requires it (sign in, save a task, etc.).
       </P>
 
       <H2>5. Your rights</H2>

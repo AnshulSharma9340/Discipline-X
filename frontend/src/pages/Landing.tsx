@@ -5,7 +5,7 @@ import { ArrowRight, Brain, Github, Lock, Smartphone, Target, Timer, Trophy } fr
 import { useAuth } from '@/store/auth';
 import { ShaderAnimation } from '@/components/ui/ShaderAnimation';
 import { InstallAppModal, shouldAutoShowInstall } from '@/components/InstallAppModal';
-import { getCookieConsent } from '@/components/CookieBanner';
+import { getConsent } from '@/lib/consent';
 import { Logo } from '@/components/Logo';
 
 export default function Landing() {
@@ -18,7 +18,7 @@ export default function Landing() {
   useEffect(() => {
     if (!shouldAutoShowInstall()) return;
     const t = setTimeout(() => {
-      if (getCookieConsent() !== null) setInstallOpen(true);
+      if (getConsent() !== null) setInstallOpen(true);
     }, 4500);
     return () => clearTimeout(t);
   }, []);

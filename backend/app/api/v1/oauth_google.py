@@ -33,20 +33,26 @@ STATE_TTL_SECONDS = 600
 
 
 @router.get("/login")
-async def google_login() -> RedirectResponse:
+async def google_login(request: Request) -> RedirectResponse:
     if not settings.google_oauth_enabled:
         raise HTTPException(503, "Google OAuth not configured")
 
     state = secrets.token_urlsafe(24)
-    params = {
+    hint = request.query_params.get("hint")
+    params: dict[str, str] = {
         "client_id": settings.GOOGLE_CLIENT_ID,
         "redirect_uri": settings.GOOGLE_REDIRECT_URI,
         "response_type": "code",
         "scope": "openid email profile",
         "access_type": "online",
-        "prompt": "select_account",
         "state": state,
     }
+    if hint:
+        # When the frontend knows which Google account to use, hand the hint
+        # to Google and skip the account picker.
+        params["login_hint"] = hint
+    else:
+        params["prompt"] = "select_account"
     url = f"{GOOGLE_AUTH_URL}?{urlencode(params)}"
     resp = RedirectResponse(url=url, status_code=302)
     resp.set_cookie(

@@ -1,7 +1,7 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Mail, Lock, KeyRound } from 'lucide-react';
+import { ArrowRight, Mail, Lock, KeyRound, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabase';
 import { api } from '@/lib/api';
@@ -9,6 +9,7 @@ import { useAuth } from '@/store/auth';
 import { ShaderAnimation } from '@/components/ui/ShaderAnimation';
 import { GoogleButton, AuthDivider } from '@/components/GoogleButton';
 import { Logo } from '@/components/Logo';
+import { forgetLogin, getLastLogin, rememberLogin, type LoginHint } from '@/lib/consent';
 
 type Mode = 'password' | 'otp';
 
@@ -19,8 +20,18 @@ export default function Login() {
   const from = (location.state as { from?: Location })?.from?.pathname ?? '/dashboard';
 
   const [mode, setMode] = useState<Mode>('password');
+  const [hint, setHint] = useState<LoginHint | null>(null);
+
+  useEffect(() => {
+    setHint(getLastLogin());
+  }, []);
 
   if (session) return <Navigate to={from} replace />;
+
+  function clearHint() {
+    forgetLogin();
+    setHint(null);
+  }
 
   return (
     <div className="min-h-screen bg-black grid lg:grid-cols-2">
@@ -42,8 +53,29 @@ export default function Login() {
           </h1>
           <p className="text-white/55 mt-2 text-sm">Sign in to keep your streak alive.</p>
 
-          <div className="mt-8">
-            <GoogleButton label="Sign in with Google" />
+          {hint ? (
+            <div className="mt-7 flex items-center gap-2 px-3 py-2 rounded-full bg-white/5 border border-white/10 text-xs">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-neon-violet to-neon-cyan grid place-items-center text-[11px] font-semibold shrink-0">
+                {hint.email[0]?.toUpperCase()}
+              </div>
+              <span className="text-white/55 shrink-0">Continue as</span>
+              <span className="text-white truncate flex-1">{hint.email}</span>
+              <button
+                onClick={clearHint}
+                className="shrink-0 text-white/40 hover:text-white/80 transition p-0.5"
+                title="Use a different account"
+                aria-label="Forget this account"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : null}
+
+          <div className="mt-6">
+            <GoogleButton
+              label={hint?.method === 'google' ? `Continue with Google` : 'Sign in with Google'}
+              loginHint={hint?.method === 'google' ? hint.email : undefined}
+            />
           </div>
 
           <AuthDivider />
@@ -70,7 +102,9 @@ export default function Login() {
           <div className="mt-6">
             {mode === 'password' ? (
               <PasswordForm
-                onSuccess={async () => {
+                prefillEmail={hint?.method !== 'google' ? hint?.email : undefined}
+                onSuccess={async (email) => {
+                  rememberLogin(email, 'password');
                   await fetchProfile();
                   toast.success('Welcome back');
                   navigate(from, { replace: true });
@@ -78,7 +112,9 @@ export default function Login() {
               />
             ) : (
               <OtpForm
-                onSuccess={async () => {
+                prefillEmail={hint?.method !== 'google' ? hint?.email : undefined}
+                onSuccess={async (email) => {
+                  rememberLogin(email, 'otp');
                   await fetchProfile();
                   toast.success('Signed in');
                   navigate(from, { replace: true });
@@ -105,8 +141,14 @@ export default function Login() {
   );
 }
 
-function PasswordForm({ onSuccess }: { onSuccess: () => Promise<void> }) {
-  const [email, setEmail] = useState('');
+function PasswordForm({
+  onSuccess,
+  prefillEmail,
+}: {
+  onSuccess: (email: string) => Promise<void>;
+  prefillEmail?: string;
+}) {
+  const [email, setEmail] = useState(prefillEmail ?? '');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -116,7 +158,7 @@ function PasswordForm({ onSuccess }: { onSuccess: () => Promise<void> }) {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      await onSuccess();
+      await onSuccess(email);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Login failed');
     } finally {
@@ -168,8 +210,14 @@ function PasswordForm({ onSuccess }: { onSuccess: () => Promise<void> }) {
   );
 }
 
-function OtpForm({ onSuccess: _onSuccess }: { onSuccess: () => Promise<void> }) {
-  const [email, setEmail] = useState('');
+function OtpForm({
+  onSuccess: _onSuccess,
+  prefillEmail,
+}: {
+  onSuccess: (email: string) => Promise<void>;
+  prefillEmail?: string;
+}) {
+  const [email, setEmail] = useState(prefillEmail ?? '');
   const [token, setToken] = useState('');
   const [stage, setStage] = useState<'email' | 'code'>('email');
   const [sending, setSending] = useState(false);
@@ -202,6 +250,7 @@ function OtpForm({ onSuccess: _onSuccess }: { onSuccess: () => Promise<void> }) 
         email,
         code: token,
       });
+      rememberLogin(email, 'otp');
       // Navigate to Supabase magic-link URL — Supabase sets the session and
       // redirects back to /dashboard, where detectSessionInUrl picks it up.
       window.location.href = res.data.action_link;

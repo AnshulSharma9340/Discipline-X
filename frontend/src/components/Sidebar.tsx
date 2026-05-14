@@ -5,7 +5,6 @@ import {
   ClipboardList,
   Trophy,
   Flame,
-  Settings,
   Shield,
   Users,
   AlertTriangle,
@@ -18,26 +17,24 @@ import {
   Sparkles,
   Heart,
   Swords,
-  Building2,
   MessageSquare,
   ChevronDown,
-  CreditCard,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { frameGradient } from '@/lib/cosmetics';
 import { Logo } from '@/components/Logo';
 import { useAuth } from '@/store/auth';
 import { useUI } from '@/store/ui';
 
 type LinkItem = { to: string; icon: typeof LayoutDashboard; label: string };
 
-// Top-level (always visible) — the 4 things a new user does daily.
+// Top-level (always visible) — the 5 things a daily user does.
 const dailyLinks: LinkItem[] = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/tasks', icon: ClipboardList, label: "Today's Tasks" },
   { to: '/focus', icon: Timer, label: 'Focus Timer' },
   { to: '/habits', icon: Check, label: 'Habits' },
+  { to: '/reflection', icon: BookOpen, label: 'Reflection' },
 ];
 
 // Collapsible groups — surface power features without overwhelming new users.
@@ -46,20 +43,13 @@ const progressLinks: LinkItem[] = [
   { to: '/achievements', icon: Trophy, label: 'Achievements' },
   { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
   { to: '/coach', icon: Brain, label: 'AI Coach' },
-  { to: '/reflection', icon: BookOpen, label: 'Reflection' },
 ];
 
-const socialLinks: LinkItem[] = [
+const communityLinks: LinkItem[] = [
   { to: '/chat', icon: MessageSquare, label: 'Chat' },
   { to: '/squads', icon: Swords, label: 'Squads' },
   { to: '/buddy', icon: Heart, label: 'Buddy' },
-];
-
-const accountLinks: LinkItem[] = [
-  { to: '/billing', icon: CreditCard, label: 'Billing & Plans' },
   { to: '/shop', icon: ShoppingBag, label: 'XP Shop' },
-  { to: '/emergency', icon: AlertTriangle, label: 'Emergency' },
-  { to: '/org', icon: Building2, label: 'Organization' },
 ];
 
 const adminLinks: LinkItem[] = [
@@ -74,13 +64,12 @@ const adminLinks: LinkItem[] = [
 
 const SECTION_KEY = 'dx-sidebar-sections';
 
-type SectionState = { progress: boolean; social: boolean; account: boolean; admin: boolean };
+type SectionState = { progress: boolean; community: boolean; admin: boolean };
 
 const DEFAULT_STATE: SectionState = {
   progress: false,
-  social: false,
-  account: false,
-  admin: true, // admins probably want this open by default
+  community: false,
+  admin: true,
 };
 
 function loadState(): SectionState {
@@ -105,6 +94,7 @@ function saveState(state: SectionState) {
 export function Sidebar() {
   const user = useAuth((s) => s.user);
   const isAdmin = user?.org_role === 'owner' || user?.org_role === 'moderator';
+  const isLocked = user?.access_status === 'locked';
   const sidebarOpen = useUI((s) => s.sidebarOpen);
   const setSidebarOpen = useUI((s) => s.setSidebarOpen);
   const [sections, setSections] = useState<SectionState>(DEFAULT_STATE);
@@ -161,7 +151,17 @@ export function Sidebar() {
           <SideLink key={l.to} {...l} onNavigate={() => setSidebarOpen(false)} />
         ))}
 
-        {/* Collapsible groups */}
+        {/* Contextual: Emergency surfaces only when the user is actually locked. */}
+        {isLocked && (
+          <SideLink
+            to="/emergency"
+            icon={AlertTriangle}
+            label="Emergency"
+            tone="danger"
+            onNavigate={() => setSidebarOpen(false)}
+          />
+        )}
+
         <SectionGroup
           label="Progress"
           open={sections.progress}
@@ -170,17 +170,10 @@ export function Sidebar() {
           onNavigate={() => setSidebarOpen(false)}
         />
         <SectionGroup
-          label="Social"
-          open={sections.social}
-          onToggle={() => toggle('social')}
-          items={socialLinks}
-          onNavigate={() => setSidebarOpen(false)}
-        />
-        <SectionGroup
-          label="Account"
-          open={sections.account}
-          onToggle={() => toggle('account')}
-          items={accountLinks}
+          label="Community"
+          open={sections.community}
+          onToggle={() => toggle('community')}
+          items={communityLinks}
           onNavigate={() => setSidebarOpen(false)}
         />
 
@@ -193,76 +186,8 @@ export function Sidebar() {
             onNavigate={() => setSidebarOpen(false)}
           />
         )}
-
-        <div className="mt-auto pt-4 space-y-2">
-          <SideLink
-            to="/settings"
-            icon={Settings}
-            label="Settings"
-            onNavigate={() => setSidebarOpen(false)}
-          />
-          <Link
-            to="/settings"
-            onClick={() => setSidebarOpen(false)}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-white/[0.06] hover:border-white/15 hover:bg-white/[0.02] transition"
-          >
-            <SidebarAvatar
-              initial={user?.name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? '?'}
-              frameCode={user?.active_frame ?? ''}
-            />
-            <div className="min-w-0 flex-1">
-              <div className="text-sm font-medium truncate">{user?.name || user?.email}</div>
-              {user?.active_title ? (
-                <div className="text-[10px] uppercase tracking-[0.16em] truncate accent-text font-medium">
-                  « {humanTitle(user.active_title)} »
-                </div>
-              ) : null}
-              <div className="text-[11px] text-white/45 capitalize">
-                {user?.org_role ?? user?.role} · Lv {user?.level ?? 1}
-              </div>
-            </div>
-          </Link>
-        </div>
       </aside>
     </>
-  );
-}
-
-const TITLE_LABELS: Record<string, string> = {
-  early_riser: 'Early Riser',
-  iron_will: 'Iron Will',
-  night_owl: 'Night Owl',
-  code_wizard: 'Code Wizard',
-  marathoner: 'The Marathoner',
-  ascendant: 'Ascendant',
-  mythic_one: 'The Mythic',
-};
-
-function humanTitle(code: string): string {
-  return TITLE_LABELS[code] ?? code.replace(/_/g, ' ');
-}
-
-function SidebarAvatar({ initial, frameCode }: { initial: string; frameCode: string }) {
-  const gradient = frameGradient(frameCode);
-  if (!gradient) {
-    return (
-      <div className="w-8 h-8 rounded-full bg-white grid place-items-center text-sm font-semibold text-black shrink-0">
-        {initial}
-      </div>
-    );
-  }
-  return (
-    <div
-      className={cn(
-        'p-[2px] rounded-full bg-gradient-to-br shrink-0 animate-[gradient-x_6s_ease_infinite]',
-        gradient,
-      )}
-      style={{ backgroundSize: '200% 200%' }}
-    >
-      <div className="w-7 h-7 rounded-full bg-white grid place-items-center text-[13px] font-semibold text-black">
-        {initial}
-      </div>
-    </div>
   );
 }
 
@@ -315,11 +240,13 @@ function SideLink({
   icon: Icon,
   label,
   onNavigate,
+  tone,
 }: {
   to: string;
   icon: typeof LayoutDashboard;
   label: string;
   onNavigate?: () => void;
+  tone?: 'danger';
 }) {
   return (
     <NavLink
@@ -329,9 +256,13 @@ function SideLink({
       className={({ isActive }) =>
         cn(
           'flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-all duration-150',
-          isActive
-            ? 'nav-active text-white'
-            : 'text-white/55 hover:text-white hover:bg-white/[0.03]',
+          tone === 'danger'
+            ? isActive
+              ? 'bg-red-500/15 text-red-200 border border-red-500/30'
+              : 'text-red-300/85 hover:text-red-200 hover:bg-red-500/[0.08] border border-red-500/20'
+            : isActive
+              ? 'nav-active text-white'
+              : 'text-white/55 hover:text-white hover:bg-white/[0.03]',
         )
       }
     >

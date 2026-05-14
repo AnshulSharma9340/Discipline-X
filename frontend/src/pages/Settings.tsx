@@ -10,6 +10,7 @@ import {
   User as UserIcon,
   ExternalLink,
   Sparkles,
+  Cookie,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -20,10 +21,12 @@ import { Badge } from '@/components/ui/Badge';
 import { Tutorial, resetTutorial } from '@/components/Tutorial';
 import { api } from '@/lib/api';
 import { useAuth } from '@/store/auth';
+import { openCookiePreferences, useCookieConsent } from '@/lib/consent';
 
 export default function Settings() {
   const user = useAuth((s) => s.user);
   const fetchProfile = useAuth((s) => s.fetchProfile);
+  const { consent } = useCookieConsent();
   const [name, setName] = useState(user?.name ?? '');
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url ?? '');
   const [bio, setBio] = useState(user?.bio ?? '');
@@ -174,6 +177,38 @@ export default function Settings() {
           <Button variant="ghost" onClick={downloadJSON}>
             <FileJson className="w-4 h-4" /> Download JSON
           </Button>
+        </div>
+      </Card>
+
+      <Card>
+        <h2 className="font-display font-semibold text-lg mb-4 flex items-center gap-2">
+          <Cookie className="w-4 h-4" /> Privacy & cookies
+        </h2>
+        <div className="space-y-3 text-sm text-white/70">
+          <p>
+            We store a small amount of data in your browser so the app works and so you don't have
+            to pick your account every time you sign in. Update your choice anytime.
+          </p>
+          <div className="flex items-center justify-between gap-3 p-3 rounded-lg border border-white/[0.08] bg-white/[0.02]">
+            <div className="min-w-0">
+              <div className="text-sm font-medium text-white">Functional cookies</div>
+              <div className="text-xs text-white/55 mt-0.5">
+                {consent
+                  ? consent.functional
+                    ? 'On — your last sign-in is remembered to streamline re-login.'
+                    : 'Off — you will pick your sign-in method every time.'
+                  : 'No choice recorded yet — you will see the banner on first visit.'}
+              </div>
+            </div>
+            <Badge tone={consent?.functional ? 'green' : 'neutral'}>
+              {consent?.functional ? 'Enabled' : 'Disabled'}
+            </Badge>
+          </div>
+          <div>
+            <Button variant="ghost" onClick={openCookiePreferences}>
+              <Cookie className="w-4 h-4" /> Change cookie preferences
+            </Button>
+          </div>
         </div>
       </Card>
 
