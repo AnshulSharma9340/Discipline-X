@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Brain, Github, Loader2, Lock, Smartphone, Target, Timer, Trophy } from 'lucide-react';
+import { ArrowRight, Brain, Github, LayoutDashboard, Loader2, Lock, Smartphone, Target, Timer, Trophy } from 'lucide-react';
 import { useAuth } from '@/store/auth';
 import { ShaderAnimation } from '@/components/ui/ShaderAnimation';
 import { InstallAppModal, shouldAutoShowInstall } from '@/components/InstallAppModal';
@@ -13,6 +13,18 @@ export default function Landing() {
   const initialized = useAuth((s) => s.initialized);
   const [installOpen, setInstallOpen] = useState(false);
 
+  // Snapshot at mount: did the browser arrive here from an OAuth/magic-link
+  // redirect (Supabase Site URL fallback)? supabase-js will consume the hash
+  // shortly after, so we can't keep reading window.location.hash on every
+  // render. Capture once and use that to decide whether to auto-bounce.
+  const [arrivedFromOAuth] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      /access_token=|refresh_token=|type=(magiclink|recovery|signup)/.test(
+        window.location.hash,
+      ),
+  );
+
   // Auto-show the install prompt once on first visit — but wait until the cookie
   // banner is dismissed so the two don't fight for screen space.
   useEffect(() => {
@@ -23,25 +35,18 @@ export default function Landing() {
     return () => clearTimeout(t);
   }, []);
 
-  // Supabase sometimes redirects OAuth returns back to "/" with the access
-  // token in the URL hash (its Site URL fallback) instead of "/dashboard".
-  // Whether that happens or not, a known session means the user belongs on
-  // the dashboard — don't gate on `initialized`, the session itself is proof.
-  if (session) return <Navigate to="/dashboard" replace />;
-
-  // If we just came back from OAuth but supabase-js hasn't parsed the hash
-  // into a session yet, show a loader so the marketing page doesn't flash.
-  const hasAuthHash =
-    typeof window !== 'undefined' &&
-    /access_token=|refresh_token=|type=(magiclink|recovery|signup)/.test(
-      window.location.hash,
-    );
-  if (hasAuthHash && !initialized) {
-    return (
-      <div className="min-h-screen grid place-items-center bg-black">
-        <Loader2 className="w-8 h-8 animate-spin text-white/60" />
-      </div>
-    );
+  // OAuth return flow: show a loader while supabase-js parses the hash, then
+  // bounce to /dashboard. Logged-in users who navigate to / on purpose are
+  // NOT redirected — they get the landing page with a Dashboard button.
+  if (arrivedFromOAuth) {
+    if (!initialized) {
+      return (
+        <div className="min-h-screen grid place-items-center bg-black">
+          <Loader2 className="w-8 h-8 animate-spin text-white/60" />
+        </div>
+      );
+    }
+    if (session) return <Navigate to="/dashboard" replace />;
   }
 
   return (
@@ -58,6 +63,9 @@ export default function Landing() {
 }
 
 function Nav({ onGetApp }: { onGetApp: () => void }) {
+  const session = useAuth((s) => s.session);
+  const signedIn = Boolean(session);
+
   return (
     <nav className="fixed top-0 inset-x-0 z-30 backdrop-blur-md bg-black/40 border-b border-white/5">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -72,15 +80,26 @@ function Nav({ onGetApp }: { onGetApp: () => void }) {
           >
             <Smartphone className="w-3.5 h-3.5" /> Get app
           </button>
-          <Link to="/login" className="px-3 py-1.5 text-white/70 hover:text-white transition">
-            Sign in
-          </Link>
-          <Link
-            to="/register"
-            className="ml-2 px-3.5 py-1.5 rounded-full bg-white text-black font-medium hover:bg-white/90 transition inline-flex items-center gap-1.5"
-          >
-            Get started <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+          {signedIn ? (
+            <Link
+              to="/dashboard"
+              className="ml-2 px-3.5 py-1.5 rounded-full bg-white text-black font-medium hover:bg-white/90 transition inline-flex items-center gap-1.5"
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" /> Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" className="px-3 py-1.5 text-white/70 hover:text-white transition">
+                Sign in
+              </Link>
+              <Link
+                to="/register"
+                className="ml-2 px-3.5 py-1.5 rounded-full bg-white text-black font-medium hover:bg-white/90 transition inline-flex items-center gap-1.5"
+              >
+                Get started <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>

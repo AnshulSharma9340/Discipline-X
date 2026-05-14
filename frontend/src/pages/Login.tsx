@@ -33,6 +33,16 @@ export default function Login() {
     setHint(null);
   }
 
+  function continueAsHint() {
+    if (!hint) return;
+    if (hint.method === 'google') {
+      const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+      window.location.href = `${apiBase}/auth/google/login?hint=${encodeURIComponent(hint.email)}`;
+      return;
+    }
+    setMode(hint.method);
+  }
+
   return (
     <div className="min-h-screen bg-black grid lg:grid-cols-2">
       <AuthHero />
@@ -54,15 +64,28 @@ export default function Login() {
           <p className="text-white/55 mt-2 text-sm">Sign in to keep your streak alive.</p>
 
           {hint ? (
-            <div className="mt-7 flex items-center gap-2 px-3 py-2 rounded-full bg-white/5 border border-white/10 text-xs">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-neon-violet to-neon-cyan grid place-items-center text-[11px] font-semibold shrink-0">
-                {hint.email[0]?.toUpperCase()}
-              </div>
-              <span className="text-white/55 shrink-0">Continue as</span>
-              <span className="text-white truncate flex-1">{hint.email}</span>
+            <div className="mt-7 flex items-stretch gap-2">
               <button
+                type="button"
+                onClick={continueAsHint}
+                className="flex-1 flex items-center gap-2 px-3 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/[0.08] hover:border-white/20 transition text-xs text-left group"
+                title={
+                  hint.method === 'google'
+                    ? 'Sign in with Google'
+                    : `Use ${hint.method === 'otp' ? 'email code' : 'password'}`
+                }
+              >
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-neon-violet to-neon-cyan grid place-items-center text-[11px] font-semibold shrink-0">
+                  {hint.email[0]?.toUpperCase()}
+                </div>
+                <span className="text-white/55 shrink-0">Continue as</span>
+                <span className="text-white truncate flex-1">{hint.email}</span>
+                <ArrowRight className="w-3.5 h-3.5 text-white/40 group-hover:text-white/80 transition shrink-0" />
+              </button>
+              <button
+                type="button"
                 onClick={clearHint}
-                className="shrink-0 text-white/40 hover:text-white/80 transition p-0.5"
+                className="shrink-0 w-9 grid place-items-center rounded-full border border-white/10 text-white/40 hover:text-white/80 hover:border-white/25 transition"
                 title="Use a different account"
                 aria-label="Forget this account"
               >
