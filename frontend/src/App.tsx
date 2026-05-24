@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { OnboardingGate } from '@/components/OnboardingGate';
+import { SubscriptionGate } from '@/components/SubscriptionGate';
 import { CookieBanner } from '@/components/CookieBanner';
 import { useAuth } from '@/store/auth';
 import { useRealtime } from '@/hooks/useRealtime';
@@ -84,7 +85,9 @@ export default function App() {
         element={
           <ProtectedRoute>
             <OnboardingGate>
-              <Layout />
+              <SubscriptionGate>
+                <Layout />
+              </SubscriptionGate>
             </OnboardingGate>
           </ProtectedRoute>
         }

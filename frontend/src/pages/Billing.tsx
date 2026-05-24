@@ -13,11 +13,14 @@ import toast from 'react-hot-toast';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { useAuth } from '@/store/auth';
+import { useSubscription } from '@/store/subscription';
 import { fetchPlans, redeemIntro, startCheckout, type Plan, type SubscriptionState } from '@/lib/billing';
 import { cn } from '@/lib/cn';
 
 export default function Billing() {
   const user = useAuth((s) => s.user);
+  const setStoreSub = useSubscription((s) => s.setSub);
+  const refreshStoreSub = useSubscription((s) => s.refresh);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [sub, setSub] = useState<SubscriptionState | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,6 +54,11 @@ export default function Billing() {
               name: user?.name,
             });
       setSub(newSub);
+      // Keep the gate's cached state fresh so the user isn't bounced back here
+      // immediately after paying. Refresh once for the authoritative premium
+      // flags, fall back to the local response if that fails.
+      setStoreSub(newSub);
+      refreshStoreSub().catch(() => {});
       toast.success(
         plan.amount_paise === 0
           ? `Free month activated — enjoy.`

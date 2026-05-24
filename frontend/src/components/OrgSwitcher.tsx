@@ -75,13 +75,13 @@ export function OrgSwitcher() {
   }
 
   return (
-    <div ref={ref} className="relative shrink-0">
+    <div ref={ref} className="relative w-full min-w-0">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 hover:border-white/25 hover:bg-white/[0.03] transition text-sm max-w-[180px] sm:max-w-[260px]"
+        className="flex w-full items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 hover:border-white/25 hover:bg-white/[0.03] transition text-sm"
       >
         <Building2 className="w-3.5 h-3.5 text-white/55 shrink-0" strokeWidth={1.75} />
-        <span className="truncate">{activeName}</span>
+        <span className="truncate flex-1 min-w-0 text-left">{activeName}</span>
         <ChevronDown
           className={cn(
             'w-3.5 h-3.5 text-white/45 shrink-0 transition',
@@ -98,7 +98,7 @@ export function OrgSwitcher() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-[280px] rounded-xl border border-white/10 bg-black/90 backdrop-blur-xl shadow-2xl z-50 overflow-hidden"
+            className="absolute left-0 top-full mt-2 w-[min(280px,calc(100vw-1rem))] rounded-xl border border-white/10 bg-black/90 backdrop-blur-xl shadow-2xl z-50 overflow-hidden"
           >
             <div className="p-2 max-h-80 overflow-auto">
               <div className="px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-white/35">
