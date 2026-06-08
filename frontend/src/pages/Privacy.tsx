@@ -1,8 +1,14 @@
 import { LegalPage, H2, H3, P, UL } from '@/components/LegalPage';
+import { Seo } from '@/components/Seo';
 
 export default function Privacy() {
   return (
     <LegalPage title="Privacy Policy" updated="May 15, 2026">
+      <Seo
+        title="Privacy Policy — DisciplineX"
+        description="How DisciplineX collects, uses, and protects your data. Account details, task submissions, analytics, third-party processors, and your rights."
+        path="/privacy"
+      />
       <P>
         DisciplineX ("we", "our", "us") helps you build a daily discipline practice with verified task
         proof, streaks, AI coaching, and team accountability. This policy explains what data we collect,

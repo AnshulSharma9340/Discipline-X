@@ -7,6 +7,7 @@ import { ShaderAnimation } from '@/components/ui/ShaderAnimation';
 import { InstallAppModal, shouldAutoShowInstall } from '@/components/InstallAppModal';
 import { getConsent } from '@/lib/consent';
 import { Logo } from '@/components/Logo';
+import { Seo } from '@/components/Seo';
 
 export default function Landing() {
   const session = useAuth((s) => s.session);
@@ -51,6 +52,11 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      <Seo
+        title="DisciplineX — Stay Sharp. Ship Daily."
+        description="Competitive productivity & discipline monitoring platform. Build streaks, ship daily proof, and stay accountable with AI-powered habit tracking, focus timers, and live leaderboards."
+        path="/"
+      />
       <Nav onGetApp={() => setInstallOpen(true)} />
       <Hero onGetApp={() => setInstallOpen(true)} />
       <Features />

@@ -1,8 +1,14 @@
 import { LegalPage, H2, P, UL } from '@/components/LegalPage';
+import { Seo } from '@/components/Seo';
 
 export default function Terms() {
   return (
     <LegalPage title="Terms of Service" updated="May 7, 2026">
+      <Seo
+        title="Terms of Service — DisciplineX"
+        description="The rules for using DisciplineX: accounts, acceptable use, content ownership, billing, account locking, termination, and liability."
+        path="/terms"
+      />
       <P>
         These terms govern your use of DisciplineX. By creating an account or using the service you
         agree to them. If you don't, please don't use the app.

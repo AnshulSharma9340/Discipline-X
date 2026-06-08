@@ -1,8 +1,14 @@
 import { LegalPage, H2, H3, P, UL } from '@/components/LegalPage';
+import { Seo } from '@/components/Seo';
 
 export default function Docs() {
   return (
     <LegalPage title="How to use DisciplineX" updated="May 7, 2026">
+      <Seo
+        title="DisciplineX Docs — How to use the platform"
+        description="Get started with DisciplineX: onboarding, daily tasks, proof submission, streaks, focus mode, habits, AI coach, squads, leaderboards, and admin workflows."
+        path="/docs"
+      />
       <P>
         Quick start: create an account, join or create an organization, ship your first task with
         proof, and your streak begins. Here's the longer version.
