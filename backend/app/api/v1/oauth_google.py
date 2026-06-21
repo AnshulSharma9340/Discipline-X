@@ -112,7 +112,14 @@ async def google_callback(request: Request) -> RedirectResponse:
         raise HTTPException(400, "Google account email not verified")
     name = profile.get("name") or email.split("@")[0]
 
-    ensure_user(email=email, name=name)
+    try:
+        ensure_user(email=email, name=name)
+    except Exception as exc:
+        logger.exception("ensure_user failed during Google sign-in for {}", email)
+        error_url = f"{settings.FRONTEND_URL}/login?error=server_error"
+        resp = RedirectResponse(url=error_url, status_code=302)
+        resp.delete_cookie(STATE_COOKIE, path="/api/v1/auth/google")
+        return resp
 
     try:
         link = generate_magic_link(

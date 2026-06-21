@@ -8,6 +8,7 @@ These run server-side only and let us:
 
 from __future__ import annotations
 
+import time
 from typing import Any
 
 from loguru import logger
@@ -15,24 +16,50 @@ from supabase import Client, create_client
 
 from app.core.config import settings
 
+_MAX_RETRIES = 3
+_BACKOFF_BASE = 0.5  # seconds
+
 
 def _client() -> Client:
     return create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
 
 
+def _retry(fn, *args, **kwargs):
+    """Call *fn* with retries on transient Supabase / GoTrue errors."""
+    last_exc: Exception | None = None
+    for attempt in range(_MAX_RETRIES):
+        try:
+            return fn(*args, **kwargs)
+        except Exception as exc:
+            exc_name = type(exc).__name__
+            # Retry on transient errors only
+            if "Retryable" in exc_name or "disconnected" in str(exc).lower() or "timeout" in str(exc).lower():
+                last_exc = exc
+                wait = _BACKOFF_BASE * (2 ** attempt)
+                logger.warning(
+                    "Supabase transient error (attempt {}/{}): {} – retrying in {:.1f}s",
+                    attempt + 1, _MAX_RETRIES, exc, wait,
+                )
+                time.sleep(wait)
+            else:
+                raise
+    raise last_exc  # type: ignore[misc]
+
+
 def find_user_by_email(email: str) -> dict[str, Any] | None:
-    """Return the Supabase auth user dict for this email, or None if missing."""
+    """Return the Supabase auth user dict for this email, or None if missing.
+
+    Uses paginated list_users with retry logic for transient errors.
+    """
     client = _client()
-    # supabase-py 2.x: list_users supports filtering via per_page + iteration.
-    # Email lookup isn't a direct API; we iterate (small projects only).
+    email_lower = email.lower()
     page = 1
     while True:
-        users = client.auth.admin.list_users(page=page, per_page=200)
-        # supabase-py returns a list directly here.
+        users = _retry(client.auth.admin.list_users, page=page, per_page=200)
         if not users:
             return None
         for u in users:
-            if (u.email or "").lower() == email.lower():
+            if (u.email or "").lower() == email_lower:
                 return u.model_dump() if hasattr(u, "model_dump") else dict(u)
         if len(users) < 200:
             return None
@@ -41,12 +68,13 @@ def find_user_by_email(email: str) -> dict[str, Any] | None:
 
 def create_user(email: str, name: str = "", email_confirmed: bool = True) -> dict[str, Any]:
     client = _client()
-    res = client.auth.admin.create_user(
+    res = _retry(
+        client.auth.admin.create_user,
         {
             "email": email,
             "email_confirm": email_confirmed,
             "user_metadata": {"name": name} if name else {},
-        }
+        },
     )
     user = res.user if hasattr(res, "user") else res
     return user.model_dump() if hasattr(user, "model_dump") else dict(user)
@@ -88,7 +116,7 @@ def generate_magic_link(email: str, redirect_to: str | None = None) -> str:
         "email": email,
         "options": {"redirect_to": redirect_to} if redirect_to else {},
     }
-    return _extract_action_link(client.auth.admin.generate_link(params))
+    return _extract_action_link(_retry(client.auth.admin.generate_link, params))
 
 
 def generate_recovery_link(email: str, redirect_to: str | None = None) -> str:
@@ -102,4 +130,5 @@ def generate_recovery_link(email: str, redirect_to: str | None = None) -> str:
         "email": email,
         "options": {"redirect_to": redirect_to} if redirect_to else {},
     }
-    return _extract_action_link(client.auth.admin.generate_link(params))
+    return _extract_action_link(_retry(client.auth.admin.generate_link, params))
+
